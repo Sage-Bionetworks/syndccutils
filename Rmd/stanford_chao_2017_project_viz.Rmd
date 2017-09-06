@@ -1,0 +1,137 @@
+---
+title: "Stanford CSBC Chao Project Summary"
+output:
+  html_notebook:
+    code_folding: hide
+  html_document: default
+---
+
+```{r, message=FALSE, include=FALSE}
+library(synapseClient,quietly=TRUE)
+library(tidyverse,quietly=TRUE)
+library(stringr,quietly=TRUE)
+library(ggplot2,quietly=TRUE)
+library(forcats,quietly=TRUE)
+library(viridis,quietly=TRUE)
+library(plotly,quietly=TRUE)
+
+synapseLogin()
+file.view.id <- "syn10531467"
+summary.table <- synTableQuery(paste0("select * from ", file.view.id), verbose=FALSE)
+fv_df <- summary.table@values
+```
+###Data annotation summaries
+
+####Assays by patient
+
+```{r assays_by_patient, message=FALSE, echo=FALSE}
+assays_by_patient <- fv_df %>% 
+  group_by(individualID, assay) %>% 
+  tally() %>% 
+  ungroup() %>%
+  mutate(individualID = fct_rev(individualID)) %>% 
+  ggplot(aes(individualID)) +
+    geom_bar(aes(fill = assay), alpha = 0.8, colour = "white",
+             position = position_stack(reverse = TRUE)) +
+    scale_fill_viridis(discrete = TRUE) + 
+    coord_flip() +
+    xlab("") +
+    ylab("Number of Assays") +
+    theme(plot.title = element_text(face = "bold"),
+          legend.title = element_blank())
+
+ggplotly(assays_by_patient, width = 800) %>%
+    layout(margin = list(l = 100, r = 250))
+```
+
+####Patients by assay
+
+```{r patient_by_assay, message=FALSE, echo=FALSE}
+patient_by_assay <- fv_df %>% 
+  group_by(individualID, assay) %>% 
+  tally() %>% 
+  ungroup() %>%
+  mutate(individualID = fct_rev(individualID)) %>% 
+  ggplot(aes(assay)) +
+    geom_bar(aes(fill = individualID), alpha = 0.8, colour = "white",
+             position = position_stack(reverse = TRUE)) +
+    scale_fill_viridis(discrete = TRUE) + 
+    coord_flip() +
+    xlab("") +
+    ylab("Number of Patients") +
+    theme(plot.title = element_text(face = "bold"),
+          legend.title = element_blank())
+
+ggplotly(patient_by_assay, width = 800) %>%
+    layout(margin = list(l = 150, r = 250))
+```
+
+####Number of files by assay and patient
+```{r, message=FALSE}
+fv_df %>% 
+  group_by(individualID, assay) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  right_join(., expand(., individualID, assay), by = c("individualID", "assay")) %>%
+  replace_na(list(n = 0)) %>% 
+  # need to be careful with column types
+  mutate(n = as.integer(n)) %>%
+  spread(individualID, n)
+
+fv_df %>% 
+  group_by(individualID, assay) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  right_join(., expand(., individualID, assay), by = c("individualID", "assay")) %>%
+  replace_na(list(n = 0)) %>% 
+  # need to be careful with column types
+  mutate(n = as.integer(n)) %>%
+  spread(assay, n)
+
+```
+
+```{r,message=FALSE}
+proj_info<-sapply(unique(c(fv_df$projectId,fv_df$projectId)),function(x) {
+  res=synGet(x)
+  c(projectId=x,Center=res@properties$name,Program=res@annotations$consortium,Institution=res@annotations$institution)})
+
+proj_info=data.frame(t(proj_info))
+```
+
+
+####Available Assays
+```{r}
+assay_counts=fv_df%>%group_by(assay)%>%summarize(Centers=n_distinct(projectId),Files=n_distinct(id),tumorType=n_distinct(tumorType),disease=n_distinct(diagnosis),specimens=n_distinct(specimenID),patients=n_distinct(individualID))
+
+arrange(assay_counts,desc(Centers))
+```
+
+```{r}
+assay_stats=fv_df%>%group_by(assay,tumorType,diagnosis)%>%summarize(Centers=n_distinct(projectId),Files=n_distinct(id),specimens=n_distinct(specimenID),patients=n_distinct(individualID))
+
+arrange(assay_stats,desc(Centers))
+```
+
+```{r}
+p=ggplot(assay_stats)+geom_bar(aes(x=assay,fill=tumorType,y=Files),stat='identity',position='dodge')+ggtitle('Files by assay,tumor type')+scale_fill_viridis(discrete = TRUE) + xlab("") +scale_y_log10()+
+    ylab("") +
+    theme(plot.title = element_text(face = "bold"),
+          legend.title = element_blank(), axis.text.x = element_text(angle = 315, hjust = 1))
+
+ggplotly(p, width = 1000) %>%
+    layout(margin = list(l = 45, r = 25,b=155))
+```
+
+
+
+
+
+```{r}
+tt_counts=fv_df%>%group_by(tumorType)%>%summarize(Centers=n_distinct(projectId),Files=n_distinct(id),disease=n_distinct(diagnosis),assay=n_distinct(assay),specimens=n_distinct(specimenID),patients=n_distinct(individualID))
+
+arrange(tt_counts,desc(Centers))
+```
+
+
+---
+

@@ -1,0 +1,73 @@
+---
+title: "Tool-specific Updates"
+output: 
+  html_notebook:
+    code_folding: "hide"
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(synapseClient,quietly=TRUE)
+library(tidyverse,quietly=TRUE)
+library(ggplot2,quietly=TRUE)
+library(forcats,quietly=TRUE)
+library(viridis,quietly=TRUE)
+library(plotly,quietly=TRUE)
+```
+
+This document refers to the pan-CSBC file view (`syn9630847`), but can be applied to any file view.
+```{r, message=FALSE, include=FALSE}
+synapseLogin()
+
+tv_table <- synTableQuery("select * from syn9898965")
+tv_df <-tv_table@values
+```
+
+```{r,message=FALSE}
+proj_info<-sapply(unique(c(tv_df$projectId)),function(x) {
+  res=synGet(x)
+  c(projectId=x,Center=res@properties$name,Program=res@annotations$consortium,Institution=res@annotations$institution)})
+
+proj_info=data.frame(t(proj_info))
+```
+
+###Tool annotation summaries
+
+####Available Programming Languages
+```{r}
+lang_counts=tv_df%>%group_by(softwareLanguage,projectId)%>%summarize(Files=n_distinct(id))
+
+files_with_info=inner_join(proj_info,lang_counts,by="projectId")
+
+files_with_info=mutate(files_with_info,Label=paste(Institution,Program,sep='\n'))
+
+arrange(files_with_info,desc(Files))
+```
+
+
+```{r}
+p=ggplot(files_with_info)+geom_bar(aes(x=Label,fill=softwareLanguage,y=Files),stat='identity',position='dodge')+ggtitle('Files/links by Center')+scale_fill_viridis(discrete = TRUE) + xlab("") + coord_flip()+
+    ylab("") +
+    theme(plot.title = element_text(face = "bold"),
+          legend.title = element_blank(), axis.text.x = element_text(angle = 315, hjust =1))
+
+ggplotly(p, width = 1000) %>%
+    layout(margin = list(l = 100, r = 100,b=55))
+```
+
+```{r}
+
+
+p=ggplot(assay_stats)+geom_bar(aes(x=assay,fill=diagnosis,y=Files),stat='identity',position='dodge')+ggtitle('Files by assay,diagnosis')+scale_fill_viridis(discrete = TRUE) + xlab("") + scale_y_log10()+
+    ylab("") +coord_flip()+
+    theme(plot.title = element_text(face = "bold"),
+          legend.title = element_blank(), axis.text.x = element_text(angle = 315, hjust = 1))
+
+ggplotly(p, width = 1000) %>%
+    layout(margin = list(l = 100, r = 100,b=55))
+```
+
+```{r,message=FALSE}
+synStore(File('toolTypeReporting.Rmd',parentId='syn10518272'))
+
+synStore(File('toolTypeReporting.nb.html',parentId='syn10518272'))
+```
