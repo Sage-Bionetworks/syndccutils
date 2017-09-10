@@ -58,50 +58,57 @@ tools_with_info
 ```{r}
 
 files_with_info=mutate(files_with_info,Label=paste(Institution,Program,sep='\n'))
+files_with_info$text=paste('Institution:',files_with_info$Institution,'\nFiles:',files_with_info$Files)
 
-p=ggplot(files_with_info)+geom_bar(aes(x=Label,y=Files,fill=Center),stat='identity')+scale_y_log10()+ggtitle('Files uploaded by Center')+scale_fill_viridis(discrete = TRUE) + xlab("") +
+p=ggplot(files_with_info,aes(text=text))+geom_bar(aes(x=Label,y=Files,fill=Center),stat='identity')+scale_y_log10()+ggtitle('Files uploaded by Center')+scale_fill_viridis(discrete = TRUE) + xlab("") +
     ylab("") + coord_flip()+
     theme(plot.title = element_text(face = "bold"),
           legend.title = element_blank(),
       axis.text.x = element_text(angle = 315, hjust = 1))
 
-ggplotly(p, width = 1000) %>%
-    layout(margin = list(l = 60, r = 65,b=55))
+ggplotly(p, tooltip='text',width=1400) %>%
+    layout(margin = list(l = 280, r = 85,b=55))
 ```
 
 ```{r}
-p=ggplot(files_with_info)+geom_bar(aes(x=Label,y=disease,fill=Center),stat='identity')+ggtitle('Diseases studied by Center')+scale_fill_viridis(discrete = TRUE) + xlab("") +
+files_with_info$text=paste('Institution:',files_with_info$Institution,'\nDiseases:',files_with_info$disease)
+
+p=ggplot(files_with_info,aes(text=text))+geom_bar(aes(x=Label,y=disease,fill=Center),stat='identity')+ggtitle('Diseases studied by Center')+scale_fill_viridis(discrete = TRUE) + xlab("") +
     ylab("") + coord_flip()+
     theme(plot.title = element_text(face = "bold"),
           legend.title = element_blank(), legend.position='botom',
       axis.text.x = element_text(angle = 315, hjust = 1))
 
-ggplotly(p, width = 1000) %>%
-   layout(margin = list(l = 135, r = 225,b=50))
+ggplotly(p,tooltip='text', width = 1400) %>%
+   layout(margin = list(l = 280, r = 85,b=50))
 
 ```
 
 ```{r}
-p=ggplot(files_with_info)+geom_bar(aes(x=Label,y=patients,fill=Center),stat='identity')+ggtitle('Individual patients studied by Center')+scale_fill_viridis(discrete = TRUE)+  xlab("") +
+files_with_info$text=paste('Institution:',files_with_info$Institution,'\nPatients:',files_with_info$patients)
+
+p=ggplot(files_with_info,aes(text=text))+geom_bar(aes(x=Label,y=patients,fill=Center),stat='identity')+ggtitle('Individual patients studied by Center')+scale_fill_viridis(discrete = TRUE)+  xlab("") +
     ylab("") + coord_flip()+
     theme(plot.title = element_text(face = "bold"),
           legend.title = element_blank(),
       axis.text.x = element_text(angle = 315, hjust = 1))
 
-ggplotly(p, width = 1000) %>%
-    layout(margin = list(l = 65, r = 65,b=40))
+ggplotly(p,tooltip='text', width = 1400) %>%
+    layout(margin = list(l = 285, r = 65,b=40))
 
 ```
 
 ```{r}
-p=ggplot(files_with_info)+geom_bar(aes(x=Label,y=Assays,fill=Center),stat='identity')+ggtitle('Individual assays collected by Center')+scale_fill_viridis(discrete = TRUE)+  xlab("") +
+files_with_info$text=paste('Institution:',files_with_info$Institution,'\nAssays:',files_with_info$Assays)
+
+p=ggplot(files_with_info,aes(text=text))+geom_bar(aes(x=Label,y=Assays,fill=Center),stat='identity')+ggtitle('Individual assays collected by Center')+scale_fill_viridis(discrete = TRUE)+  xlab("") +
     ylab("") + coord_flip()+
     theme(plot.title = element_text(face = "bold"),
           legend.title = element_blank(),
       axis.text.x = element_text(angle = 315, hjust = 1))
 
-ggplotly(p, width = 1000) %>%
-    layout(margin = list(l = 65, r = 65,b=30))
+ggplotly(p, tooltip='text',width = 1300) %>%
+    layout(margin = list(l = 280, r = 65,b=30))
 
 ```
 

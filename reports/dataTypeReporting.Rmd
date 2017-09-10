@@ -45,28 +45,36 @@ arrange(assay_stats,desc(Centers))
 ```
 
 ```{r}
-p=ggplot(assay_stats)+geom_bar(aes(x=assay,fill=tumorType,y=Files),stat='identity',position='dodge')+ggtitle('Files by assay,tumor type')+scale_fill_viridis(discrete = TRUE) + xlab("") +scale_y_log10()+ coord_flip()+
+assay_stats$text = paste('Assay:',assay_stats$assay,
+        '\nTumor Type:',assay_stats$tumorType,
+        '\nFiles:',assay_stats$Files)
+
+p=ggplot(assay_stats,aes(text=text))+geom_bar(aes(x=assay,fill=tumorType,y=Files),stat='identity',position='dodge')+ggtitle('Files by assay,tumor type')+scale_fill_viridis(discrete = TRUE) + xlab("") +scale_y_log10()+ coord_flip()+
     ylab("") +
     theme(plot.title = element_text(face = "bold"),
           legend.title = element_blank(), axis.text.x = element_text(angle = 315, hjust = 1))
 
-ggplotly(p, width = 1000) %>%
-    layout(margin = list(l = 100, r = 100,b=55))
+ggplotly(p, tooltip="text",width = 1000) %>%
+    layout(margin = list(l = 200, r = 100,b=55))
 ```
 
 ```{r}
 
+assay_stats$text = paste('Assay:',assay_stats$assay,
+        '\nDiagnosis:',assay_stats$diagnosis,
+        '\nFiles:',assay_stats$Files)
 
-p=ggplot(assay_stats)+geom_bar(aes(x=assay,fill=diagnosis,y=Files),stat='identity',position='dodge')+ggtitle('Files by assay,diagnosis')+scale_fill_viridis(discrete = TRUE) + xlab("") + scale_y_log10()+
+p=ggplot(assay_stats,aes(text=text))+geom_bar(aes(x=assay,fill=diagnosis,y=Files),stat='identity',position='dodge')+ggtitle('Files by assay,diagnosis')+scale_fill_viridis(discrete = TRUE) + xlab("") + scale_y_log10()+
     ylab("") +coord_flip()+
     theme(plot.title = element_text(face = "bold"),
           legend.title = element_blank(), axis.text.x = element_text(angle = 315, hjust = 1))
 
-ggplotly(p, width = 1000) %>%
-    layout(margin = list(l = 100, r = 100,b=55))
+ggplotly(p, tooltip='text',width = 1000) %>%
+    layout(margin = list(l = 200, r = 100,b=55))
 ```
 
 ```{r}
+
 disease_counts=fv_df%>%group_by(diagnosis)%>%summarize(Centers=n_distinct(projectId),Files=n_distinct(id),tumorType=n_distinct(tumorType),assay=n_distinct(assay),specimens=n_distinct(specimenID),patients=n_distinct(individualID))
 
 arrange(disease_counts,desc(Centers))
