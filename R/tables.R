@@ -1,6 +1,6 @@
 
 # Project summary tables --------------------------------------------------
-
+library(tidyverse,quietly=TRUE)
 # adapted from lines 29-33 in 'fileViewReporting.Rmd'
 summarize_project_info <- function(view_df) {
     proj_info <-
