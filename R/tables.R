@@ -1,3 +1,5 @@
+library(tidyverse)
+library(synapseClient)
 
 # Project summary tables --------------------------------------------------
 

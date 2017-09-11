@@ -1,3 +1,7 @@
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+library(forcats)
 
 plot_assay_stats_by_tumortype <- function(assay_stats) {
     p <- ggplot(assay_stats) +
