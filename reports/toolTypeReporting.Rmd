@@ -51,20 +51,10 @@ p=ggplot(files_with_info)+geom_bar(aes(x=Label,fill=softwareLanguage,y=Files),st
           legend.title = element_blank(), axis.text.x = element_text(angle = 315, hjust =1))
 
 ggplotly(p, width = 1000) %>%
-    layout(margin = list(l = 100, r = 100,b=55))
+    layout(margin = list(l = 150, r = 100,b=55))
 ```
 
-```{r}
 
-
-p=ggplot(assay_stats)+geom_bar(aes(x=assay,fill=diagnosis,y=Files),stat='identity',position='dodge')+ggtitle('Files by assay,diagnosis')+scale_fill_viridis(discrete = TRUE) + xlab("") + scale_y_log10()+
-    ylab("") +coord_flip()+
-    theme(plot.title = element_text(face = "bold"),
-          legend.title = element_blank(), axis.text.x = element_text(angle = 315, hjust = 1))
-
-ggplotly(p, width = 1000) %>%
-    layout(margin = list(l = 100, r = 100,b=55))
-```
 
 ```{r,message=FALSE}
 synStore(File('toolTypeReporting.Rmd',parentId='syn10518272'))
