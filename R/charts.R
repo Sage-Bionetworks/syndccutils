@@ -62,3 +62,41 @@ plot_project_toollanguage_counts_by_center <- function(
     ggplotly(p, width = 1000) %>%
         layout(margin = list(l = 100, r = 100, b = 55))
 }
+
+# adapted from lines 28-44 in 'pan_stanford_viz.Rmd'
+plot_assay_counts_by_patient <- function(patient_datafile_counts_by_assay) {
+    p <- patient_datafile_counts_by_assay %>%
+        gather(assay, Files, -individualID) %>%
+        mutate(individualID = fct_rev(individualID)) %>%
+        ggplot(aes(individualID)) +
+        geom_bar(aes(fill = assay), alpha = 0.8, colour = "white",
+                 position = position_stack(reverse = TRUE)) +
+        scale_fill_viridis(discrete = TRUE) +
+        coord_flip() +
+        xlab("") +
+        ylab("Number of Assays") +
+        theme(plot.title = element_text(face = "bold"),
+              legend.title = element_blank())
+
+    ggplotly(p, width = 800) %>%
+        layout(margin = list(l = 100, r = 250))
+}
+
+# adapted from lines 49-66 in 'pan_stanford_viz.Rmd'
+plot_patient_counts_by_assay <- function(assay_datafile_counts_by_patient) {
+    p <- assay_datafile_counts_by_patient %>%
+        gather(individualID, Files, -assay) %>%
+        ggplot(aes(assay)) +
+        geom_bar(aes(fill = individualID), alpha = 0.8, colour = "white",
+                 position = position_stack(reverse = TRUE)) +
+        scale_fill_viridis(discrete = TRUE) +
+        coord_flip() +
+        xlab("") +
+        ylab("Number of Patients") +
+        theme(plot.title = element_text(face = "bold"),
+              legend.title = element_blank())
+
+    ggplotly(p, width = 800) %>%
+        layout(margin = list(l = 150, r = 250))
+}
+
