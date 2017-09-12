@@ -1,3 +1,5 @@
+library(tidyverse)
+library(synapseClient)
 
 #' Collect all rows and columns from a Synapse table and return as values
 #' in a data frame.
@@ -115,4 +117,18 @@ table_as_wiki <- function(tab #table to populate
 }
 
 
+# test --------------------------------------------------------------------
 
+get_query_url <- function(table_id, query_string) {
+    query <- glue::glue("{{'sql': '{q}'}}", q = query_string)
+    query_encoded <- jsonlite::base64_enc(query)
+    url <- glue::glue("https://www.synapse.org/#!Synapse:{id}/tables/query/{query}",
+                      id = table_id, query = query_encoded)
+    url
+}
+
+table_id <- "syn9630847"
+query_string <- 'SELECT id FROM syn9630847 WHERE projectId = "syn7248578"'
+
+get_query_url(table_id, query_string)
+url <- "https://www.synapse.org/#!Synapse:syn9630847/tables/query/eyJsaW1pdCI6MjUsICJzcWwiOiJTRUxFQ1QgaWQgRlJPTSBzeW45NjMwODQ3IFdIRVJFIHByb2plY3RJZCA9IFwic3luNzI0ODU3OFwiIiwgImlzQ29uc2lzdGVudCI6dHJ1ZSwgIm9mZnNldCI6MH0="
