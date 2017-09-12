@@ -76,7 +76,7 @@ save_table <- function(project_id, table_name, table_df) {
 #' Save a static or dynamic chart to a file and store in Synapse.
 #'
 #' @param parent_id
-#' @param file_name
+#' @param chart_filename
 #' @param plot_object
 #' @param static
 #'
@@ -84,8 +84,10 @@ save_table <- function(project_id, table_name, table_df) {
 #' @export
 #'
 #' @examples
-save_chart <- function(parent_id, file_name, plot_object, static = FALSE) {
-
+save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
+    chart_widget <- plotly::as_widget(plot_object)
+    htmlwidgets::saveWidget(chart_widget)
+    syn_entity <- synStore(File(path = chart_filename, parentId = parent_id))
     return(syn_entity)
 }
 

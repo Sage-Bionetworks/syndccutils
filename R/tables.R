@@ -1,6 +1,8 @@
+library(tidyverse)
+library(synapseClient)
 
 # Project summary tables --------------------------------------------------
-library(tidyverse,quietly=TRUE)
+
 # adapted from lines 29-33 in 'fileViewReporting.Rmd'
 summarize_project_info <- function(view_df) {
     proj_info <-
@@ -125,7 +127,21 @@ summarize_tumortype_counts <- function(fileview_df) {
 
 # Patient summary tables --------------------------------------------------
 
-summarize_assay_counts_by_patient <- function(fileview_df) {
+summarize_assaycounts_by_patient <- function(fileview_df) {
+    fileview_df %>%
+        group_by(individualID, assay) %>%
+        tally() %>%
+        ungroup() %>%
+        right_join(., expand(., individualID, assay),
+                   by = c("individualID", "assay")) %>%
+        replace_na(list(n = 0)) %>%
+        # need to be careful with column types
+        mutate(n = as.integer(n))
+
+}
+
+# adapted from lines 71-79 in 'pan_stanford_viz.Rmd'
+summarize_assay_datafile_counts_by_patient <- function(fileview_df) {
     fileview_df %>%
         group_by(individualID, assay) %>%
         tally() %>%
@@ -138,7 +154,8 @@ summarize_assay_counts_by_patient <- function(fileview_df) {
         spread(individualID, n)
 }
 
-summarize_patient_counts_by_assay <- function(fileview_df) {
+# adapted from lines 81-89 in 'pan_stanford_viz.Rmd'
+summarize_patient_datafile_counts_by_assay <- function(fileview_df) {
     fileview_df %>%
         group_by(individualID, assay) %>%
         tally() %>%
