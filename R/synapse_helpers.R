@@ -89,6 +89,28 @@ save_chart <- function(parent_id, file_name, plot_object, static = FALSE) {
     return(syn_entity)
 }
 
+#' Convert a table to a wik istring
+#'
+#' #param tab
+#' @param columnsAsCode
+#'
+#' @return
+#' @export
+table_as_wiki <- function(tab #table to populate
+    ,columnsAsCode=c()#list of columns to format as courier in markdown
+    ){
+
+    #first add in backticks for code blocks
+    for(i in columnsAsCode)
+        tab[,i]<-sapply(tab[,i],function(x) paste0('`',x,'`'))
+
+    rowstr=paste(
+            paste0(names(tab),collapse='|'),'\n',
+            paste0(rep('---',ncol(tab)),collapse='|'),'\n'
+            )
+    tabstr<-paste(apply(tab,1,function(x) paste0(x,collapse='|')),collapse='\n')
+    return(paste0(rowstr,tabstr))
+}
 
 
 
