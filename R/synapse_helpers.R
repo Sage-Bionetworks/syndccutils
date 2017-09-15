@@ -11,7 +11,6 @@ library(synapseClient)
 #'
 #' @examples
 get_table_df <- function(table_id) {
-
     syn_table_data <- synTableQuery(sprintf("select * from %s", table_id))
     return(syn_table_data@values)
 }
@@ -93,27 +92,35 @@ save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
     return(syn_entity)
 }
 
-#' Convert a table to a wik istring
+
+#' Construct a Synapse SQL-style table query using names/values of data frame
+#' column(s) to compose 'WHERE' clauses
 #'
-#' #param tab
-#' @param columnsAsCode
+#' @param table_id
+#' @param ...
 #'
 #' @return
 #' @export
-table_as_wiki <- function(tab #table to populate
-    ,columnsAsCode=c()#list of columns to format as courier in markdown
-    ){
+#'
+#' @examples
+#' test_df %>%
+#'     rowwise() %>%
+#'     mutate(query = build_tablequery(table_id, assay))
+build_tablequery <- function(table_id, ...) {
 
-    #first add in backticks for code blocks
-    for(i in columnsAsCode)
-        tab[,i]<-sapply(tab[,i],function(x) paste0('`',x,'`'))
-
-    rowstr=paste(
-            paste0(names(tab),collapse='|'),'\n',
-            paste0(rep('---',ncol(tab)),collapse='|'),'\n'
-            )
-    tabstr<-paste(apply(tab,1,function(x) paste0(x,collapse='|')),collapse='\n')
-    return(paste0(rowstr,tabstr))
+    query_template <- "SELECT * FROM {id} WHERE ( {filters} )"
+    dots <- substitute(list(...))[-1]
+    list_names <- sapply(dots, deparse)
+    list(...) %>%
+        set_names(list_names) %>%
+        map2(names(.), function(value, key) {
+            filter_string <- glue::glue("( {key} = '{value}' )",
+                                        key = key, value = value)
+            filter_string
+        }) %>%
+        flatten_chr() %>%
+        stringr::str_c(collapse = " AND ") %>%
+        glue::glue(query_template, id = table_id, filters = .)
 }
 
 
@@ -127,7 +134,6 @@ table_as_wiki <- function(tab #table to populate
 #'
 #' @examples
 get_tablequery_url <- function(table_id, query_string) {
-
     query <- list(limit = 25,
                   sql = query_string,
                   isConsistent = TRUE,
