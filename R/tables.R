@@ -99,9 +99,9 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 
 as_datatable <- function(df, cols_as_code = c()) {
     df %>%
-        datatable(escape = FALSE, width = 800, rownames = FALSE,
+        datatable(escape = FALSE, rownames = FALSE, height = 400,
                   options=list(
-                      pageLength = 10,
+                      pageLength = min(nrow(df), 10),
                       dom = 'tp',
                       initComplete = JS("
                                     function(settings, json) {
