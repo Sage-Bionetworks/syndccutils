@@ -66,7 +66,9 @@ get_tablequery_url <- function(table_id, query_string) {
 #'
 #' @examples
 add_queryview_column <- function(df) {
-    df
+    df %>%
+        mutate(viewFiles = get_tablequery_url(sourceFileview, query),
+               viewFiles = glue::glue("[View Files]({url})", url = viewFiles))
 }
 
 
@@ -88,6 +90,50 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
     }
     df %>% knitr::kable(format = "markdown")
 }
+
+
+format_summarytable_columns <- function(df, facet_cols = c()) {
+    # df %>%
+    #     rename(Files = id, Diagnoses = diagnosis, `Tumor Types` = tumorType,
+    #            Individuals = individualID, Specimens = specimenID)
+    name_map <- tibble(name = names(df)) %>%
+        mutate(formatted_name = case_when(
+            name == "id" ~ "Files",
+            name == "assay" & (name %in% facet_cols) ~ "Assay",
+            name == "assay" & !(name %in% facet_cols) ~ "Assays",
+            name == "diagnosis" & (name %in% facet_cols) ~ "Diagnosis",
+            name == "diagnosis" & !(name %in% facet_cols) ~ "Diagnoses",
+            name == "tumorType" & (name %in% facet_cols) ~ "Tumor Type",
+            name == "tumorType" & !(name %in% facet_cols) ~ "Tumor Types",
+            name == "individualID" & (name %in% facet_cols) ~ "Individual",
+            name == "individualID" & !(name %in% facet_cols) ~ "Individuals",
+            name == "specimenID" & (name %in% facet_cols) ~ "Specimen",
+            name == "specimenID" & !(name %in% facet_cols) ~ "Specimens",
+            name == "sourceFileview" ~ "Source Fileview",
+            name == "viewFiles" ~ "View Files",
+            TRUE ~ name
+        )) %>%
+        split(.$name) %>%
+        map("formatted_name")
+    set_names(df, name_map)
+}
+
+
+# Core summary tables (data files) ----------------------------------------
+
+summarize_datafiles_by_assay <- function(view_df, table_id) {
+    count_cols <- c("id", "diagnosis", "tumorType", "individualID",
+                    "specimenID")
+    view_df %>%
+        group_by(assay) %>%
+        summarise_at(count_cols, n_distinct) %>%
+        mutate(sourceFileview = table_id,
+               query = build_tablequery(sourceFileview, assay)) %>%
+        add_queryview_column() %>%
+        select(-query)
+}
+
+assay_datafile_counts <- fv_df %>% summarize_datafiles_by_assay(table_id)
 
 
 # Project summary tables --------------------------------------------------
