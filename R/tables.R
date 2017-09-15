@@ -65,10 +65,15 @@ get_tablequery_url <- function(table_id, query_string) {
 #' @export
 #'
 #' @examples
-add_queryview_column <- function(df) {
+add_queryview_column <- function(df, format = c("markdown", "html")) {
+    link_templates <- list(
+        markdown = "[View]({url})",
+        html = '<a href="{url}">View</a>'
+    )
+    link_template <- link_templates[[format]]
     df %>%
         mutate(viewFiles = get_tablequery_url(sourceFileview, query),
-               viewFiles = glue::glue("[View Files]({url})", url = viewFiles))
+               viewFiles = glue::glue(link_template, url = viewFiles))
 }
 
 
@@ -92,10 +97,34 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 }
 
 
+as_datatable <- function(df, cols_as_code = c()) {
+    df %>%
+        datatable(escape = FALSE, width = 800, rownames = FALSE,
+                  options=list(
+                      pageLength = 10,
+                      dom = 'tp',
+                      initComplete = JS("
+                                    function(settings, json) {
+                                    $(this.api().table().body()).css({
+                                    'font-family': 'Roboto, Open Sans, sans-serif',
+                                    'font-size': '10px'
+                                    });
+                                    $(this.api().table().header()).css({
+                                    'font-family': 'Roboto, Open Sans, sans-serif',
+                                    'font-size': '11px'
+                                    });
+                                    $(this.api().table().container()).css({
+                                    'font-family': 'Roboto, Open Sans, sans-serif',
+                                    'font-size': '11px'
+                                    });
+                                    }
+                                    ")
+                  )
+        )
+}
+
+
 format_summarytable_columns <- function(df, facet_cols = c()) {
-    # df %>%
-    #     rename(Files = id, Diagnoses = diagnosis, `Tumor Types` = tumorType,
-    #            Individuals = individualID, Specimens = specimenID)
     name_map <- tibble(name = names(df)) %>%
         mutate(formatted_name = case_when(
             name == "id" ~ "Files",
@@ -127,13 +156,12 @@ summarize_datafiles_by_assay <- function(view_df, table_id) {
     view_df %>%
         group_by(assay) %>%
         summarise_at(count_cols, n_distinct) %>%
+        rowwise() %>%
         mutate(sourceFileview = table_id,
                query = build_tablequery(sourceFileview, assay)) %>%
-        add_queryview_column() %>%
+        add_queryview_column(format = "html") %>%
         select(-query)
 }
-
-assay_datafile_counts <- fv_df %>% summarize_datafiles_by_assay(table_id)
 
 
 # Project summary tables --------------------------------------------------
