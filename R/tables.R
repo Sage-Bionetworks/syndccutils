@@ -1,6 +1,95 @@
 library(tidyverse)
 library(synapseClient)
 
+
+# Table utility functions -------------------------------------------------
+
+#' Construct a Synapse SQL-style table query using names/values of data frame
+#' column(s) to compose 'WHERE' clauses
+#'
+#' @param table_id
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' test_df %>%
+#'     rowwise() %>%
+#'     mutate(query = build_tablequery(table_id, assay))
+build_tablequery <- function(table_id, ...) {
+
+    query_template <- "SELECT * FROM {id} WHERE ( {filters} )"
+    dots <- substitute(list(...))[-1]
+    list_names <- sapply(dots, deparse)
+    list(...) %>%
+        set_names(list_names) %>%
+        map2(names(.), function(value, key) {
+            filter_string <- glue::glue("( {key} = '{value}' )",
+                                        key = key, value = value)
+            filter_string
+        }) %>%
+        flatten_chr() %>%
+        stringr::str_c(collapse = " AND ") %>%
+        glue::glue(query_template, id = table_id, filters = .)
+}
+
+
+#' Construct a URL to view the results of a Synapse table query
+#'
+#' @param table_id
+#' @param query_string
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_tablequery_url <- function(table_id, query_string) {
+    query <- list(limit = 25,
+                  sql = query_string,
+                  isConsistent = TRUE,
+                  offset = 0) %>%
+        jsonlite::toJSON(auto_unbox = TRUE)
+    query_encoded <- openssl::base64_encode(query)
+    base_url <- "https://www.synapse.org/#!Synapse:{id}/tables/query/{query}"
+    glue::glue(base_url, id = table_id, query = query_encoded)
+}
+
+
+#' Shortcut function that wraps `build_tablequery` and `get_tablequery_url`
+#' to add a new column with link to view table query results
+#'
+#' @param df
+#'
+#' @return
+#' @export
+#'
+#' @examples
+add_queryview_column <- function(df) {
+    df
+}
+
+
+#' Format data frame as markdown table
+#'
+#' @param df
+#' @param cols_as_code
+#'
+#' @return
+#' @export
+#'
+#' @examples
+as_wiki_markdown <- function(df, cols_as_code = c()) {
+
+    if (length(cols_as_code)) {
+        # first add in backticks for code blocks
+        df <- df %>%
+            dplyr::mutate_at(cols_as_code, funs(stringr::str_c("`", ., "`")))
+    }
+    df %>% knitr::kable(format = "markdown")
+}
+
+
 # Project summary tables --------------------------------------------------
 
 # adapted from lines 29-33 in 'fileViewReporting.Rmd'
@@ -82,6 +171,7 @@ summarize_project_toollanguage_counts <- function(view_df, project_info,fv_synid
 
 }
 
+
 # Data type tables --------------------------------------------------------
 
 # adapted from lines 36-38 in 'dataTypeReporting.Rmd'
@@ -128,6 +218,7 @@ summarize_assay_stats <- function(fileview_df,fv_synid) {
         downloadFiles=paste(dl_syn_query,'tumorType =',paste0('"',tumorType,'"'),'AND assay =',paste0('"',assay,'"'),'AND diagnosis =',paste0('"',diagnosis,'"')))
 }
 
+
 # adapted from lines 70-72 in 'dataTypeReporting.Rmd'
 summarize_disease_counts <- function(fileview_df,fv_synid) {
     disease_counts = fileview_df %>%
@@ -149,6 +240,7 @@ summarize_disease_counts <- function(fileview_df,fv_synid) {
     disease_counts%>% mutate(viewFiles=paste(fv_syn_query,'diagnosis =',paste0('"',diagnosis,'"')),
         downloadFiles=paste(dl_syn_query,'diagnosis =',paste0('"',diagnosis,'"')))
 }
+
 
 # adapted from lines 77-79 in 'dataTypeReporting.Rmd'
 summarize_tumortype_counts <- function(fileview_df,fv_synid) {
@@ -172,6 +264,7 @@ summarize_tumortype_counts <- function(fileview_df,fv_synid) {
         downloadFiles=paste(dl_syn_query,'tumorType =',paste0('"',tumorType,'"')))
 }
 
+
 # Patient summary tables --------------------------------------------------
 
 summarize_assaycounts_by_patient <- function(fileview_df,fv_synid) {
@@ -191,6 +284,7 @@ summarize_assaycounts_by_patient <- function(fileview_df,fv_synid) {
         downloadFiles=paste(dl_syn_query,'individualID =',paste0('"',individualID,'"'),'AND assay =',paste0('"',assay,'"')))
 
 }
+
 
 # adapted from lines 71-79 in 'pan_stanford_viz.Rmd'
 summarize_assay_datafile_counts_by_patient <- function(fileview_df,fv_synid) {
@@ -212,6 +306,7 @@ summarize_assay_datafile_counts_by_patient <- function(fileview_df,fv_synid) {
         downloadFiles=paste(dl_syn_query,'individualID =',paste0('"',individualID,'"'),'AND assay =',paste0('"',assay,'"')))
 
 }
+
 
 # adapted from lines 81-89 in 'pan_stanford_viz.Rmd'
 summarize_patient_datafile_counts_by_assay <- function(fileview_df,fv_synid) {
