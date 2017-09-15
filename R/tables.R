@@ -68,7 +68,7 @@ get_tablequery_url <- function(table_id, query_string) {
 add_queryview_column <- function(df, format = c("markdown", "html")) {
     link_templates <- list(
         markdown = "[View]({url})",
-        html = '<a href="{url}">View</a>'
+        html = '<a href="{url}" target="_blank">View</a>'
     )
     link_template <- link_templates[[format]]
     df %>%
@@ -107,15 +107,15 @@ as_datatable <- function(df, cols_as_code = c()) {
                                     function(settings, json) {
                                     $(this.api().table().body()).css({
                                     'font-family': 'Roboto, Open Sans, sans-serif',
-                                    'font-size': '10px'
+                                    'font-size': '13px'
                                     });
                                     $(this.api().table().header()).css({
                                     'font-family': 'Roboto, Open Sans, sans-serif',
-                                    'font-size': '11px'
+                                    'font-size': '14px'
                                     });
                                     $(this.api().table().container()).css({
                                     'font-family': 'Roboto, Open Sans, sans-serif',
-                                    'font-size': '11px'
+                                    'font-size': '14px'
                                     });
                                     }
                                     ")
@@ -144,7 +144,7 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
         )) %>%
         split(.$name) %>%
         map("formatted_name")
-    set_names(df, name_map)
+    plyr::rename(df, name_map)
 }
 
 

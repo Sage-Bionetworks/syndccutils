@@ -87,8 +87,14 @@ save_table <- function(project_id, table_name, table_df) {
 #' @examples
 save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
     chart_widget <- plotly::as_widget(plot_object)
-    htmlwidgets::saveWidget(chart_widget)
+    htmlwidgets::saveWidget(chart_widget, chart_filename)
     syn_entity <- synStore(File(path = chart_filename, parentId = parent_id))
+    return(syn_entity)
+}
+
+save_datatable <- function(parent_id, dt_filename, dt_widget) {
+    htmlwidgets::saveWidget(dt_widget, dt_filename)
+    syn_entity <- synStore(File(path = dt_filename, parentId = parent_id))
     return(syn_entity)
 }
 
