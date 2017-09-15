@@ -4,6 +4,27 @@ library(viridis)
 library(plotly)
 library(forcats)
 
+
+
+# Core summary charts (data files) ----------------------------------------
+
+plot_assay_counts_by_tumortype <- function(view_df) {
+    p <- fileview_df %>%
+        group_by(assay, tumorType) %>%
+        tally() %>%
+        ggplot(aes(x = tumorType, y = n)) +
+        geom_col(aes(fill = assay)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("")
+
+    ggplotly(p, height = 500) %>%
+        layout(margin = list(l = 150, r = 100, b = 55))
+}
+fileview_df %>% plot_assay_counts_by_tumortype()
+
+# old functions -----------------------------------------------------------
+
 plot_assay_stats_by_tumortype <- function(assay_stats) {
     #adding in a text line for better
     assay_stats$text = paste('Assay:',assay_stats$assay,
