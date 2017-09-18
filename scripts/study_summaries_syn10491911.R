@@ -20,9 +20,9 @@ fileview_df <- get_table_df(master_fileview_id)
 # Assays by patient -------------------------------------------------------
 
 table_filename <- glue::glue("{source_id}_DataFileCountsByAssay.html",
-                             source_id = master_fileview_id)
+                             source_id = study_id)
 chart_filename <- glue::glue("{source_id}_AssayDataFilesByTumorType.html",
-                             source_id = master_fileview_id)
+                             source_id = study_id)
 
 # create and save table
 datafile_counts_by_assay <- fileview_df %>%
