@@ -86,15 +86,23 @@ save_table <- function(project_id, table_name, table_df) {
 #'
 #' @examples
 save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
+    if (!dir.exists("html")) {
+        dir.create("html")
+    }
     chart_widget <- plotly::as_widget(plot_object)
     htmlwidgets::saveWidget(chart_widget, chart_filename)
     syn_entity <- synStore(File(path = chart_filename, parentId = parent_id))
+    file.rename(chart_filename, file.path("html", chart_filename))
     return(syn_entity)
 }
 
 save_datatable <- function(parent_id, dt_filename, dt_widget) {
+    if (!dir.exists("html")) {
+        dir.create("html")
+    }
     htmlwidgets::saveWidget(dt_widget, dt_filename)
     syn_entity <- synStore(File(path = dt_filename, parentId = parent_id))
+    file.rename(dt_filename, file.path("html", dt_filename))
     return(syn_entity)
 }
 
