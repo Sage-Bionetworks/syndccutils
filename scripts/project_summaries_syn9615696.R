@@ -2,11 +2,14 @@ source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
 
+# Script/template to create summary tables and charts for a "project"
+
 # Config ------------------------------------------------------------------
 
-synproject_id <- "syn10491911"
-parent_id <- "syn10491911"
-master_fileview_id <- "syn10531467"
+synproject_id <- "syn7315808" # Synapse project for project Center
+project_id <- "syn9615696" # Synapse folder associated with project
+parent_id <- "syn10831920" # Center 'Reporting' folder where files should be stored
+master_fileview_id <- "syn9636756" # Synapse fileview associated with project
 
 
 # Collect data ------------------------------------------------------------
