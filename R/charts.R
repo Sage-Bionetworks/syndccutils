@@ -21,7 +21,6 @@ plot_assay_counts_by_tumortype <- function(view_df) {
     ggplotly(p, height = 500) %>%
         layout(margin = list(l = 150, r = 100, b = 55))
 }
-fileview_df %>% plot_assay_counts_by_tumortype()
 
 # old functions -----------------------------------------------------------
 

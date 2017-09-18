@@ -1,6 +1,6 @@
 library(tidyverse)
 library(synapseClient)
-
+library(DT)
 
 # Table utility functions -------------------------------------------------
 
