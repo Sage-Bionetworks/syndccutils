@@ -2,13 +2,14 @@ source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
 
-# Script/template to create summary tables and charts for a "project"
+# Script/template to create summary tables and charts for a "study"
 
 # Config ------------------------------------------------------------------
 
-synproject_id <- "syn9615696" # Synapse project for project Center
+synproject_id <- "syn7315808" # Synapse project for project Center
+study_id <- "syn10491913" # Synapse folder associated with study
 parent_id <- "syn10831920" # Center 'Reporting' folder where files should be stored
-master_fileview_id <- "syn10838871" # Synapse fileview associated with project
+master_fileview_id <- "syn10531116" # Synapse fileview associated with study
 
 
 # Collect data ------------------------------------------------------------
@@ -19,15 +20,13 @@ fileview_df <- get_table_df(master_fileview_id)
 # Assays by patient -------------------------------------------------------
 
 table_filename <- glue::glue("{source_id}_DataFileCountsByAssay.html",
-                             source_id = synproject_id)
+                             source_id = study_id)
 files_by_assay_and_tumortype_table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndTumorType.html",
-                                                          source_id = synproject_id)
-files_by_study_assay_and_tumortype_table_filename <- glue::glue("{source_id}_DataFileCountsByStudyAssayAndTumorType.html",
-                                                                source_id = synproject_id)
+                                                          source_id = study_id)
 assay_by_tumor_chart_filename <- glue::glue("{source_id}_AssayDataFilesByTumorType.html",
-                                            source_id = synproject_id)
+                                            source_id = study_id)
 patient_by_tumor_chart_filename <- glue::glue("{source_id}_PatientsByTumorType.html",
-                                              source_id = synproject_id)
+                                              source_id = study_id)
 
 summarize_datafiles_by_assay_and_tumortype <- function(view_df, table_id) {
     count_cols <- c("id", "diagnosis", "individualID",
@@ -38,45 +37,6 @@ summarize_datafiles_by_assay_and_tumortype <- function(view_df, table_id) {
         rowwise() %>%
         mutate(sourceFileview = table_id,
                query = build_tablequery(sourceFileview, assay, tumorType)) %>%
-        add_queryview_column(format = "html") %>%
-        select(-query)
-}
-
-## my_format_summarytable_columns adds projectName -> study Name to mapping
-my_format_summarytable_columns <- function(df, facet_cols = c()) {
-    name_map <- tibble(name = names(df)) %>%
-        mutate(formatted_name = case_when(
-            name == "id" ~ "Files",
-            name == "assay" & (name %in% facet_cols) ~ "Assay",
-            name == "assay" & !(name %in% facet_cols) ~ "Assays",
-            name == "projectName" & (name %in% facet_cols) ~ "Study",
-            name == "projectName" & !(name %in% facet_cols) ~ "Studies",
-            name == "diagnosis" & (name %in% facet_cols) ~ "Diagnosis",
-            name == "diagnosis" & !(name %in% facet_cols) ~ "Diagnoses",
-            name == "tumorType" & (name %in% facet_cols) ~ "Tumor Type",
-            name == "tumorType" & !(name %in% facet_cols) ~ "Tumor Types",
-            name == "individualID" & (name %in% facet_cols) ~ "Individual",
-            name == "individualID" & !(name %in% facet_cols) ~ "Individuals",
-            name == "specimenID" & (name %in% facet_cols) ~ "Specimen",
-            name == "specimenID" & !(name %in% facet_cols) ~ "Specimens",
-            name == "sourceFileview" ~ "Source Fileview",
-            name == "viewFiles" ~ "View Files",
-            TRUE ~ name
-        )) %>%
-        split(.$name) %>%
-        map("formatted_name")
-    plyr::rename(df, name_map)
-}
-
-summarize_datafiles_by_study_assay_and_tumortype <- function(view_df, table_id) {
-    count_cols <- c("id", "diagnosis", "individualID",
-                    "specimenID")
-    view_df %>%
-        group_by(assay, tumorType, projectName) %>%
-        summarise_at(count_cols, n_distinct) %>%
-        rowwise() %>%
-        mutate(sourceFileview = table_id,
-               query = build_tablequery(sourceFileview, assay, tumorType, projectName)) %>%
         add_queryview_column(format = "html") %>%
         select(-query)
 }
@@ -97,21 +57,11 @@ datafile_counts_by_assay_and_tumortype_dt <- datafile_counts_by_assay_and_tumort
     format_summarytable_columns(c("assay", "tumorType")) %>%
     as_datatable()
 
-datafile_counts_by_study_assay_and_tumortype <- fileview_df %>%
-    summarize_datafiles_by_study_assay_and_tumortype(master_fileview_id)
-
-datafile_counts_by_study_assay_and_tumortype_dt <- datafile_counts_by_study_assay_and_tumortype %>%
-    my_format_summarytable_columns(c("projectName", "assay", "tumorType")) %>%
-    as_datatable()
-
 syn_dt_entity <- datafile_counts_by_assay_dt %>%
     save_datatable(parent_id, table_filename, .)
 
 syn_file_by_assay_and_tumortype_dt_entity <- datafile_counts_by_assay_and_tumortype_dt %>%
     save_datatable(parent_id, files_by_assay_and_tumortype_table_filename, .)
-
-syn_file_by_study_assay_and_tumortype_dt_entity <- datafile_counts_by_study_assay_and_tumortype_dt %>%
-    save_datatable(parent_id, files_by_study_assay_and_tumortype_table_filename, .)
 
 
 ## Only change here from plot_assay_counts_by_tumortype
