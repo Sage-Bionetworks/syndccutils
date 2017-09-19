@@ -47,7 +47,11 @@ syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
 # Files by category -------------------------------------------------------
 
-chart <- list(assay = "Assay", tumorType = "Tumor Type") %>%
+chart_filename <- glue::glue("{source_id}_AllFilesByCategory.html",
+                             source_id = study_id)
+categories <- list(assay = "Assay", tumorType = "Tumor Type")
+
+chart <- categories %>%
     map2(.y = names(.), function(annotation_prettykey, annotation_key) {
         p <- fileview_df %>%
             group_by(.dots = annotation_key) %>%
@@ -69,10 +73,13 @@ chart <- list(assay = "Assay", tumorType = "Tumor Type") %>%
     subplot(shareY = TRUE, titleX = TRUE) %>%
     layout(showlegend = FALSE,
            font = list(family = "Roboto, Open Sans, sans-serif"))
-chart
+syn_entity <- save_chart(parent_id, chart_filename, chart)
 
 
 # Individuals by assay + category -----------------------------------------
+
+chart_filename <- glue::glue("{source_id}_PatientsByAssayAndCategories.html",
+                             source_id = study_id)
 
 categories <- list(tumorType = "Tumor Type")
 p <- categories %>%
@@ -109,7 +116,6 @@ chart <- ggplotly(p, tooltip = c("x", "y", "fill"),
                   height = 50 * n_distinct(fileview_df$assay) + 200) %>%
     layout(font = list(family = "Roboto, Open Sans, sans-serif"),
            margin = list(b = 150)) %>%
-    style(xgap = 5, ygap = 5) %>%
-    I
+    style(xgap = 5, ygap = 5)
 
-chart
+syn_entity <- save_chart(parent_id, chart_filename, chart)
