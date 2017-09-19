@@ -7,9 +7,9 @@ source("R/synapse_helpers.R")
 # Config ------------------------------------------------------------------
 
 synproject_id <- "syn7315808" # Synapse project for project Center
-project_id <- "syn9615696" # Synapse folder associated with project
+project_id <- "syn9615696" # Synapse folder associated with study
 parent_id <- "syn10831920" # Center 'Reporting' folder where files should be stored
-master_fileview_id <- "syn9636756" # Synapse fileview associated with project
+master_fileview_id <- "syn10838871" # Synapse fileview associated with project
 
 
 # Collect data ------------------------------------------------------------
@@ -34,22 +34,161 @@ syn_dt_entity <- datafile_counts_by_assay_dt %>%
     save_datatable(parent_id, table_filename, .)
 
 
+# Files by assay and tumor type -------------------------------------------
+
+summarize_datafiles_by_assay_and_tumortype <- function(view_df, table_id) {
+    count_cols <- c("id", "diagnosis", "individualID",
+                    "specimenID")
+    view_df %>%
+        group_by(assay, tumorType) %>%
+        summarise_at(count_cols, n_distinct) %>%
+        rowwise() %>%
+        mutate(sourceFileview = table_id,
+               query = build_tablequery(sourceFileview, assay, tumorType)) %>%
+        add_queryview_column(format = "html") %>%
+        select(-query)
+}
+
+## my_format_summarytable_columns adds projectName -> study Name to mapping
+my_format_summarytable_columns <- function(df, facet_cols = c()) {
+    name_map <- tibble(name = names(df)) %>%
+        mutate(formatted_name = case_when(
+            name == "id" ~ "Files",
+            name == "assay" & (name %in% facet_cols) ~ "Assay",
+            name == "assay" & !(name %in% facet_cols) ~ "Assays",
+            name == "projectName" & (name %in% facet_cols) ~ "Study",
+            name == "projectName" & !(name %in% facet_cols) ~ "Studies",
+            name == "diagnosis" & (name %in% facet_cols) ~ "Diagnosis",
+            name == "diagnosis" & !(name %in% facet_cols) ~ "Diagnoses",
+            name == "tumorType" & (name %in% facet_cols) ~ "Tumor Type",
+            name == "tumorType" & !(name %in% facet_cols) ~ "Tumor Types",
+            name == "individualID" & (name %in% facet_cols) ~ "Individual",
+            name == "individualID" & !(name %in% facet_cols) ~ "Individuals",
+            name == "specimenID" & (name %in% facet_cols) ~ "Specimen",
+            name == "specimenID" & !(name %in% facet_cols) ~ "Specimens",
+            name == "sourceFileview" ~ "Source Fileview",
+            name == "viewFiles" ~ "View Files",
+            TRUE ~ name
+        )) %>%
+        split(.$name) %>%
+        map("formatted_name")
+    plyr::rename(df, name_map)
+}
+
+files_by_assay_and_tumortype_table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndTumorType.html",
+                                                          source_id = project_id)
+
+datafile_counts_by_assay_and_tumortype <- fileview_df %>%
+    summarize_datafiles_by_assay_and_tumortype(master_fileview_id)
+
+datafile_counts_by_assay_and_tumortype_dt <- datafile_counts_by_assay_and_tumortype %>%
+    format_summarytable_columns(c("assay", "tumorType")) %>%
+    as_datatable()
+
+syn_file_by_assay_and_tumortype_dt_entity <- datafile_counts_by_assay_and_tumortype_dt %>%
+    save_datatable(parent_id, files_by_assay_and_tumortype_table_filename, .)
+
+
+# Files by study, assay, and tumor type -----------------------------------
+
+summarize_datafiles_by_study_assay_and_tumortype <- function(view_df, table_id) {
+    count_cols <- c("id", "diagnosis", "individualID",
+                    "specimenID")
+    view_df %>%
+        group_by(assay, tumorType, projectName) %>%
+        summarise_at(count_cols, n_distinct) %>%
+        rowwise() %>%
+        mutate(sourceFileview = table_id,
+               query = build_tablequery(sourceFileview, assay, tumorType, projectName)) %>%
+        add_queryview_column(format = "html") %>%
+        select(-query)
+}
+
+files_by_study_assay_and_tumortype_table_filename <- glue::glue("{source_id}_DataFileCountsByStudyAssayAndTumorType.html",
+                                                                source_id = project_id)
+
+datafile_counts_by_study_assay_and_tumortype <- fileview_df %>%
+    summarize_datafiles_by_study_assay_and_tumortype(master_fileview_id)
+
+datafile_counts_by_study_assay_and_tumortype_dt <- datafile_counts_by_study_assay_and_tumortype %>%
+    my_format_summarytable_columns(c("projectName", "assay", "tumorType")) %>%
+    as_datatable()
+
+syn_file_by_study_assay_and_tumortype_dt_entity <- datafile_counts_by_study_assay_and_tumortype_dt %>%
+    save_datatable(parent_id, files_by_study_assay_and_tumortype_table_filename, .)
+
+
 # Assays by tumor type ----------------------------------------------------
 
-chart_filename <- glue::glue("{source_id}_AssayDataFilesByTumorType.html",
-                             source_id = project_id)
+## Only change here from plot_assay_counts_by_tumortype
+## is adding an ylab
+my_plot_assay_counts_by_tumortype <- function(view_df) {
+    p <- fileview_df %>%
+        group_by(assay, tumorType) %>%
+        tally() %>%
+        ggplot(aes(x = tumorType, y = n)) +
+        geom_col(aes(fill = assay)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("Number of Files")
+
+    ggplotly(p, height = 500) %>%
+        layout(margin = list(l = 150, r = 100, b = 55))
+}
+
+# chart_filename <- glue::glue("{source_id}_AssayDataFilesByTumorType.html",
+#                              source_id = project_id)
+#
+# # create and save chart
+# chart <- fileview_df %>%
+#     plot_assay_counts_by_tumortype()
+#
+# syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+
+assay_by_tumor_chart_filename <- glue::glue("{source_id}_AssayDataFilesByTumorType.html",
+                                            source_id = project_id)
+
 
 # create and save chart
 chart <- fileview_df %>%
-    plot_assay_counts_by_tumortype()
+    my_plot_assay_counts_by_tumortype()
+syn_entity <- save_chart(parent_id, assay_by_tumor_chart_filename, chart)
 
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
+# Patients by tumor type --------------------------------------------------
+
+## Differs from my_plot_assay_counts_by_tumortype above in that
+## tally -> summarize and the ylab is different
+
+my_plot_patient_counts_by_tumortype <- function(view_df) {
+    p <- fileview_df %>%
+        group_by(assay, tumorType) %>%
+        summarize(n = n_distinct(individualID)) %>%
+        ggplot(aes(x = tumorType, y = n)) +
+        geom_col(aes(fill = assay)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("Number of Patients")
+
+    ggplotly(p, height = 500) %>%
+        layout(margin = list(l = 150, r = 100, b = 55))
+}
+
+patient_by_tumor_chart_filename <- glue::glue("{source_id}_PatientsByTumorType.html",
+                                              source_id = project_id)
+
+chart <- fileview_df %>%
+    my_plot_patient_counts_by_tumortype()
+syn_entity <- save_chart(parent_id, patient_by_tumor_chart_filename, chart)
 
 # Files by category -------------------------------------------------------
 
+chart_filename <- glue::glue("{source_id}_AllFilesByCategory.html",
+                             source_id = project_id)
+
 categories <- list(assay = "Assay", tumorType = "Tumor Type",
                    projectName = "Study")
+
 chart <- categories %>%
     map2(.y = names(.), function(annotation_prettykey, annotation_key) {
         p <- fileview_df %>%
@@ -72,10 +211,13 @@ chart <- categories %>%
     subplot(shareY = TRUE, titleX = TRUE) %>%
     layout(showlegend = FALSE,
            font = list(family = "Roboto, Open Sans, sans-serif"))
-chart
+syn_entity <- save_chart(parent_id, chart_filename, chart)
 
 
 # Individuals by assay + category -----------------------------------------
+
+chart_filename <- glue::glue("{source_id}_PatientsByAssayAndCategories.html",
+                             source_id = project_id)
 
 categories <- list(tumorType = "Tumor Type", projectName = "Study")
 p <- categories %>%
@@ -112,10 +254,8 @@ chart <- ggplotly(p, tooltip = c("x", "y", "fill"),
                   height = 50 * n_distinct(fileview_df$assay) + 200) %>%
     layout(font = list(family = "Roboto, Open Sans, sans-serif"),
            margin = list(b = 150)) %>%
-    style(xgap = 5, ygap = 5) %>%
-    I
+    style(xgap = 5, ygap = 5)
 
-chart
-
+syn_entity <- save_chart(parent_id, chart_filename, chart)
 
 
