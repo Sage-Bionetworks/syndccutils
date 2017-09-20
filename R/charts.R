@@ -8,19 +8,90 @@ library(forcats)
 
 # Core summary charts (data files) ----------------------------------------
 
-plot_assay_counts_by_tumortype <- function(view_df) {
-    p <- fileview_df %>%
-        group_by(assay, tumorType) %>%
-        tally() %>%
-        ggplot(aes(x = tumorType, y = n)) +
-        geom_col(aes(fill = assay)) + coord_flip() +
-        scale_fill_viridis_d() +
-        xlab("") +
-        ylab("")
-
-    ggplotly(p, height = 500) %>%
-        layout(margin = list(l = 150, r = 100, b = 55))
+#' Plot the breakdown of files from a file view according to distinct values
+#' within each specified annotation key (i.e., category).
+#'
+#' @param view_df
+#' @param annotation_keys
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
+#'                   diagnosis = "Diagnosis", species = "Species",
+#'                   organ = "Organ", tissue = "Tissue",
+#'                   dataType = "Data Type", study = "Study")
+#' plot_file_counts_by_annotationkey(fileview_df, plot_keys)
+plot_file_counts_by_annotationkey <- function(view_df, annotation_keys) {
+    chart <- annotation_keys %>%
+        map2(.y = names(.), function(annotation_prettykey, annotation_key) {
+            p <- view_df %>%
+                group_by(.dots = annotation_key) %>%
+                tally() %>%
+                ggplot(aes(x = 1, y = n)) +
+                geom_col(aes_string(fill = annotation_key),
+                         colour = "white", size = 0.2) +
+                scale_fill_viridis_d() +
+                xlab(annotation_prettykey) +
+                ylab("Num. Files") +
+                theme_minimal() +
+                theme(axis.text.x = element_blank(),
+                      axis.ticks.x = element_blank()) +
+                guides(fill = FALSE)
+            ggplotly(p, tooltip = c("y", "fill"),
+                     width = 100 * length(annotation_keys) + 50,
+                     height = 300)
+        }) %>%
+        subplot(shareY = TRUE, titleX = TRUE) %>%
+        layout(showlegend = FALSE,
+               font = list(family = "Roboto, Open Sans, sans-serif"))
+    chart
 }
+
+
+#' Plot the breakdown of samples in a file view based on distinct values
+#' within two specified annotation keys.
+#'
+#' @param view_df
+#' @param sample_key string indicating sample type
+#' @param annotation_keys
+#' @param filter_missing remove records with missing annotation values
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
+#' plot_sample_counts_by_annotationkey_2d(fileview_df, "cellLine", plot_keys)
+plot_sample_counts_by_annotationkey_2d <- function(
+    view_df, sample_key = c("individualID", "specimenID", "cellLine"),
+    annotation_keys, filter_missing = TRUE
+) {
+    # TODO: add some check to make sure length(annotation_keys) == 2
+    if (filter_missing) {
+        view_df <- view_df %>%
+            filter_at(vars(one_of(c(names(annotation_keys), sample_key))),
+                      all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
+    }
+    sample_labels <- list(individualID = "Individuals",
+                          specimenID = "Specimens",
+                          cellLine = "Cell Lines")
+    p <- view_df %>%
+        dplyr::group_by(.dots = names(annotation_keys)) %>%
+        dplyr::summarize(n = !!! n_distinct(sample_key)) %>%
+        ggplot2::ggplot(aes_string(x = names(annotation_keys)[2], y = "n")) +
+        ggplot2::geom_col(aes_string(fill = names(annotation_keys[1]))) +
+        ggplot2::coord_flip() +
+        ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
+        ggplot2::xlab("") +
+        ggplot2::ylab(glue::glue("Number of {label}",
+                                 label = sample_labels[[sample_key]]))
+
+    plotly::ggplotly(p, height = 500) %>%
+        plotly::layout(margin = list(l = 150, r = 100, b = 55))
+}
+
 
 # old functions -----------------------------------------------------------
 

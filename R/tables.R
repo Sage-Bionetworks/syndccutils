@@ -163,6 +163,18 @@ summarize_datafiles_by_assay <- function(view_df, table_id) {
         select(-query)
 }
 
+summarize_datafiles_by_assay_and_tumortype <- function(view_df, table_id) {
+    count_cols <- c("id", "diagnosis", "individualID",
+                    "specimenID")
+    view_df %>%
+        group_by(assay, tumorType) %>%
+        summarise_at(count_cols, n_distinct) %>%
+        rowwise() %>%
+        mutate(sourceFileview = table_id,
+               query = build_tablequery(sourceFileview, assay, tumorType)) %>%
+        add_queryview_column(format = "html") %>%
+        select(-query)
+}
 
 # Project summary tables --------------------------------------------------
 

@@ -19,103 +19,44 @@ fileview_df <- get_table_df(master_fileview_id)
 
 # Files by assay -------------------------------------------------------
 
-table_filename <- glue::glue("{source_id}_DataFileCountsByAssay.html",
+table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndTumorType.html",
                              source_id = study_id)
 
 # create and save table
-datafile_counts_by_assay <- fileview_df %>%
-    summarize_datafiles_by_assay(master_fileview_id)
+datafile_counts_by_assay_and_tumortype <- fileview_df %>%
+    summarize_datafiles_by_assay_and_tumortype(master_fileview_id)
 
-datafile_counts_by_assay_dt <- datafile_counts_by_assay %>%
-    format_summarytable_columns("assay") %>%
+datafile_counts_by_assay_and_tumortype_dt <- datafile_counts_by_assay_and_tumortype %>%
+    format_summarytable_columns(c("assay", "tumorType")) %>%
     as_datatable()
-
-syn_dt_entity <- datafile_counts_by_assay_dt %>%
+datafile_counts_by_assay_and_tumortype_dt
+syn_dt_entity <- datafile_counts_by_assay_and_tumortype_dt %>%
     save_datatable(parent_id, table_filename, .)
 
-# Assays by tumor type ----------------------------------------------------
 
-chart_filename <- glue::glue("{source_id}_AssayDataFilesByTumorType.html",
+# Individuals by assays by tumor type -------------------------------------
+
+chart_filename <- glue::glue("{source_id}_IndividualsByAssayAndTumorType.html",
                              source_id = study_id)
 
 # create and save chart
+plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 chart <- fileview_df %>%
-    plot_assay_counts_by_tumortype()
-
+    plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
+                                           annotation_keys = plot_keys)
+# chart
 syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
 
 # Files by category -------------------------------------------------------
 
-chart_filename <- glue::glue("{source_id}_AllFilesByCategory.html",
+chart_filename <- glue::glue("{source_id}_DataFilesByCategory.html",
                              source_id = study_id)
-categories <- list(assay = "Assay", tumorType = "Tumor Type")
+plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 
-chart <- categories %>%
-    map2(.y = names(.), function(annotation_prettykey, annotation_key) {
-        p <- fileview_df %>%
-            group_by(.dots = annotation_key) %>%
-            tally() %>%
-            ggplot(aes(x = 1, y = n)) +
-            geom_col(aes_string(fill = annotation_key),
-                     colour = "white") +
-            scale_fill_viridis_d() +
-            xlab(annotation_prettykey) +
-            ylab("Num. Files") +
-            theme_minimal() +
-            theme(axis.text.x = element_blank(),
-                  axis.ticks.x = element_blank()) +
-            guides(fill = FALSE)
-        ggplotly(p, tooltip = c("y", "fill"),
-                 width = 100 * length(categories) + 50,
-                 height = 300)
-    }) %>%
-    subplot(shareY = TRUE, titleX = TRUE) %>%
-    layout(showlegend = FALSE,
-           font = list(family = "Roboto, Open Sans, sans-serif"))
+chart <- fileview_df %>%
+    plot_file_counts_by_annotationkey(plot_keys)
+# chart
 syn_entity <- save_chart(parent_id, chart_filename, chart)
 
 
-# Individuals by assay + category -----------------------------------------
-
-chart_filename <- glue::glue("{source_id}_PatientsByAssayAndCategories.html",
-                             source_id = study_id)
-
-categories <- list(tumorType = "Tumor Type")
-p <- categories %>%
-    map2(.y = names(.), function(annotation_prettykey, annotation_key) {
-        fileview_df %>%
-            group_by(.dots = c("assay", annotation_key)) %>%
-            summarize(num_individuals = n_distinct(individualID)) %>%
-            ungroup() %>%
-            rename_(.dots = list(temp = annotation_key)) %>%
-            complete(temp = c(unique(temp), "NA"), assay) %>%
-            replace_na(list(num_individuals = 0)) %>%
-            rename_(.dots = setNames("temp", annotation_key)) %>%
-            gather(category, value, -assay, -num_individuals)
-    }) %>%
-    bind_rows() %>%
-    mutate(value = fct_relevel(value, "NA", after = Inf)) %>%
-    ggplot(aes(x = value, y = assay)) +
-    geom_tile(aes(fill = num_individuals)) +
-    scale_fill_viridis_c("Num. Individuals") +
-    scale_x_discrete(expand = c(0, 0)) +
-    scale_y_discrete(expand = c(0, 0)) +
-    xlab("") +
-    ylab("") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
-          legend.position = "bottom",
-          strip.text.x = element_text(face = "bold"),
-          strip.background = element_blank(),
-          panel.spacing.x = unit(3, "lines")) +
-    facet_grid(. ~ category, space = "free", scales = "free", switch = "y")
-
-chart <- ggplotly(p, tooltip = c("x", "y", "fill"),
-                  width = 100 * length(categories) + 200,
-                  height = 50 * n_distinct(fileview_df$assay) + 200) %>%
-    layout(font = list(family = "Roboto, Open Sans, sans-serif"),
-           margin = list(b = 150)) %>%
-    style(xgap = 5, ygap = 5)
-
-syn_entity <- save_chart(parent_id, chart_filename, chart)
