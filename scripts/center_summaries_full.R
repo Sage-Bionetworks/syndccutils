@@ -39,3 +39,4 @@ syn_dt_entity <- datafile_counts_by_assay_dt %>%
 syn_chart_entity <- fileview_df %>%
     plot_assay_counts_by_tumortype() %>%
     save_chart(parent_id, chart_filename, .)
+

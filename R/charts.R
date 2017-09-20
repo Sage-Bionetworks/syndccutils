@@ -22,6 +22,21 @@ plot_assay_counts_by_tumortype <- function(view_df) {
         layout(margin = list(l = 150, r = 100, b = 55))
 }
 
+plot_assay_counts_by_center <- function(merged_df) {
+    p <- merged_df %>%
+        group_by(Center,assay) %>%
+        tally() %>%
+        ggplot(aes(x = assay, y = n)) +
+        geom_col(aes(fill = Center)) + coord_flip() +
+        scale_fill_viridis_d() +
+        scale_y_log10() +
+        xlab("") +
+        ylab("")
+
+    ggplotly(p, height = 500) %>%
+        layout(margin = list(l = 150, r = 100, b = 55))
+}
+
 # old functions -----------------------------------------------------------
 
 plot_assay_stats_by_tumortype <- function(assay_stats) {

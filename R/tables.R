@@ -138,6 +138,8 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
             name == "individualID" & !(name %in% facet_cols) ~ "Individuals",
             name == "specimenID" & (name %in% facet_cols) ~ "Specimen",
             name == "specimenID" & !(name %in% facet_cols) ~ "Specimens",
+            name == "Center" & (name %in% facet_cols) ~ "Center",
+            name == "Center" & !(name %in% facet_cols) ~ "Centers",
             name == "sourceFileview" ~ "Source Fileview",
             name == "viewFiles" ~ "View Files",
             TRUE ~ name
@@ -164,10 +166,45 @@ summarize_datafiles_by_assay <- function(view_df, table_id) {
 }
 
 
+summarize_datafiles_by_center_assay <- function(view_df, table_id) {
+    count_cols <- c("id", "diagnosis", "tumorType", "individualID",
+        "specimenID")
+    view_df %>%
+        group_by(projectId,assay) %>%
+        summarise_at(count_cols, n_distinct) %>%
+        rowwise() %>%
+        mutate(sourceFileview = table_id,
+            query = build_tablequery(sourceFileview, assay)) %>%
+        add_queryview_column(format = "html") %>%
+        select(-query)
+}
+
+
 # Project summary tables --------------------------------------------------
 
+# adapted from lines 49-53 in 'fileViewReporting.Rmd'
+summarize_project_toolfile_counts <- function(view_df){
+#    project_info,fv_synid) {
+    project_toolfile_counts <- view_df %>%
+        group_by(projectId) %>%
+        summarize(
+            Files = n_distinct(id),
+            ToolTypes = n_distinct(softwareType),
+            ToolLanguages = n_distinct(softwareLanguage)
+        ) %>%        mutate(Label = paste(Institution, Program, sep = '\n'))
+
+ #       inner_join(project_info, ., by = "projectId") %>%
+
+    ###adding query information
+  #  fv_syn_query=paste('SELECT * FROM',fv_synid,'WHERE')
+  #  dl_syn_query=paste('SELECT id FROM',fv_synid,'WHERE')
+
+  #  project_toolfile_counts%>% mutate(viewFiles=paste(fv_syn_query,'projectId =',paste0('"',projectId,'"')),
+  #      downloadFiles=paste(dl_syn_query,'projectId =',paste0('"',projectId,'"')))
+    project_toolfile_counts
+}
 # adapted from lines 29-33 in 'fileViewReporting.Rmd'
-summarize_project_info <- function(view_df,fv_synid) {
+summarize_project_info <- function(view_df) {
     proj_info <-
         sapply(unique(c(view_df$projectId)),
                function(x) {
@@ -205,26 +242,7 @@ summarize_project_datafile_counts <- function(view_df, project_info,fv_synid) {
         downloadFiles=paste(dl_syn_query,'projectId =',paste0('"',projectId,'"')))
     }
 
-# adapted from lines 49-53 in 'fileViewReporting.Rmd'
-summarize_project_toolfile_counts <- function(view_df, project_info,fv_synid) {
-    project_toolfile_counts <- view_df %>%
-        group_by(projectId) %>%
-        summarize(
-            Files = n_distinct(id),
-            ToolTypes = n_distinct(softwareType),
-            ToolLanguages = n_distinct(softwareLanguage)
-        ) %>%
-        inner_join(project_info, ., by = "projectId") %>%
-        mutate(Label = paste(Institution, Program, sep = '\n'))
 
-    ###adding query information
-    fv_syn_query=paste('SELECT * FROM',fv_synid,'WHERE')
-    dl_syn_query=paste('SELECT id FROM',fv_synid,'WHERE')
-
-    project_toolfile_counts%>% mutate(viewFiles=paste(fv_syn_query,'projectId =',paste0('"',projectId,'"')),
-        downloadFiles=paste(dl_syn_query,'projectId =',paste0('"',projectId,'"')))
-
-}
 
 # adapted from lines 37-43 in 'toolTypeReporting.Rmd'
 summarize_project_toollanguage_counts <- function(view_df, project_info,fv_synid) {
