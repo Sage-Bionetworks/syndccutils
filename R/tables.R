@@ -178,11 +178,10 @@ summarize_datafiles_by_assay_and_tumortype <- function(view_df, table_id) {
         select(-query)
 }
 
-summarize_datafiles_by_center_assay <- function(view_df, table_id) {
-    count_cols <- c("id", "diagnosis", "tumorType", "individualID",
-        "specimenID")
+summarize_datafiles_by_center_and_assay <- function(view_df, table_id) {
+    count_cols <- c("id", "diagnosis", "tumorType")
     view_df %>%
-        group_by(projectId,assay) %>%
+        group_by(Center, Program, assay) %>%
         summarise_at(count_cols, n_distinct) %>%
         rowwise() %>%
         mutate(sourceFileview = table_id,
@@ -191,8 +190,20 @@ summarize_datafiles_by_center_assay <- function(view_df, table_id) {
         select(-query)
 }
 
+summarize_toolfiles_by_center <- function(view_df, table_id) {
+    count_cols <- c("id", "softwareType", "softwareLanguage")
+    view_df %>%
+        group_by(projectId, Center) %>%
+        summarise_at(count_cols, n_distinct) %>%
+        rowwise() %>%
+        mutate(sourceFileview = table_id,
+               query = build_tablequery(sourceFileview, projectId)) %>%
+        add_queryview_column(format = "html") %>%
+        select(-query, -projectId)
+}
 
 # Project summary tables --------------------------------------------------
+
 
 # adapted from lines 49-53 in 'fileViewReporting.Rmd'
 summarize_project_toolfile_counts <- function(view_df,table_id){
