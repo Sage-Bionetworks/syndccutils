@@ -141,7 +141,6 @@ chart2 <- tool_fileview_df %>%
 chart2
 syn_chart2_entity <- save_chart(parent_id,output_chart_filename,chart2)
 
-<<<<<<< HEAD
 #this is not working, waiting for James...
 syn_dt_entity <-tool_file_summary %>% save_datatable(parent_id,table_filename)
 
@@ -371,5 +370,3 @@ tool_fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='pro
 #
 # # chart
 # syn_entity <- save_chart(parent_id, chart_filename, chart)
-=======
->>>>>>> 09ab1cd502c572b1a8e4e07421de3d2855fdcf44
