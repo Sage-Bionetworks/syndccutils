@@ -107,6 +107,36 @@ plot_assay_counts_by_center <- function(merged_df) {
         layout(margin = list(l = 150, r = 100, b = 55))
 }
 
+plot_tool_inputs <- function(merged_df){
+    p<- merged_df %>%
+        group_by(Center,inputDataType) %>%
+        tally () %>%
+        ggplot(aes(x=inputDataType,y=n)) +
+        geom_col(aes(fill=Center)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("")
+
+    ggplotly(p,height=300) %>%
+        layout(margin=list(l = 150, r=100, b=55))
+
+}
+
+plot_tool_outputs <- function(merged_df){
+    p<- merged_df %>%
+        group_by(Center,outputDataType) %>%
+        tally () %>%
+        ggplot(aes(x=outputDataType,y=n)) +
+        geom_col(aes(fill=Center)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("")
+
+    ggplotly(p,height=300) %>%
+        layout(margin=list(l = 150, r=100, b=55))
+
+}
+
 # old functions -----------------------------------------------------------
 
 plot_assay_stats_by_tumortype <- function(assay_stats) {

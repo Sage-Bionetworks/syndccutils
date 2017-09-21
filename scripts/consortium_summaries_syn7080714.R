@@ -46,7 +46,6 @@ syn_chart_entity <- fileview_df %>%
 # Files by assay and tumor type -------------------------------------------
 
 
-
 ###Now collate by center----------------------------------------------------
 table_filename <- glue::glue("{source_id}_DataFileCountsByCenter.html",
     source_id = consortium_id)
@@ -72,14 +71,34 @@ syn_chart_entity <- fileview_with_center %>%
 ###now work on tool summaries---------------------------------------------
 table_filename <- glue::glue("{source_id}_toolFileCountsByCenter.html",
     source_id = consortium_id)
-chart_filename <- glue::glue("{source_id}_toolFilesByCenter.html",
+
+input_chart_filename <- glue::glue("{source_id}_toolFilesByInput.html",
     source_id = consortium_id)
 
-tool_fileview_df <- get_table_df('syn9898965')
+output_chart_filename <- glue::glue("{source_id}_toolFilesByOutput.html",
+    source_id = consortium_id)
 
-tool_fileview_with_center <- fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='projectId')
+tool_fileview_id='syn9898965'
+tool_fileview_df <- get_table_df(tool_fileview_id)
 
-tool_file_summary <- tool_fileview_with_center %>% summarize_project_toolfile_counts
+tool_file_summary <- tool_fileview_df %>%
+    summarize_project_toolfile_counts(tool_fileview_id) %>%
+        inner_join(summarize_project_info(tool_fileview_df),by='projectId') %>%
+        select(Center,Institution, Program, Files=id, ToolTypes=softwareType,viewFiles) %>%
+    format_summarytable_columns(c("Center")) %>%
+        as_datatable()
+
+#this is not working, waiting for James...
+syn_dt_entity <-tool_file_summary %>% save_datatable(parent_id,table_filename)
+
+#create and save chart
+tool_fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='projectId') %>%
+    plot_tool_inputs() %>%
+    save_chart(parent_id,input_chart_filename,.)
+
+tool_fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='projectId') %>%
+    plot_tool_outputs() %>%
+    save_chart(parent_id,output_chart_filename,.)
 
 # #===========================================
 # ## my_format_summarytable_columns adds projectName -> study Name to mapping
