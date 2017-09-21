@@ -88,6 +88,20 @@ chart
 syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
 
+# Files by category -------------------------------------------------------
+
+chart_filename <- glue::glue("{source_id}_DataFilesByCategory.html",
+                             source_id = consortium_id)
+plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
+                  diagnosis = "Diagnosis", species = "Species",
+                  organ = "Organ", tissue = "Tissue",
+                  dataType = "Data Type", study = "Study")
+
+chart <- fileview_df %>%
+    plot_file_counts_by_annotationkey(plot_keys)
+chart
+syn_entity <- save_chart(parent_id, chart_filename, chart)
+
 
 # Tool files by Center ----------------------------------------------------
 
