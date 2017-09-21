@@ -91,7 +91,7 @@ tool_file_summary <- tool_fileview_df %>%
 #this is not working, waiting for James...
 syn_dt_entity <-tool_file_summary %>% save_datatable(parent_id,table_filename)
 
-#create and save chart
+#create and save charts
 tool_fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='projectId') %>%
     plot_tool_inputs() %>%
     save_chart(parent_id,input_chart_filename,.)
