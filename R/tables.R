@@ -18,7 +18,6 @@ library(DT)
 #'     rowwise() %>%
 #'     mutate(query = build_tablequery(table_id, assay))
 build_tablequery <- function(table_id, ...) {
-
     query_template <- "SELECT * FROM {id} WHERE ( {filters} )"
     dots <- substitute(list(...))[-1]
     list_names <- sapply(dots, deparse)
@@ -136,6 +135,8 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
             name == "tumorType" & !(name %in% facet_cols) ~ "Tumor Types",
             name == "individualID" & (name %in% facet_cols) ~ "Individual",
             name == "individualID" & !(name %in% facet_cols) ~ "Individuals",
+            name == "cellLine" & (name %in% facet_cols) ~ "Cell Line",
+            name == "cellLine" & !(name %in% facet_cols) ~ "Cell Lines",
             name == "specimenID" & (name %in% facet_cols) ~ "Specimen",
             name == "specimenID" & !(name %in% facet_cols) ~ "Specimens",
             name == "Center" & (name %in% facet_cols) ~ "Center",
@@ -151,6 +152,53 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
 
 
 # Core summary tables (data files) ----------------------------------------
+
+#' Count files in a Synapse file view, grouped by two annotation keys.
+#'
+#' @param view_df data frame representing Synapse file view
+#' @param annotation_keys character vector of grouping keys
+#' @param table_id string representing Synapse ID for file view
+#' @param count_cols character vector of keys for which to count files
+#' @param filter_missing remove records with missing annotation values
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' group_keys <- c("assay", "tumorType")
+#' summarize_datafiles_by_annotationkey(fileview_df, group_keys, fileview_id)
+summarize_files_by_annotationkey <- function(
+    view_df, annotation_keys, table_id, count_cols = NULL, filter_missing = TRUE
+) {
+    if (is.null(count_cols)) {
+        count_cols <- c("id", "diagnosis", "individualID")
+    }
+
+    if (filter_missing) {
+        view_df <- view_df %>%
+            filter_at(vars(one_of(annotation_keys)),
+                      all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
+    }
+
+    query_keys <- annotation_keys
+    if ("Center" %in% annotation_keys) {
+        annotation_keys <- c("projectId", annotation_keys)
+        query_keys[query_keys == "Center"] <- "projectId"
+    }
+
+    query_cols <- sapply(query_keys, as.name)
+    view_df %>%
+        dplyr::group_by(.dots = annotation_keys) %>%
+        dplyr::summarise_at(count_cols, n_distinct) %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(sourceFileview = table_id,
+               query = build_tablequery(sourceFileview,
+                                        rlang::UQS(query_cols))) %>%
+        add_queryview_column(format = "html") %>%
+        dplyr::select(-query, -matches("projectId")) %>%
+        dplyr::ungroup()
+}
+
 
 summarize_datafiles_by_assay <- function(view_df, table_id) {
     count_cols <- c("id", "diagnosis", "tumorType", "individualID",
