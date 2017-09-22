@@ -3,7 +3,10 @@ source("R/tables.R")
 source("R/synapse_helpers.R")
 
 # Script/template to create summary tables and charts for a "project"
+
 synapseLogin()
+
+
 # Config ------------------------------------------------------------------
 
 synproject_id <- "syn7080714" # Synapse project for consortium
@@ -160,13 +163,68 @@ syn_dt_entity <- toolfile_counts_by_center_dt %>%
 toolfile_counts_dt
 
 
-# Tool files by Center, input, and output ---------------------------------
+# Tool files by input -----------------------------------------------------
+
+table_filename <- glue::glue("{source_id}_ToolFilesCountsByInput.html",
+                                   source_id = consortium_id)
+
+# create and save table
+group_keys <- "inputDataType"
+count_cols <- "id"
+
+toolfile_counts <- tool_fileview_df %>%
+    summarize_files_by_annotationkey(
+        annotation_keys = group_keys,
+        table_id = master_tool_fileview_id,
+        count_cols = count_cols
+    )
+
+toolfile_counts_dt <- toolfile_counts %>%
+    format_summarytable_columns(group_keys) %>%
+    as_datatable()
+
+syn_id_entity <-toolfile_counts_dt %>%
+    save_datatable(parent_id, table_filename, .)
+
+# view table
+toolfile_counts_dt
+
+
+# Tool file counts by output ----------------------------------------------
+
+output_table_filename <- glue::glue("{source_id}_ToolFilesCountsByOutput.html",
+                                    source_id = consortium_id)
+
+# create and save table
+group_keys <- "outputDataType"
+count_cols <- "id"
+
+toolfile_counts <- tool_fileview_df %>%
+    summarize_files_by_annotationkey(
+        annotation_keys = group_keys,
+        table_id = master_tool_fileview_id,
+        count_cols = count_cols
+    )
+
+toolfile_counts_dt <- toolfile_counts %>%
+    format_summarytable_columns(group_keys) %>%
+    as_datatable()
+
+syn_id_entity <-toolfile_counts_dt %>%
+    save_datatable(parent_id, table_filename, .)
+
+# view table
+toolfile_counts_dt
+
+
+# Tool files by Center, input, and output (charts) ------------------------
 
 input_chart_filename <- glue::glue("{source_id}_ToolFilesByInput.html",
                                    source_id = consortium_id)
 
 output_chart_filename <- glue::glue("{source_id}_ToolFilesByOutput.html",
                                     source_id = consortium_id)
+
 
 
 # create and save chart

@@ -250,6 +250,30 @@ summarize_toolfiles_by_center <- function(view_df, table_id) {
         select(-query, -projectId)
 }
 
+summarize_toolfiles_by_input <- function(view_df, table_id){
+    count_cols <- c("id")
+    view_df %>%
+        group_by(inputDataType) %>%
+        summarise_at(count_cols, n_distinct) %>%
+        rowwise() %>%
+        mutate(sourceFileview = table_id,
+            query = build_tablequery(sourceFileview, inputDataType)) %>%
+        add_queryview_column(format = "html") %>%
+        select(-query)
+}
+
+summarize_toolfiles_by_output <- function(view_df, table_id){
+    count_cols <- c("id")
+    view_df %>%
+        group_by(outputDataType) %>%
+        summarise_at(count_cols, n_distinct) %>%
+        rowwise() %>%
+        mutate(sourceFileview = table_id,
+            query = build_tablequery(sourceFileview, outputDataType)) %>%
+        add_queryview_column(format = "html") %>%
+        select(-query)
+}
+
 # Project summary tables --------------------------------------------------
 
 
