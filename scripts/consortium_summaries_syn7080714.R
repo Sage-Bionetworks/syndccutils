@@ -126,9 +126,14 @@ syn_dt_entity <- toolfile_counts_by_center_dt %>%
 input_chart_filename <- glue::glue("{source_id}_ToolFilesByInput.html",
                                    source_id = consortium_id)
 
+input_table_filename <- glue::glue("{source_id}_ToolFilesCountsByInput.html",
+    source_id = consortium_id)
+
 output_chart_filename <- glue::glue("{source_id}_ToolFilesByOutput.html",
                                     source_id = consortium_id)
 
+output_table_filename <- glue::glue("{source_id}_ToolFilesCountsByOutput.html",
+    source_id = consortium_id)
 
 # create and save chart
 chart1 <- tool_fileview_df %>%
@@ -141,17 +146,29 @@ chart2 <- tool_fileview_df %>%
 chart2
 syn_chart2_entity <- save_chart(parent_id,output_chart_filename,chart2)
 
-#this is not working, waiting for James...
-syn_dt_entity <-tool_file_summary %>% save_datatable(parent_id,table_filename)
+##now do tables for input/output types
+toolfile_counts_by_input <- tool_fileview_df %>%
+    summarize_toolfiles_by_input(tool_fileview_id) %>%
+    format_summarytable_columns(c("inputDataType")) %>%
+    as_datatable()
+
+syn_id_entity <-toolfile_counts_by_input %>% save_datatable(parent_id,input_table_filename,.)
+
+toolfile_counts_by_output <- tool_fileview_df %>%
+    summarize_toolfiles_by_output(tool_fileview_id) %>%
+    format_summarytable_columns(c("outputDataType")) %>%
+    as_datatable()
+
+syn_od_entity <-toolfile_counts_by_output %>% save_datatable(parent_id,output_table_filename,.)
 
 #create and save charts
-tool_fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='projectId') %>%
-    plot_tool_inputs() %>%
-    save_chart(parent_id,input_chart_filename,.)
-
-tool_fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='projectId') %>%
-    plot_tool_outputs() %>%
-    save_chart(parent_id,output_chart_filename,.)
+# tool_fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='projectId') %>%
+#     plot_tool_inputs() %>%
+#     save_chart(parent_id,input_chart_filename,.)
+#
+# tool_fileview_df %>% inner_join(summarize_project_info(tool_fileview_df),by='projectId') %>%
+#     plot_tool_outputs() %>%
+#     save_chart(parent_id,output_chart_filename,.)
 
 # #===========================================
 # ## my_format_summarytable_columns adds projectName -> study Name to mapping
