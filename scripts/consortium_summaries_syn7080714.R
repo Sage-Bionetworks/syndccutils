@@ -18,7 +18,8 @@ master_tool_fileview_id <- "syn9898965" # Synapse fileview associated with conso
 
 # Collect data ------------------------------------------------------------
 
-fileview_df <- get_table_df(master_fileview_id)
+# fileview_df <- get_table_df(master_fileview_id)
+fileview_df <- feather::read_feather("data/csbc_fileview.feather")
 tool_fileview_df <- get_table_df(master_tool_fileview_id)
 
 
@@ -60,18 +61,34 @@ datafile_counts_dt
 # Individuals by assays by tumor type -------------------------------------
 
 chart_filename <- glue::glue("{source_id}_IndividualsByAssayAndTumorType.html",
-                             source_id = project_id)
+                             source_id = consortium_id)
 
 # create and save chart
 plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 chart <- fileview_df %>%
-    plot_sample_counts_by_annotationkey_2d(sample_key = "cellLine",
+    plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
                                            annotation_keys = plot_keys)
 syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
 # view chart
 chart
 
+# Cell lines by assays and tumor type -------------------------------------
+
+chart_filename <- glue::glue("{source_id}_CellLinesByAssayAndTumorType.html",
+                             source_id = consortium_id)
+
+# create and save chart
+plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
+
+chart <- fileview_df %>%
+    plot_sample_counts_by_annotationkey_2d(sample_key = "cellLine",
+                                           annotation_keys = plot_keys)
+
+syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+
+# view chart
+chart
 
 # Data files by Center and assay ------------------------------------------
 
@@ -128,7 +145,7 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
                   dataType = "Data Type", study = "Study")
 
 chart <- fileview_df %>%
-    plot_file_counts_by_annotationkey(plot_keys)
+    plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
 
 syn_entity <- save_chart(parent_id, chart_filename, chart)
 
@@ -231,7 +248,7 @@ output_chart_filename <- glue::glue("{source_id}_ToolFilesByOutput.html",
 chart1 <- tool_fileview_df %>%
     plot_tool_inputs()
 
-syn_chart1_entity <- save_chart(parent_id, input_chart_filename, chart1)
+# syn_chart1_entity <- save_chart(parent_id, input_chart_filename, chart1)
 
 # view chart
 chart1
@@ -240,7 +257,7 @@ chart1
 chart2 <- tool_fileview_df %>%
     plot_tool_outputs()
 
-syn_chart2_entity <- save_chart(parent_id, output_chart_filename, chart2)
+# syn_chart2_entity <- save_chart(parent_id, output_chart_filename, chart2)
 
 # view chart
 chart2
