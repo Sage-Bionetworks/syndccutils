@@ -89,6 +89,9 @@ save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
     if (!dir.exists("html")) {
         dir.create("html")
     }
+    if (plot_object$sizingPolicy$defaultHeight) {
+        plot_object$sizingPolicy$defaultHeight <- NULL
+    }
     chart_widget <- plotly::as_widget(plot_object)
     htmlwidgets::saveWidget(chart_widget, chart_filename)
     syn_entity <- synStore(File(path = chart_filename, parentId = parent_id))
