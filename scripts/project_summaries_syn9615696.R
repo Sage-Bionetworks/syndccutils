@@ -58,8 +58,7 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 
 chart <- fileview_df %>%
     plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
-                                           annotation_keys = plot_keys,
-                                           filter_missing = TRUE)
+                                           annotation_keys = plot_keys)
 
 syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
@@ -79,7 +78,8 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
 chart <- fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
 
-syn_entity <- save_chart(parent_id, chart_filename, chart)
+# syn_entity <-
+save_chart(parent_id, chart_filename, chart)
 
 # view chart
 chart
