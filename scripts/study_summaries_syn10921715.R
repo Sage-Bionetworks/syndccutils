@@ -6,10 +6,10 @@ source("R/synapse_helpers.R")
 
 # Config ------------------------------------------------------------------
 
-synproject_id <- "syn7315808" # Synapse project for project Center
-study_id <- "syn10491911" # Synapse folder associated with study
-parent_id <- "syn10831920" # Center 'Reporting' folder where files should be stored
-master_fileview_id <- "syn10531467" # Synapse fileview associated with study
+synproject_id <- "syn9775595" # Synapse project for project Center
+study_id <- "syn10921715" # Synapse folder associated with study
+parent_id <- "syn10921753" # Center 'Reporting' folder where files should be stored
+master_fileview_id <- "syn10890010" # Synapse fileview associated with study
 
 
 # Collect data ------------------------------------------------------------
@@ -71,7 +71,7 @@ chart_filename <- glue::glue("{source_id}_DataFilesByCategory.html",
 plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 
 chart <- fileview_df %>%
-    plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
+    plot_file_counts_by_annotationkey(plot_keys)
 
 syn_entity <- save_chart(parent_id, chart_filename, chart)
 

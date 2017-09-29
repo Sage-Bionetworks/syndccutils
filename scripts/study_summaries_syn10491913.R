@@ -71,7 +71,7 @@ chart_filename <- glue::glue("{source_id}_DataFilesByCategory.html",
 plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 
 chart <- fileview_df %>%
-    plot_file_counts_by_annotationkey(plot_keys)
+    plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
 
 syn_entity <- save_chart(parent_id, chart_filename, chart)
 

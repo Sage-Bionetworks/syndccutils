@@ -5,6 +5,12 @@ library(plotly)
 library(forcats)
 
 
+custom_theme_bw <- function() {
+    theme_bw() +
+        theme(axis.title = element_text(face = "bold"),
+              legend.title = element_text(face = "bold"),
+              plot.title = element_text(face = "bold"))
+}
 
 # Core summary charts (data files) ----------------------------------------
 
@@ -13,6 +19,8 @@ library(forcats)
 #'
 #' @param view_df
 #' @param annotation_keys
+#' @param replace_missing String to use for missing annotation values (defaults to "Not Annotated").
+#' @param chart_height Height of the chart in pixels (optional, defaults to automatic sizing).
 #'
 #' @return
 #' @export
@@ -23,29 +31,50 @@ library(forcats)
 #'                   organ = "Organ", tissue = "Tissue",
 #'                   dataType = "Data Type", study = "Study")
 #' plot_file_counts_by_annotationkey(fileview_df, plot_keys)
-plot_file_counts_by_annotationkey <- function(view_df, annotation_keys) {
+plot_file_counts_by_annotationkey <- function(
+    view_df, annotation_keys, replace_missing = "Not Annotated",
+    chart_height = NULL
+) {
+
     chart <- annotation_keys %>%
         map2(.y = names(.), function(annotation_prettykey, annotation_key) {
-            p <- view_df %>%
-                group_by(.dots = annotation_key) %>%
-                tally() %>%
-                ggplot(aes(x = 1, y = n)) +
-                geom_col(aes_string(fill = annotation_key),
-                         colour = "white", size = 0.2) +
-                scale_fill_viridis_d() +
-                xlab(annotation_prettykey) +
-                ylab("Num. Files") +
-                theme_minimal() +
-                theme(axis.text.x = element_blank(),
-                      axis.ticks.x = element_blank()) +
-                guides(fill = FALSE)
-            ggplotly(p, tooltip = c("y", "fill"),
+            key_col <- as.name(annotation_key)
+            plot_df <- view_df %>%
+                dplyr::group_by(.dots = annotation_key) %>%
+                dplyr::tally() %>%
+                dplyr::mutate_at(.vars = annotation_key,
+                                 funs(replace(., is.na(.), replace_missing))) %>%
+                dplyr::mutate(UQ(key_col) := fct_relevel(
+                    UQ(key_col), replace_missing, after = 0L
+                )) %>%
+                dplyr::mutate(label = glue::glue(
+                    "<b>{value}:</b>\n{count} files",
+                    value = rlang::UQ(key_col),
+                    count = n
+                ))
+
+            p <- plot_df %>%
+                ggplot2::ggplot(aes(x = 1, y = n, text = label)) +
+                ggplot2::geom_col(aes_(fill = as.name(annotation_key)),
+                                  position = position_stack(reverse = FALSE),
+                                  colour = "white", size = 0.2) +
+                ggplot2::scale_fill_viridis_d() +
+                ggplot2::xlab(annotation_prettykey) +
+                ggplot2::ylab("Number of Files") +
+                ggplot2::scale_x_continuous(expand = c(0, 0)) +
+                ggplot2::scale_y_continuous(expand = c(0, 0)) +
+                custom_theme_bw() +
+                ggplot2::theme(axis.text.x = element_blank(),
+                               axis.ticks.x = element_blank()) +
+                ggplot2::guides(fill = FALSE)
+
+            ggplotly(p, tooltip = "text",
                      width = 100 * length(annotation_keys) + 50,
-                     height = 300)
+                     height = chart_height)
         }) %>%
-        subplot(shareY = TRUE, titleX = TRUE) %>%
-        layout(showlegend = FALSE,
-               font = list(family = "Roboto, Open Sans, sans-serif"))
+        plotly::subplot(shareY = TRUE, titleX = TRUE) %>%
+        plotly::layout(showlegend = FALSE,
+                       font = list(family = "Roboto, Open Sans, sans-serif"))
     chart
 }
 
@@ -74,23 +103,49 @@ plot_sample_counts_by_annotationkey_2d <- function(
             filter_at(vars(one_of(c(names(annotation_keys), sample_key))),
                       all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
+
+    fill_vals <- unique(view_df[[names(annotation_keys)[1]]])
+    bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
+    num_bars <- length(bar_vals)
+
+    fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
+    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length))
+
     sample_labels <- list(individualID = "Individuals",
                           specimenID = "Specimens",
                           cellLine = "Cell Lines")
-    p <- view_df %>%
+    plot_df <- view_df %>%
         dplyr::group_by(.dots = names(annotation_keys)) %>%
-        dplyr::summarize(n = !!! n_distinct(sample_key)) %>%
-        ggplot2::ggplot(aes_string(x = names(annotation_keys)[2], y = "n")) +
-        ggplot2::geom_col(aes_string(fill = names(annotation_keys[1]))) +
-        ggplot2::coord_flip() +
+        dplyr::summarize(n = n_distinct(rlang::UQ(as.name(sample_key)))) %>%
+        ungroup() %>%
+        dplyr::mutate(label = glue::glue(
+            "<b>{assay}:</b>\n{count} {samples}",
+            assay = rlang::UQ(as.name(names(annotation_keys)[1])),
+            count = n,
+            samples = stringr::str_to_lower(sample_labels[[sample_key]]))
+        )
+
+    p <- plot_df %>%
+        ggplot2::ggplot(aes_string(x = names(annotation_keys)[2], y = "n",
+                                   text = "label")) +
+        ggplot2::geom_col(aes_string(fill = names(annotation_keys[1])),
+                          colour = "white", size = 0.2) +
         ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
         ggplot2::xlab("") +
         ggplot2::ylab(glue::glue("Number of {label}",
-                                 label = sample_labels[[sample_key]]))
+                                 label = sample_labels[[sample_key]])) +
+        ggplot2::scale_y_continuous(expand = c(0, 0)) +
+        ggplot2::coord_flip() +
+        custom_theme_bw()
 
-    plotly::ggplotly(p, height = 500) %>%
-        plotly::layout(margin = list(l = 150, r = 100, b = 55))
+    plotly::ggplotly(p, tooltip = 'text', height = num_bars * 50 + 155) %>%
+        plotly::layout(margin = list(l = 10 + bar_margin * 6,
+                                     r = 10 + fill_margin * 6,
+                                     b = 55),
+                       font = list(family = "Roboto, Open Sans, sans-serif"),
+                       legend = list(tracegroupgap = 10, yanchor = "top"))
 }
+
 
 plot_assay_counts_by_center <- function(merged_df) {
     p <- merged_df %>%
@@ -136,6 +191,7 @@ plot_tool_outputs <- function(merged_df){
         layout(margin=list(l = 150, r=100, b=55))
 
 }
+
 
 # old functions -----------------------------------------------------------
 
@@ -190,8 +246,9 @@ plot_assay_stats_by_disease <- function(assay_stats) {
 }
 
 # adapted from lines 48-54 in 'toolTypeReporting.Rmd'
-plot_project_toollanguage_counts_by_center <- function(project_toollanguage_counts) {
-
+plot_project_toollanguage_counts_by_center <- function(
+    project_toollanguage_counts
+) {
     project_toollanguage_counts$text=paste('Center:',project_toollanguage_counts$Label,'\nLanguage',project_toollanguage_counts$softwareLanguage,'\nFiles:',project_toollanguage_counts$Files)
 
     p <- ggplot(project_toollanguage_counts,aes(text='text')) +

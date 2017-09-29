@@ -98,7 +98,7 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 
 as_datatable <- function(df, cols_as_code = c()) {
     df %>%
-        datatable(escape = FALSE, rownames = FALSE, height = 400,
+        datatable(escape = FALSE, rownames = FALSE,
                   options=list(
                       pageLength = min(nrow(df), 10),
                       dom = 'tp',
@@ -141,6 +141,12 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
             name == "specimenID" & !(name %in% facet_cols) ~ "Specimens",
             name == "Center" & (name %in% facet_cols) ~ "Center",
             name == "Center" & !(name %in% facet_cols) ~ "Centers",
+            name == "study" & (name %in% facet_cols) ~ "Study",
+            name == "study" & !(name %in% facet_cols) ~ "Studies",
+            name == "softwareType" & (name %in% facet_cols) ~ "Software Type",
+            name == "softwareType" & !(name %in% facet_cols) ~ "Software Types",
+            name == "softwareLanguage" & (name %in% facet_cols) ~ "Software Language",
+            name == "softwareLanguage" & !(name %in% facet_cols) ~ "Software Languages",
             name == "sourceFileview" ~ "Source Fileview",
             name == "viewFiles" ~ "View Files",
             TRUE ~ name
@@ -153,7 +159,7 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
 
 # Core summary tables (data files) ----------------------------------------
 
-#' Count files in a Synapse file view, grouped by two annotation keys.
+#' Count files in a Synapse file view, grouped two annotation keys.
 #'
 #' @param view_df data frame representing Synapse file view
 #' @param annotation_keys character vector of grouping keys
@@ -197,6 +203,138 @@ summarize_files_by_annotationkey <- function(
         add_queryview_column(format = "html") %>%
         dplyr::select(-query, -matches("projectId")) %>%
         dplyr::ungroup()
+}
+
+
+
+#' Count files in a Synapse file view, grouped by annotation keys.
+#'
+#' @param view_df data frame representing Synapse file view
+#' @param annotation_keys character vector of grouping keys
+#' @param table_id string representing Synapse ID for file view
+#' @param synproject_key if 'projectId' is in `annotation_keys`, a string
+#'   indicating a corresponding key to rename the column
+#' @param count_cols character vector of keys for which to count files
+#' @param list_cols character vector of keys for which to list values
+#' @param augment_keys list mapping target columns (list names) for which to
+#'   prepend values of corresponding meta columns (list values)
+#' @param link_keys list mapping target columns (list names) for which to
+#'   construct links from Synapse IDs in corresponding ID columns (list values)
+#' @param filter_missing remove records with missing annotation values
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' group_keys <- c("assay", "tumorType")
+#' list_cols <- "study"
+#' augment_keys <- list(study = "Center Name")
+#' link_keys <- list(study = "Study")
+#' fileview_df %>%
+#'    summarize_files_by_annotationkey_new(
+#'        annotation_keys = group_keys,
+#'        table_id = master_fileview_id,
+#'        count_cols = count_cols,
+#'        list_cols = list_cols,
+#'        augment_keys = augment_keys,
+#'        link_keys = link_keys
+#'    )
+summarize_files_by_annotationkey_new <- function(
+    view_df, annotation_keys, table_id, synproject_key = NULL,
+    count_cols = NULL, list_cols = NULL, augment_keys = NULL, link_keys = NULL,
+    filter_missing = TRUE
+) {
+    if (is.null(count_cols)) {
+        count_cols <- "id"
+    }
+
+    if (filter_missing) {
+        view_df <- view_df %>%
+            filter_at(vars(one_of(annotation_keys)),
+                      all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
+    }
+
+    if (!is.null(augment_keys)) {
+        augment_keys %>%
+            walk2(names(.), function(meta_key, target_key) {
+                target_col <- as.name(target_key)
+                meta_col <- as.name(meta_key)
+                view_df <<- view_df %>%
+                    mutate(rlang::UQ(target_col) :=
+                               ifelse(!is.na(rlang::UQ(target_col)),
+                                      str_c(
+                                          rlang::UQ(meta_col),
+                                          rlang::UQ(target_col),
+                                          sep = " — "
+                                      ),
+                                      rlang::UQ(target_col)))
+            })
+    }
+
+    link_template <- "<a href='https://www.synapse.org/#!Synapse:{id}' target='_blank'>{target}</a>"
+    if (!is.null(link_keys)) {
+        link_keys %>%
+            walk2(names(.), function(id_key, target_key) {
+                target_col <- as.name(target_key)
+                id_col <- as.name(id_key)
+                view_df <<- view_df %>%
+                    mutate(rlang::UQ(target_col) :=
+                               ifelse(!is.na(rlang::UQ(target_col)),
+                                      glue::glue(
+                                          link_template,
+                                          id = rlang::UQ(id_col),
+                                          target = rlang::UQ(target_col)
+                                      ),
+                                      rlang::UQ(target_col)))
+            })
+    }
+
+    query_keys <- annotation_keys
+    if ("projectId" %in% annotation_keys & !is.null(synproject_key)) {
+        annotation_keys <- c(synproject_key, annotation_keys)
+    }
+
+    group_cols <- sapply(annotation_keys, as.name)
+    query_cols <- sapply(query_keys, as.name)
+
+    count_df <- view_df %>%
+        dplyr::group_by(rlang::UQS(group_cols)) %>%
+        dplyr::summarise_at(count_cols, n_distinct) %>%
+        dplyr::ungroup()
+
+    if (!is.null(list_cols)) {
+        merge_strings <- function(x) {
+            stringr::str_c(unique(x), collapse = "</li><li>")
+        }
+
+        list_df <- view_df %>%
+            dplyr::group_by(rlang::UQS(group_cols)) %>%
+            dplyr::summarise_at(list_cols, merge_strings) %>%
+            dplyr::ungroup() %>%
+            dplyr::mutate_at(.vars = list_cols,
+                             funs(str_c("<ul><li>", ., "</li></ul>", sep = "")))
+
+        summary_df <- left_join(count_df, list_df, by = annotation_keys)
+    } else {
+        summary_df <- count_df
+    }
+
+    summary_df <- summary_df %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(sourceFileview = table_id,
+                      query = build_tablequery(sourceFileview,
+                                               rlang::UQS(query_cols))) %>%
+        add_queryview_column(format = "html") %>%
+        dplyr::select(-query, -sourceFileview) %>%
+        dplyr::ungroup()
+
+
+    if ("projectId" %in% annotation_keys & !is.null(synproject_key)) {
+        summary_df %>%
+            dplyr::select(-matches("projectId"))
+    } else {
+        summary_df
+    }
 }
 
 

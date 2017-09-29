@@ -16,6 +16,10 @@ master_fileview_id <- "syn10838871" # Synapse fileview associated with project
 
 fileview_df <- get_table_df(master_fileview_id)
 
+# Add Synapse project info --------------------------------------------
+
+fileview_df <- fileview_df %>%
+    left_join(summarize_project_info(.), by = "projectId")
 
 # Data files by assay and tumor type --------------------------------------
 
@@ -37,8 +41,8 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
+# syn_dt_entity <- datafile_counts_dt %>%
+#     save_datatable(parent_id, table_filename, .)
 
 # view table
 datafile_counts_dt
@@ -72,9 +76,10 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
                   projectName = "Study")
 
 chart <- fileview_df %>%
-    plot_file_counts_by_annotationkey(plot_keys)
+    plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
 
-syn_entity <- save_chart(parent_id, chart_filename, chart)
+# syn_entity <-
+save_chart(parent_id, chart_filename, chart)
 
 # view chart
 chart
