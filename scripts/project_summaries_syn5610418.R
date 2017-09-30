@@ -22,80 +22,76 @@ fileview_df <- get_table_df(master_fileview_id)
 table_filename <- glue::glue("{source_id}_DataFileCountsByAssay.html",
                              source_id = source_id)
 
-summarize_datafiles_by_assay <- function(view_df, table_id) {
-    count_cols <- c("id")
-    view_df %>%
-        group_by(assay) %>%
-        summarise_at(count_cols, n_distinct) %>%
-        rowwise() %>%
-        mutate(sourceFileview = table_id,
-               query = build_tablequery(sourceFileview, assay)) %>%
-        add_queryview_column(format = "html") %>%
-        select(-query)
-}
 
-datafile_counts_by_assay <- fileview_df %>%
-    summarize_datafiles_by_assay(master_fileview_id)
+#table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndTumorType.html",
+#    source_id = project_id)
 
-datafile_counts_by_assay_dt <- datafile_counts_by_assay %>%
-    format_summarytable_columns("assay") %>%
+# create and save table
+group_keys <- c("dataType")
+count_cols <- c("id")
+
+datafile_counts <- fileview_df %>%
+    summarize_files_by_annotationkey_new(
+        annotation_keys = group_keys,
+        table_id = master_fileview_id,
+        count_cols = count_cols
+    )
+
+datafile_counts_dt <- datafile_counts %>%
+    format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_by_assay_dt %>%
-    save_datatable(parent_id, table_filename, .)
+ syn_dt_entity <- datafile_counts_dt %>%
+     save_datatable(parent_id, table_filename, .)
+
+# view table
+datafile_counts_dt
+###-------
+
 
 
 # summarize by species
 files_by_species_table_filename <- glue::glue("{source_id}_DataFileCountsBySpecies.html",
                                               source_id = source_id)
 
-summarize_datafiles_by_species <- function(view_df, table_id) {
-    count_cols <- c("id")
-    view_df %>%
-        group_by(species) %>%
-        summarise_at(count_cols, n_distinct) %>%
-        rowwise() %>%
-        mutate(sourceFileview = table_id,
-               query = build_tablequery(sourceFileview, species)) %>%
-        add_queryview_column(format = "html") %>%
-        select(-query)
-}
+group_keys=c('species')
+datafile_counts <- fileview_df %>%
+    summarize_files_by_annotationkey_new(
+        annotation_keys = group_keys,
+        table_id = master_fileview_id,
+        count_cols = count_cols
+    )
 
-datafile_counts_by_species <- fileview_df %>%
-    summarize_datafiles_by_species(master_fileview_id)
-
-datafile_counts_by_species_dt <- datafile_counts_by_species %>%
-    format_summarytable_columns(c("species")) %>%
+datafile_counts_dt <- datafile_counts %>%
+    format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_file_by_species_dt_entity <- datafile_counts_by_species_dt %>%
-    save_datatable(parent_id, files_by_species_table_filename, .)
+syn_dt_entity <- datafile_counts_dt %>%
+    save_datatable(parent_id, table_filename, .)
+
+# view table
+datafile_counts_dt
 
 # summarize by species
 files_by_dataType_table_filename <- glue::glue("{source_id}_DataFileCountsByDataType.html",
                                                source_id = source_id)
+group_keys=c('dataType')
+datafile_counts <- fileview_df %>%
+    summarize_files_by_annotationkey_new(
+        annotation_keys = group_keys,
+        table_id = master_fileview_id,
+        count_cols = count_cols
+    )
 
-summarize_datafiles_by_dataType <- function(view_df, table_id) {
-    count_cols <- c("id")
-    view_df %>%
-        group_by(dataType) %>%
-        summarise_at(count_cols, n_distinct) %>%
-        rowwise() %>%
-        mutate(sourceFileview = table_id,
-               query = build_tablequery(sourceFileview, dataType)) %>%
-        add_queryview_column(format = "html") %>%
-        select(-query)
-}
-
-datafile_counts_by_dataType <- fileview_df %>%
-    summarize_datafiles_by_dataType(master_fileview_id)
-
-datafile_counts_by_dataType_dt <- datafile_counts_by_dataType %>%
-    format_summarytable_columns(c("dataType")) %>%
+datafile_counts_dt <- datafile_counts %>%
+    format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_file_by_dataType_dt_entity <- datafile_counts_by_dataType_dt %>%
-    save_datatable(parent_id, files_by_dataType_table_filename, .)
+syn_dt_entity <- datafile_counts_dt %>%
+    save_datatable(parent_id, table_filename, .)
+
+# view table
+datafile_counts_dt
 
 # plot --------------------------------------------------------
 

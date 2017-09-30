@@ -154,7 +154,7 @@ plot_assay_counts_by_center <- function(merged_df) {
         ggplot(aes(x = assay, y = n)) +
         geom_col(aes(fill = Center)) + coord_flip() +
         scale_fill_viridis_d() +
-        scale_y_log10() +
+     #   scale_y_log10() +
         xlab("") +
         ylab("")
 
@@ -320,7 +320,7 @@ plot_project_file_counts_by_center <- function(project_stats) {
 
     p <- ggplot(project_stats, aes(text = text)) +
         geom_bar(aes(x = Label, y = Files, fill = Center), stat = 'identity') +
-        scale_y_log10() +
+     #   scale_y_log10() +
         ggtitle('Files uploaded by Center') +
         scale_fill_viridis(discrete = TRUE) +
         xlab("") +

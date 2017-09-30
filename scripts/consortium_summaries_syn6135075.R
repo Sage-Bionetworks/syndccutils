@@ -40,12 +40,16 @@ nf2_table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndNF2Genotyp
 # create and save table - NF1
 group_keys <- c("assay", "nf1Genotype")
 count_cols <- c("id", "cellType", "individualID")
+list_cols <- c("Center")
+link_keys <-list(Center="projectId")
 
 datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey(
+    summarize_files_by_annotationkey_new(
         annotation_keys = group_keys,
         table_id = master_fileview_id,
-        count_cols = count_cols
+        count_cols = count_cols,
+        list_cols = list_cols,
+        link_keys = link_keys
         )
 
 datafile_counts_dt <- datafile_counts %>%
@@ -62,11 +66,16 @@ datafile_counts_dt
 group_keys <- c("assay", "nf2Genotype")
 count_cols <- c("id", "cellType", "individualID")
 
+list_cols <- c("Center")
+link_keys <-list(Center="projectId")
+
 datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey(
+    summarize_files_by_annotationkey_new(
         annotation_keys = group_keys,
         table_id = master_fileview_id,
-        count_cols = count_cols
+        count_cols = count_cols,
+        list_cols = list_cols,
+        link_keys = link_keys
     )
 
 datafile_counts_dt <- datafile_counts %>%
@@ -79,25 +88,29 @@ syn_dt_entity <- datafile_counts_dt %>%
 # view table
 datafile_counts_dt
 
-group_keys <- c("assay", "Center")
+group_keys <- c( "projectId","assay")
 count_cols <- c("id", "cellType", "individualID")
+synproject_key <- "Center"
 
 datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey(
+    summarize_files_by_annotationkey_new(
         annotation_keys = group_keys,
         table_id = master_fileview_id,
-        count_cols = count_cols
+        count_cols = count_cols,
+        synproject_key = synproject_key
     )
 
 datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
 
 # view table
 datafile_counts_dt
+
+syn_dt_entity <- datafile_counts_dt %>%
+    save_datatable(parent_id, table_filename, .)
+
 
 
 #Now do plots -------------------------------------------

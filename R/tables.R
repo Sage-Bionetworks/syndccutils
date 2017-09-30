@@ -1,6 +1,7 @@
 library(tidyverse)
 library(synapseClient)
 library(DT)
+library(stringr)
 
 # Table utility functions -------------------------------------------------
 
