@@ -150,13 +150,21 @@ chart_filename <- glue::glue("{source_id}_DataFilesByCenterAndAssay.html",
 
 
 # create and save chart
-chart <- syn_chart_entity <- fileview_df %>%
-    plot_assay_counts_by_center()
+plot_keys <- list(projectId = "Center", assay = "Assay")
+
+chart <- fileview_df %>%
+    plot_file_counts_by_annotationkey_2d(
+        annotation_keys = plot_keys,
+        synproject_key = "Center Name",
+        filter_missing = TRUE,
+        log_counts = TRUE
+    )
 
 syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
 # view chart
 chart
+
 
 
 # Files by category -------------------------------------------------------
