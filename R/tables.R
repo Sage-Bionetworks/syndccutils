@@ -1,9 +1,170 @@
 library(tidyverse)
 library(synapseClient)
 library(DT)
-library(stringr)
 
 # Table utility functions -------------------------------------------------
+
+#' Fill in missing values with default or specified string.
+#'
+#' @param df data frame nominally representing a Synapse table or file view
+#' @param placeholder
+#' @param replace_keys
+#'
+#' @return
+#' @export
+#'
+#' @examples
+add_missing_placeholder <- function(
+    df, placeholder = "Not Annotated", replace_keys = NULL
+) {
+
+    if (!is.null(replace_keys)) {
+        df %>%
+            dplyr::mutate_at(.vars = replace_keys,
+                             funs(replace(., is.na(.), placeholder)))
+    } else {
+        df %>%
+            dplyr::mutate_all(funs(replace(., is.na(.), placeholder)))
+    }
+}
+
+
+#' Remove rows with missing or bad values for specified keys.
+#'
+#' @param df data frame nominally representing a Synapse table or file view
+#' @param filter_keys character vector of keys for which to check values
+#' @param bad_values character vector specifying bad values to exclude
+#'
+#' @return
+#' @export
+#'
+#' @examples
+filter_by_key <- function(
+    df, filter_keys, bad_values = c("null", "Not Applicable")
+) {
+
+    df %>%
+        filter_at(vars(one_of(filter_keys)),
+                  all_vars(!is.na(.) & !(. %in% bad_values)))
+}
+
+
+#' Augment values in one column with the value of another column.
+#'
+#' @param df data frame nominally representing a Synapse table or file view
+#' @param augment_keys list mapping target columns (list names) for which to
+#'   prepend values of corresponding meta columns (list values)
+#'
+#' @return
+#' @export
+#'
+#' @examples
+augment_values <- function(
+    df, augment_keys
+) {
+
+    augment_keys %>%
+        walk2(names(.), function(meta_key, target_key) {
+            target_col <- as.name(target_key)
+            meta_col <- as.name(meta_key)
+            df <<- df %>%
+                mutate(rlang::UQ(target_col) :=
+                           ifelse(!is.na(rlang::UQ(target_col)),
+                                  str_c(
+                                      rlang::UQ(meta_col),
+                                      rlang::UQ(target_col),
+                                      sep = " — "
+                                  ),
+                                  rlang::UQ(target_col)))
+        })
+    df
+}
+
+
+#' Convert values to named Synapse URLs based on corresponding Synapse IDs.
+#'
+#' @param df data frame nominally representing a Synapse table or file view
+#' @param link_keys list mapping target columns (list names) for which to
+#'   construct links from Synapse IDs in corresponding ID columns (list values)
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_synapse_links <- function(
+    df, link_keys
+) {
+
+    link_template <- "<a href='https://www.synapse.org/#!Synapse:{id}' target='_blank'>{target}</a>"
+    link_keys %>%
+        walk2(names(.), function(id_key, target_key) {
+            target_col <- as.name(target_key)
+            id_col <- as.name(id_key)
+            df <<- df %>%
+                mutate(rlang::UQ(target_col) :=
+                           ifelse(!is.na(rlang::UQ(target_col)),
+                                  glue::glue(
+                                      link_template,
+                                      id = rlang::UQ(id_col),
+                                      target = rlang::UQ(target_col)
+                                  ),
+                                  rlang::UQ(target_col)))
+        })
+    df
+}
+
+
+#' Count distinct values within each group for specified keys.
+#'
+#' @param df data frame nominally representing a Synapse table or file view
+#' @param group_keys character vector of keys by which to group
+#' @param count_keys character vector of keys for which to count files
+#'
+#' @return
+#' @export
+#'
+#' @examples
+count_values <- function(
+    df, group_keys, count_keys
+) {
+
+    group_cols <- sapply(group_keys, as.name)
+
+    df %>%
+        dplyr::group_by(rlang::UQS(group_cols)) %>%
+        dplyr::summarise_at(count_keys, n_distinct) %>%
+        dplyr::ungroup()
+}
+
+
+#' List distinct values within each group for specified keys
+#'
+#' @param df data frame nominally representing a Synapse table or file view
+#' @param group_keys character vector of keys by which to group
+#' @param list_keys character vector of keys for which to list values
+#'
+#' @return
+#' @export
+#'
+#' @examples
+list_values <- function(
+
+    df, group_keys, list_keys
+) {
+    group_cols <- sapply(group_keys, as.name)
+
+    merge_strings <- function(x) {
+        stringr::str_c(unique(x), collapse = "</li><li>")
+    }
+
+    df %>%
+        dplyr::group_by(rlang::UQS(group_cols)) %>%
+        dplyr::summarise_at(list_keys, merge_strings) %>%
+        dplyr::ungroup() %>%
+        dplyr::mutate_at(.vars = list_keys,
+                         funs(str_c("<ul><li>", ., "</li></ul>", sep = "")))
+}
+
 
 #' Construct a Synapse SQL-style table query using names/values of data frame
 #' column(s) to compose 'WHERE' clauses
@@ -97,7 +258,17 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 }
 
 
+#' Convert and format data frame as datatable widget.
+#'
+#' @param df
+#' @param cols_as_code
+#'
+#' @return
+#' @export
+#'
+#' @examples
 as_datatable <- function(df, cols_as_code = c()) {
+
     df %>%
         datatable(escape = FALSE, rownames = FALSE,
                   options=list(
@@ -124,7 +295,17 @@ as_datatable <- function(df, cols_as_code = c()) {
 }
 
 
+#' Prettify column names based on annotation keys.
+#'
+#' @param df
+#' @param facet_cols
+#'
+#' @return
+#' @export
+#'
+#' @examples
 format_summarytable_columns <- function(df, facet_cols = c()) {
+
     name_map <- tibble(name = names(df)) %>%
         mutate(formatted_name = case_when(
             name == "id" ~ "Files",
@@ -205,7 +386,6 @@ summarize_files_by_annotationkey <- function(
         dplyr::select(-query, -matches("projectId")) %>%
         dplyr::ungroup()
 }
-
 
 
 #' Count files in a Synapse file view, grouped by annotation keys.
