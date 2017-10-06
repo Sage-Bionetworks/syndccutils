@@ -1,4 +1,5 @@
 library(tidyverse)
+library(stringr)
 library(synapseClient)
 library(DT)
 
@@ -148,13 +149,17 @@ count_values <- function(
 #'
 #' @examples
 list_values <- function(
-
-    df, group_keys, list_keys
+    df, group_keys, list_keys, list_format = c("html", "csv")
 ) {
+    list_format <- match.arg(list_format)
+    sep_opts <- list(html = "</li><li>", csv = ",")
+    start_opts <- list(html = "<ul><li>", csv = "")
+    end_opts <- list(html = "</li></ul>", csv = "")
+
     group_cols <- sapply(group_keys, as.name)
 
     merge_strings <- function(x) {
-        stringr::str_c(unique(x), collapse = "</li><li>")
+        stringr::str_c(unique(x), collapse = sep_opts[[list_format]])
     }
 
     df %>%
@@ -162,7 +167,8 @@ list_values <- function(
         dplyr::summarise_at(list_keys, merge_strings) %>%
         dplyr::ungroup() %>%
         dplyr::mutate_at(.vars = list_keys,
-                         funs(str_c("<ul><li>", ., "</li></ul>", sep = "")))
+                         funs(str_c(start_opts[[list_format]], .,
+                                    end_opts[[list_format]], sep = "")))
 }
 
 
@@ -227,6 +233,7 @@ get_tablequery_url <- function(table_id, query_string) {
 #'
 #' @examples
 add_queryview_column <- function(df, format = c("markdown", "html")) {
+    format <- match.arg(format)
     link_templates <- list(
         markdown = "[View]({url})",
         html = '<a href="{url}" target="_blank">View</a>'
