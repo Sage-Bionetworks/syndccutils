@@ -9,8 +9,6 @@ import feather
 
 
 def _expand_fileinfo(syn, synId):
-    #print("_expand_fileinfo `syn`: {}".format(syn))
-    #print("_expand_fileinfo `synId`: {}".format(synId))
     entity = syn.getEntity(synId)
     fileinfo_fields = ['createdBy', 'modifiedBy', 'versionNumber']
     fileinfo = {k: v for k, v in entity.items()
@@ -33,8 +31,6 @@ def _expand_fileinfo(syn, synId):
 
 
 def add_fileinfo(syn, df):
-    #print("add_fileinfo `syn`: {}".format(syn))
-    #print("add_fileinfo `df`: {}".format(df))
     fileinfo = _expand_fileinfo(syn, df['entityId'])
     for k in fileinfo:
         df[k] = fileinfo[k]
@@ -69,9 +65,22 @@ def synwalk_to_df(syn, synId):
             columns=['folderPath', 'folderId', 'entityName', 'entityId']
         )
 
+def get_project_path(synId, path=None):
+     if path is None:
+         path = ""
+     entity_info = syn.getEntity(synId)
+     if 'Project' in entity_info['entityType']:
+         return os.path.dirname(os.path.join(entity_info['name'], path))
+     else:
+         path = os.path.join(entity_info['name'], path)
+         return get_project_path(entity_info['parentId'], path)
+
 
 def build_manifest(syn, synId):
+    print("collecting list of entities in tree with root '{}'".format(synId))
     base_df = synwalk_to_df(syn, synId)
+    print("{} entities found".format(len(base_df.index)))
+    print("expanding file and user details for all entities")
     manifest_df = (
         base_df
         .apply(lambda x: add_fileinfo(syn, x), axis=1)
@@ -92,6 +101,7 @@ def save_manifest(df, synId, out_dir=None):
         path = os.path.join(out_dir, path)
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
+    print("saving results to '{}'".format(path))
     feather.write_dataframe(df, path)
 
 
