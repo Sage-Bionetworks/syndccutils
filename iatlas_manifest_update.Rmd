@@ -1,0 +1,59 @@
+---
+title: "Update iAtlas Data Manifest"
+date: lubridate::today()
+output: html_notebook
+---
+
+```{r}
+library(googlesheets)
+suppressMessages(library(tidyverse))
+library(feather)
+```
+
+### Download current manifest
+
+Read current version of iAtlas manifest from shared Google Sheets URL.
+
+```{r}
+manifest_url <- "https://docs.google.com/spreadsheets/d/1DsKOfudrxW06zl__7pkbI_nLpBn9Z9cDJ40Gd6HcbFY/"
+gs_auth()
+manifest_gs <- gs_url(manifest_url)
+```
+
+```{r, message=FALSE}
+files_gs_df <- gs_read(manifest_gs)
+```
+
+```{r}
+files_gs_irwg_df <- files_gs_df %>% 
+    filter(isIRWG)
+```
+
+### Read latest manifest from Synapse
+
+**Note:** generated using the following command:
+```
+python python/data_manifest.py syn4680136 data
+```
+
+```{r}
+files_syn_irwg_df <- read_feather("data/syn4680136_manifest_2017-10-12.feather")
+```
+
+```{r}
+col_order <- c("isIRWG", "rootPath", "rootId", "folderPath", "folderId", 
+               "entityName", "entityId", "fileName", "downloadName", 
+               "externalURL", "contentMd5", "contentSize", "versionNumber", 
+               "createdById", "createdByName", "createdByUser", 
+               "modifiedById", "modifiedByName", "modifiedByUser",             
+               "Contributor", "BigQueryTable", "FilteredAnnotatedBigQueryTable", 
+               "Keep", "Phase", "Notes")
+files_master_irwg_df <- files_syn_irwg_df %>% 
+    left_join(files_gs_irwg_df %>% 
+                  select(isIRWG, rootPath, rootId, fileId, Contributor, 
+                         BigQueryTable, FilteredAnnotatedBigQueryTable,
+                         Keep, Phase, Notes), 
+              by = c("entityId" = "fileId")) %>% 
+    select(one_of(col_order))
+```
+
