@@ -24,12 +24,14 @@ manifest_gs <- gs_url(manifest_url)
 files_gs_df <- gs_read(manifest_gs)
 ```
 
+### Subset to IRWG files
+
 ```{r}
 files_gs_irwg_df <- files_gs_df %>% 
     filter(isIRWG)
 ```
 
-### Read latest manifest from Synapse
+### Read latest manifest from Synapse (IRWG files)
 
 **Note:** generated using the following command:
 ```
@@ -37,8 +39,10 @@ python python/data_manifest.py syn4680136 data
 ```
 
 ```{r}
-files_syn_irwg_df <- read_feather("data/syn4680136_manifest_2017-10-12.feather")
+files_syn_irwg_df <- read_feather("../data/syn4680136_manifest_2017-10-13.feather")
 ```
+
+### Merge Google and Synapse based manifests (IRWG files)
 
 ```{r}
 col_order <- c("isIRWG", "rootPath", "rootId", "folderPath", "folderId", 
@@ -54,6 +58,61 @@ files_master_irwg_df <- files_syn_irwg_df %>%
                          BigQueryTable, FilteredAnnotatedBigQueryTable,
                          Keep, Phase, Notes), 
               by = c("entityId" = "fileId")) %>% 
-    select(one_of(col_order))
+    rename(rootPath = rootPath.x, rootId = rootId.x) %>% 
+    select(one_of(col_order)) %>% 
+    replace_na(list(isIRWG = TRUE))
+```
+
+### Subset to non-IRWG files
+
+```{r}
+files_gs_other_df <- files_gs_df %>% 
+    filter(!isIRWG)
+```
+
+```{r}
+files_gs_other_df %>% 
+    select(folderPath, folderId, entityName = fileName, entityId = fileId) %>% 
+    write_feather("../data/nonIRWG_base-manifest.feather")
+```
+
+### Read latest manifest from Synapse (non-IRWG files)
+
+```{r}
+files_syn_other_df <- read_feather("../data/nonirwg_manifest_2017-10-13.feather")
+```
+
+### Merge Google and Synapse based manifests (non-IRWG files)
+
+```{r}
+col_order <- c("isIRWG", "rootPath", "rootId", "folderPath", "folderId", 
+               "entityName", "entityId", "fileName", "downloadName", 
+               "externalURL", "contentMd5", "contentSize", "versionNumber", 
+               "createdById", "createdByName", "createdByUser", 
+               "modifiedById", "modifiedByName", "modifiedByUser",             
+               "Contributor", "BigQueryTable", "FilteredAnnotatedBigQueryTable", 
+               "Keep", "Phase", "Notes")
+files_master_other_df <- files_syn_other_df %>% 
+    left_join(files_gs_other_df %>% 
+                  select(isIRWG, rootPath, rootId, fileId, Contributor, 
+                         BigQueryTable, FilteredAnnotatedBigQueryTable,
+                         Keep, Phase, Notes), 
+              by = c("entityId" = "fileId")) %>% 
+    select(one_of(col_order)) %>% 
+    replace_na(list(isIRWG = FALSE))
+```
+
+### Combine all files to create final manifest 
+
+```{r}
+files_master_df <- bind_rows(files_master_irwg_df, files_master_other_df)
+```
+
+### Create new worksheet and save in Google Sheets
+
+```{r}
+ws_name <- glue::glue("Files_{date}", date = lubridate::today())
+manifest_gs <- manifest_gs %>% 
+    gs_ws_new(ws_title = ws_name, input = files_master_df)
 ```
 
