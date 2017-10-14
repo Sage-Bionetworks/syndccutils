@@ -65,7 +65,7 @@ def synwalk_to_df(syn, synId):
             columns=['folderPath', 'folderId', 'entityName', 'entityId']
         )
 
-def get_project_path(synId, path=None):
+def get_project_path(syn, synId, path=None):
      if path is None:
          path = ""
      entity_info = syn.getEntity(synId)
@@ -73,7 +73,7 @@ def get_project_path(synId, path=None):
          return os.path.dirname(os.path.join(entity_info['name'], path))
      else:
          path = os.path.join(entity_info['name'], path)
-         return get_project_path(entity_info['parentId'], path)
+         return get_project_path(syn, entity_info['parentId'], path)
 
 
 def build_manifest(syn, synId):
@@ -89,6 +89,8 @@ def build_manifest(syn, synId):
         .rename(columns={'createdBy': 'createdById', 
                          'modifiedBy': 'modifiedById'})
     )
+    manifest_df['rootPath'] = get_project_path(syn, synId)
+    manifest_df['rootId'] = synId
     return manifest_df
 
 
