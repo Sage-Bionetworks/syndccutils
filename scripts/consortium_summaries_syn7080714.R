@@ -223,7 +223,7 @@ toolfile_counts_dt
 
 # Tool files by input -----------------------------------------------------
 
-table_filename <- glue::glue("{source_id}_ToolFilesCountsByInput.html",
+input_table_filename <- glue::glue("{source_id}_ToolFilesCountsByInput.html",
                                    source_id = consortium_id)
 
 # create and save table
@@ -242,7 +242,7 @@ toolfile_counts_dt <- toolfile_counts %>%
     as_datatable()
 
 syn_id_entity <-toolfile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
+    save_datatable(parent_id, input_table_filename, .)
 
 # view table
 toolfile_counts_dt
@@ -269,7 +269,7 @@ toolfile_counts_dt <- toolfile_counts %>%
     as_datatable()
 
 syn_id_entity <-toolfile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
+    save_datatable(parent_id, output_table_filename, .)
 
 # view table
 toolfile_counts_dt
