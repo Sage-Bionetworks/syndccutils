@@ -23,12 +23,12 @@ fileview_df <- fileview_df %>%
 
 # Data files by assay and tumor type --------------------------------------
 
-table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndTumorType.html",
+table_filename <- glue::glue("{source_id}_DataFileCountsByDrugAndDose.html",
                              source_id = project_id)
 
 # create and save table
-group_keys <- c("assay", "tumorType")
-count_cols <- c("id", "diagnosis", "specimenID")
+group_keys <- c("compoundName", "compoundDose")
+count_cols <- c("id", "specimenID", "individualID")
 
 datafile_counts <- fileview_df %>%
     summarize_files_by_annotationkey(
@@ -41,8 +41,8 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-# syn_dt_entity <- datafile_counts_dt %>%
-#     save_datatable(parent_id, table_filename, .)
+ syn_dt_entity <- datafile_counts_dt %>%
+    save_datatable(parent_id, table_filename, .)
 
 # view table
 datafile_counts_dt
@@ -50,14 +50,14 @@ datafile_counts_dt
 
 # Individuals by assays and tumor type ------------------------------------
 
-chart_filename <- glue::glue("{source_id}_IndividualsByAssayAndTumorType.html",
+chart_filename <- glue::glue("{source_id}_IndividualsByDrugAndDose.html",
                              source_id = project_id)
 
 # create and save chart
-plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
+plot_keys <- list(assay= "Assay",compoundName = "Drug") #list(assay = "Assay", tumorType = "Tumor Type")
 
 chart <- fileview_df %>%
-    plot_sample_counts_by_annotationkey_2d(sample_key = "specimenID",
+    plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
                                            annotation_keys = plot_keys)
 
 syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
@@ -73,7 +73,8 @@ chart_filename <- glue::glue("{source_id}_DataFilesByCategory.html",
 
 # create and save chart
 plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
-                  projectName = "Study")
+    diagnosis = "Diagnosis", species = "Species",
+    organ = "Organ", tissue = "Tissue", compoundName="Drug", study = "Study")
 
 chart <- fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
