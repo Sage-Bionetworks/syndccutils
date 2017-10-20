@@ -19,6 +19,9 @@ master_fileview_id <- "syn11270144" # Synapse fileview associated with consortiu
 
 fileview_df <- get_table_df(master_fileview_id)
 
+cell_lines <- synTableQuery('SELECT distinct Sample FROM syn8496249')@values
+
+fileview_df<-subset(fileview_df,specimenID%in%cell_lines$Sample)
 
 # Add Synapse project info --------------------------------------------
 
@@ -40,3 +43,30 @@ syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
 # view chart
 chart
+
+#----now download data by cell line
+
+table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndcellline.html",
+    source_id = consortium_id)
+
+
+group_keys <- c("specimenID","assay")
+count_cols <- c("id")
+
+cell_line_counts <- fileview_df %>%
+    summarize_files_by_annotationkey(
+        annotation_keys = group_keys,
+        table_id = master_fileview_id,
+        count_cols = count_cols
+    )
+
+cell_line_counts_dt <- cell_line_counts %>%
+ #   format_summarytable_columns(c("Center", group_keys)) %>%
+    as_datatable()
+
+syn_dt_entity <- cell_line_counts_dt %>%
+    save_datatable(parent_id, table_filename, .)
+
+# view table
+cell_line_counts_dt
+
