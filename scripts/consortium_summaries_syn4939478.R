@@ -40,8 +40,9 @@ nf2_table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndNF2Genotyp
 # create and save table - NF1
 group_keys <- c("assay", "nf1Genotype")
 count_cols <- c("id", "cellType", "individualID")
-list_cols <- c("Project")
-link_keys <-list(Project="projectId")
+list_cols <- c("projectId")
+link_keys <-list(projectId="Project")
+synproject_key <- "Project"
 
 datafile_counts <- fileview_df %>%
     summarize_files_by_annotationkey_new(
@@ -49,7 +50,8 @@ datafile_counts <- fileview_df %>%
         table_id = master_fileview_id,
         count_cols = count_cols,
         list_cols = list_cols,
-        link_keys = link_keys
+        synproject_key = synproject_key#,
+      # link_keys = link_keys
         )
 
 datafile_counts_dt <- datafile_counts %>%
@@ -63,30 +65,33 @@ syn_dt_entity <- datafile_counts_dt %>%
 datafile_counts_dt
 
 
-group_keys <- c( "projectId","assay")
-count_cols <- c("id", "cellType", "individualID")
-synproject_key <- "Project"
+# create and save table
+group_keys <- "assay"
+#synproject_key <- "Project"
+count_cols <- c("id", "tumorType", "diagnosis")
+list_cols=c("projectId")
+link_keys<-list(projectId="Project")
 
 datafile_counts <- fileview_df %>%
     summarize_files_by_annotationkey_new(
         annotation_keys = group_keys,
         table_id = master_fileview_id,
-        count_cols = count_cols,
-        synproject_key = synproject_key
-    )
+        list_cols = list_cols,
+       # link_keys = link_keys,
+        synproject_key = synproject_key,
+        count_cols = count_cols
+    ) %>%
+    rename(`Project` = projectId)
 
 datafile_counts_dt <- datafile_counts %>%
-    format_summarytable_columns(group_keys) %>%
+    format_summarytable_columns(c("Project Name", group_keys)) %>%
     as_datatable()
-
-
-# view table
-datafile_counts_dt
 
 syn_dt_entity <- datafile_counts_dt %>%
     save_datatable(parent_id, table_filename, .)
 
-
+# view table
+datafile_counts_dt
 
 #Now do plots -------------------------------------------
 plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
