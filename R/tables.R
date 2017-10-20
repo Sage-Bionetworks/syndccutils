@@ -534,6 +534,7 @@ summarize_project_info <- function(view_df) {
                    res = synGet(x)
                    c(
                        projectId = x,
+                       projectName = ifelse(is.null(res@properties$name),"",res@properties$name),
                        Center = ifelse(is.null(res@properties$name),"",res@properties$name),
                        Program = ifelse(is.null(res@annotations$consortium),"",res@annotations$consortium),
                        Institution = ifelse(is.null(res@annotations$institution),"",res@annotations$institution)

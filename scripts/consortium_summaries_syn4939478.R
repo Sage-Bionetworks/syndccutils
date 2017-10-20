@@ -26,6 +26,8 @@ fileview_df <- fileview_df %>%
     left_join(summarize_project_info(.), by = "projectId")
 
 
+ok. in the code you have `list(projectId="Project")` — the function doesn’t know that “Center” ~ “Project”, you have to give it an actual column name :)
+
 # Data files by assay and tumor type --------------------------------------
 
 table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndProject.html",
@@ -40,9 +42,8 @@ nf2_table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndNF2Genotyp
 # create and save table - NF1
 group_keys <- c("assay", "nf1Genotype")
 count_cols <- c("id", "cellType", "individualID")
-list_cols <- c("projectId")
-link_keys <-list(projectId="Project")
-synproject_key <- "Project"
+list_cols <- c("projectName")
+link_keys <-list(projectName="projectId")
 
 datafile_counts <- fileview_df %>%
     summarize_files_by_annotationkey_new(
@@ -50,9 +51,9 @@ datafile_counts <- fileview_df %>%
         table_id = master_fileview_id,
         count_cols = count_cols,
         list_cols = list_cols,
-        synproject_key = synproject_key#,
-      # link_keys = link_keys
-        )
+        link_keys = link_keys
+        ) %>%
+    rename(Project = projectName)
 
 datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
@@ -65,26 +66,26 @@ syn_dt_entity <- datafile_counts_dt %>%
 datafile_counts_dt
 
 
+# Data files by assay -----------------------------------------------------
+
 # create and save table
 group_keys <- "assay"
-#synproject_key <- "Project"
 count_cols <- c("id", "tumorType", "diagnosis")
-list_cols=c("projectId")
-link_keys<-list(projectId="Project")
+list_cols <- c("projectName")
+link_keys <-list(projectName="projectId")
 
 datafile_counts <- fileview_df %>%
     summarize_files_by_annotationkey_new(
         annotation_keys = group_keys,
         table_id = master_fileview_id,
         list_cols = list_cols,
-       # link_keys = link_keys,
-        synproject_key = synproject_key,
+        link_keys = link_keys,
         count_cols = count_cols
     ) %>%
-    rename(`Project` = projectId)
+    rename(Project = projectName)
 
 datafile_counts_dt <- datafile_counts %>%
-    format_summarytable_columns(c("Project Name", group_keys)) %>%
+    format_summarytable_columns(group_keys) %>%
     as_datatable()
 
 syn_dt_entity <- datafile_counts_dt %>%
