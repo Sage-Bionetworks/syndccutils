@@ -122,4 +122,3 @@ syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 # view chart
 chart
 
-

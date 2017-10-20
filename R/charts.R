@@ -113,7 +113,8 @@ plot_sample_counts_by_annotationkey_2d <- function(
 
     sample_labels <- list(individualID = "Individuals",
                           specimenID = "Specimens",
-                          cellLine = "Cell Lines")
+                          cellLine = "Cell Lines",
+                          id = "Files")
     plot_df <- view_df %>%
         dplyr::group_by(.dots = names(annotation_keys)) %>%
         dplyr::summarize(n = n_distinct(rlang::UQ(as.name(sample_key)))) %>%
