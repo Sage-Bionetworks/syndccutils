@@ -216,6 +216,24 @@ plot_file_counts_by_annotationkey_2d <- function(
                        legend = list(tracegroupgap = 10, yanchor = "top"))
 }
 
+get_annotation_summary <-function(merged_df){
+    replace_missing <- "Not Annotated"
+
+    p <- merged_df %>%
+        dplyr::mutate_at(.vars = c('assay'),
+            funs(replace(., is.na(.), replace_missing))) %>%
+        group_by(assay,Center) %>%
+        tally() %>%
+        ggplot(aes(x = Center, y = n)) +
+        geom_col(aes(fill = assay)) + coord_flip() +
+        scale_fill_viridis_d() +
+        #   scale_y_log10() +
+        xlab("") +
+        ylab("")
+
+    ggplotly(p, height = 500) %>%
+        layout(margin = list(l = 350, r = 100, b = 55))
+}
 
 plot_assay_counts_by_center <- function(merged_df) {
     p <- merged_df %>%

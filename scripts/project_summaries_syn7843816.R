@@ -54,7 +54,7 @@ chart_filename <- glue::glue("{source_id}_IndividualsByDrugAndDose.html",
                              source_id = project_id)
 
 # create and save chart
-plot_keys <- list(assay= "Assay",compoundName = "Drug") #list(assay = "Assay", tumorType = "Tumor Type")
+plot_keys <- list(drugScreenType="Screen",compoundName = "Drug") #list(assay = "Assay", tumorType = "Tumor Type")
 
 chart <- fileview_df %>%
     plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",

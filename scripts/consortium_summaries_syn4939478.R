@@ -26,7 +26,7 @@ fileview_df <- fileview_df %>%
     left_join(summarize_project_info(.), by = "projectId")
 
 
-ok. in the code you have `list(projectId="Project")` — the function doesn’t know that “Center” ~ “Project”, you have to give it an actual column name :)
+#ok. in the code you have `list(projectId="Project")` — the function doesn’t know that “Center” ~ “Project”, you have to give it an actual column name :)
 
 # Data files by assay and tumor type --------------------------------------
 
@@ -100,18 +100,16 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
     organ = "Organ", tissue = "Tissue",
     dataType = "Data Type", study = "Study")
 
-chart_filename <- glue::glue("{source_id}_DataFilesByAndAssay.html",
+chart_filename <- glue::glue("{source_id}_DataFilesByCenterAndAssay.html",
                              source_id = consortium_id)
 
 chart <- fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys)
 
 chart
+
 syn_entity <- save_chart(parent_id, chart_filename, chart)
 
-
-chart_filename <- glue::glue("{source_id}_DataFilesByCenterAndAssay.html",
-    source_id = consortium_id)
 
 
 # create and save chart
@@ -122,4 +120,17 @@ syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
 # view chart
 chart
+
+chart_filename <- glue::glue("{source_id}_annotationSummary.html",
+    source_id = consortium_id)
+
+
+chart <- syn_chart_entity <- fileview_df %>%
+    get_annotation_summary()
+syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+
+# view chart
+chart
+
+
 
