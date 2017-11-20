@@ -216,6 +216,76 @@ plot_file_counts_by_annotationkey_2d <- function(
                        legend = list(tracegroupgap = 10, yanchor = "top"))
 }
 
+
+
+plot_study_counts_by_annotationkey_2d <- function(
+    view_df, annotation_keys, synproject_key = NULL,
+    filter_missing = TRUE, log_counts = FALSE
+) {
+    # TODO: add some check to make sure length(annotation_keys) == 2
+    if (filter_missing) {
+        view_df <- view_df %>%
+            filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
+                all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
+    }
+
+    if ("projectId" %in% names(annotation_keys) & !is.null(synproject_key)) {
+        annotation_keys <- annotation_keys %>%
+            plyr::rename(list("projectId" = synproject_key))
+    }
+
+    fill_vals <- unique(view_df[[names(annotation_keys)[1]]])
+    bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
+    print(bar_vals)
+    num_bars <- length(bar_vals)
+
+    fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
+    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length))
+
+    print(bar_margin)
+    group_cols <- sapply(names(annotation_keys), as.name)
+
+    replace_missing <- "Not Annotated"
+    plot_df <- view_df %>%
+        dplyr::group_by(rlang::UQS(group_cols)) %>%
+        dplyr::summarize(n = n_distinct(study)) %>%
+        ungroup() %>%
+        dplyr::mutate_at(.vars = names(annotation_keys),
+            funs(replace(., is.na(.), replace_missing))) %>%
+        dplyr::mutate(label = glue::glue(
+            "<b>{assay}:</b>\n{count} studies",
+            assay = rlang::UQ(as.name(names(annotation_keys)[1])),
+            count = n)
+        ) %>%
+        I
+
+    scale_note <- ""
+    if (log_counts) {
+        plot_df <- plot_df %>%
+            mutate(n = ifelse(n > 0, log10(n), n))
+        scale_note <- " (log10)"
+    }
+
+    p <- plot_df %>%
+        ggplot2::ggplot(aes_(x = rlang::UQ(group_cols[[2]]), y = as.name("n"),
+            text = as.name("label"))) +
+        ggplot2::geom_col(aes_(fill = rlang::UQ(group_cols[[1]])),
+            colour = "white", size = 0.2) +
+        ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
+        ggplot2::xlab("") +
+        ggplot2::ylab(glue::glue("Number of Studies{scale}", scale = scale_note)) +
+        ggplot2::scale_y_continuous(expand = c(0, 0)) +
+        ggplot2::coord_flip() +
+        custom_theme_bw()
+
+    plotly::ggplotly(p, tooltip = 'text', height = num_bars * 50 + 155) %>%
+        plotly::layout(margin = list(l = 10 + bar_margin * 6,
+            r = 10 + fill_margin * 6,
+            b = 55),
+            font = list(family = "Roboto, Open Sans, sans-serif"),
+            legend = list(tracegroupgap = 10, yanchor = "top"))
+}
+
 get_annotation_summary <-function(merged_df){
     replace_missing <- "Not Annotated"
 
