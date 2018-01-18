@@ -12,7 +12,7 @@ synapseLogin()
 synproject_id <- "syn6135075" # Synapse project for consortium
 consortium_id <- "syn6135075" # Synapse folder associated with consortium
 parent_id <- "syn10901483" # consortium 'Reporting' folder where files should be stored
-master_fileview_id <- "syn9692006" # Synapse fileview associated with consortium data
+master_fileview_id <- "syn11614206" # Synapse fileview associated with consortium data
 
 
 # Collect data ------------------------------------------------------------

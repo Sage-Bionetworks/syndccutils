@@ -125,27 +125,27 @@ syn_entity <- save_chart(parent_id, chart_filename, chart)
 
 
 
-chart_filename <- glue::glue("{source_id}_AssayCountsByCenter.html",
-    source_id = consortium_id)
-# create and save chart
-chart <- syn_chart_entity <- fileview_df %>%
-    plot_assay_counts_by_center()
+# chart_filename <- glue::glue("{source_id}_AssayCountsByCenter.html",
+#     source_id = consortium_id)
+# # create and save chart
+# chart <- syn_chart_entity <- fileview_df %>%
+#     plot_assay_counts_by_center()
+#
+# syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+#
+# # view chart
+# chart
 
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
-
-# view chart
-chart
-
-chart_filename <- glue::glue("{source_id}_annotationSummary.html",
-    source_id = consortium_id)
-
-
-chart <- syn_chart_entity <- fileview_df %>%
-    get_annotation_summary()
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
-
-# view chart
-chart
+# chart_filename <- glue::glue("{source_id}_annotationSummary.html",
+#     source_id = consortium_id)
+#
+#
+# chart <- syn_chart_entity <- fileview_df %>%
+#     get_annotation_summary()
+# syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+#
+# # view chart
+# chart
 
 ##now collate datasets by assay, species, tumor type
 

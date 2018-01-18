@@ -232,11 +232,12 @@ get_tablequery_url <- function(table_id, query_string) {
 #' @export
 #'
 #' @examples
-add_queryview_column <- function(df, format = c("markdown", "html")) {
+add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
     format <- match.arg(format)
     link_templates <- list(
         markdown = "[View]({url})",
-        html = '<a href="{url}" target="_blank">View</a>'
+        html = '<a href="{url}" target="_blank">View</a>',
+        raw = '{url}'
     )
     link_template <- link_templates[[format]]
     df %>%
@@ -363,7 +364,7 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
 #' group_keys <- c("assay", "tumorType")
 #' summarize_datafiles_by_annotationkey(fileview_df, group_keys, fileview_id)
 summarize_files_by_annotationkey <- function(
-    view_df, annotation_keys, table_id, count_cols = NULL, filter_missing = TRUE
+    view_df, annotation_keys, table_id, count_cols = NULL, filter_missing = TRUE, queryformat="html"
 ) {
     if (is.null(count_cols)) {
         count_cols <- c("id", "diagnosis", "individualID")
@@ -389,7 +390,7 @@ summarize_files_by_annotationkey <- function(
         dplyr::mutate(sourceFileview = table_id,
                query = build_tablequery(sourceFileview,
                                         rlang::UQS(query_cols))) %>%
-        add_queryview_column(format = "html") %>%
+        add_queryview_column(format = queryformat) %>%
         dplyr::select(-query, -matches("projectId")) %>%
         dplyr::ungroup()
 }

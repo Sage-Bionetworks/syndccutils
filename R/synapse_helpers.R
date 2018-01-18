@@ -111,5 +111,29 @@ save_datatable <- function(parent_id, dt_filename, dt_widget) {
     return(syn_entity)
 }
 
+datatable_to_synapse <-function(parent_id, table_name, dt) {
+    tcols<-as.tableColumns(dt)$tableColumns
+    tcols[[which(sapply(tcols,function(x) x$name)=='viewFiles')]]$columnType<-'LINK'
+    schema <- synapseClient::TableSchema(name=table_name,
+            columns=tcols,
+            parent=parent_id)
+    syn_id <-synapseClient::synStore(Table(schema,dt))
+    return(syn_id)
+
+}
+
+simple_plots_wiki_string <-function(table_id, group_keys,count_cols,title ){
+
+    md_string <- paste('${plot?query= select ',group_keys[1],',',group_keys[2],',',count_cols[1],' from ',
+        table_id,' GROUP BY ',group_keys[1],',',group_keys[2],'&title=',title,'&type=BAR&barmode=STACK&showlegend=true&fill=',group_keys[2],'}',sep='')
+    ##maybe we can aspire to glue some day
+        #glue::glue('${plot?query=select [xaxis],', '[fill],', '[yaxis]', 'from [table]', 'GROUP BY [fill],', '[xaxis]','&title=[title]','&type=BAR&barmode=STACK&showlegend=true&fill=[fill]}',
+       # table=table_id,
+    #    xaxis=group_keys[1],
+    #    yaxis=count_cols[1],
+    #    fill=group_keys[2])
+    return(md_string)
+
+}
 
 
