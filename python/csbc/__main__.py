@@ -120,7 +120,7 @@ def template(args, syn):
     else:
         teamId = None
 
-    if consortium not in ['U24', 'U54','U01']:
+    if consortium not in ['U54','U01']:
 
         print("Please provide an existing consortium Id")
 
@@ -133,12 +133,6 @@ def template(args, syn):
 
         if consortium in ['U01']:
             templateId = 'syn11801693'
-            buildProject(syn, projectName=project_name, teamId=teamId, adminId=csbc_admin_teamId, templateId=templateId,
-                         projectView=csbc_project_viewId)
-
-        if consortium in ['U24']:
-            # replace synId with a known format
-            templateId = 'syn1234'
             buildProject(syn, projectName=project_name, teamId=teamId, adminId=csbc_admin_teamId, templateId=templateId,
                          projectView=csbc_project_viewId)
 
