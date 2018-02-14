@@ -37,7 +37,7 @@ def synapseLogin():
     return syn
 
 
-def creatProject(syn, project_name, teamId=None, adminId=None):
+def createProject(syn, project_name, teamId=None, adminId=None):
     """
     Given a project name, creates a synapse project and sets permissions for All registered Synapse users and Anyone
     on the web to read/view, then given an admin and/or project team id it sets permissions for the team.
@@ -94,7 +94,7 @@ def buildProject(syn, projectName, teamId, adminId, templateId, projectView):
     :return:
     """
 
-    pc = creatProject(syn, project_name=projectName, teamId=teamId, adminId=adminId)
+    pc = createProject(syn, project_name=projectName, teamId=teamId, adminId=adminId)
     print("project %s location on synapse is %s" % (projectName, pc.id))
 
     copied_syn_dict = synapseutils.copy(syn, entity=templateId, destinationId=pc.id)
