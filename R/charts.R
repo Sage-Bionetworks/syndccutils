@@ -74,7 +74,8 @@ plot_file_counts_by_annotationkey <- function(
         }) %>%
         plotly::subplot(shareY = TRUE, titleX = TRUE) %>%
         plotly::layout(showlegend = FALSE,
-                       font = list(family = "Roboto, Open Sans, sans-serif"))
+                       font = list(family = "Roboto, Open Sans, sans-serif")) %>%
+        plotly::config(displayModeBar = F)
     chart
 }
 
@@ -144,7 +145,8 @@ plot_sample_counts_by_annotationkey_2d <- function(
                                      r = 10 + fill_margin * 6,
                                      b = 55),
                        font = list(family = "Roboto, Open Sans, sans-serif"),
-                       legend = list(tracegroupgap = 10, yanchor = "top"))
+                       legend = list(tracegroupgap = 10, yanchor = "top")) %>%
+        plotly::config(displayModeBar = F)
 }
 
 
@@ -213,7 +215,8 @@ plot_file_counts_by_annotationkey_2d <- function(
                                      r = 10 + fill_margin * 6,
                                      b = 55),
                        font = list(family = "Roboto, Open Sans, sans-serif"),
-                       legend = list(tracegroupgap = 10, yanchor = "top"))
+                       legend = list(tracegroupgap = 10, yanchor = "top")) %>%
+        plotly::config(displayModeBar = F)
 }
 
 
@@ -317,7 +320,8 @@ plot_assay_counts_by_center <- function(merged_df) {
         ylab("")
 
     ggplotly(p, height = 500) %>%
-        layout(margin = list(l = 150, r = 100, b = 55))
+        layout(margin = list(l = 150, r = 100, b = 55)) %>%
+        plotly::config(displayModeBar = F)
 }
 
 plot_tool_inputs <- function(merged_df){
@@ -331,7 +335,8 @@ plot_tool_inputs <- function(merged_df){
         ylab("")
 
     ggplotly(p,height=300) %>%
-        layout(margin=list(l = 150, r=100, b=55))
+        layout(margin=list(l = 150, r=100, b=55)) %>%
+        plotly::config(displayModeBar = F)
 
 }
 
@@ -346,7 +351,8 @@ plot_tool_outputs <- function(merged_df){
         ylab("")
 
     ggplotly(p,height=300) %>%
-        layout(margin=list(l = 150, r=100, b=55))
+        layout(margin=list(l = 150, r=100, b=55)) %>%
+        plotly::config(displayModeBar = F)
 
 }
 
@@ -375,7 +381,8 @@ plot_assay_stats_by_tumortype <- function(assay_stats) {
         )
 
     ggplotly(p,tooltip='text',width = 1000) %>%
-        layout(margin = list(l = 100, r = 100, b = 55))
+        layout(margin = list(l = 100, r = 100, b = 55)) %>%
+        plotly::config(displayModeBar = F)
 }
 
 plot_assay_stats_by_disease <- function(assay_stats) {
@@ -400,7 +407,8 @@ plot_assay_stats_by_disease <- function(assay_stats) {
         )
 
     ggplotly(p, tooltip='text',width = 1000) %>%
-        layout(margin = list(l = 100, r = 100, b = 55))
+        layout(margin = list(l = 100, r = 100, b = 55)) %>%
+        plotly::config(displayModeBar = F)
 }
 
 # adapted from lines 48-54 in 'toolTypeReporting.Rmd'
@@ -425,7 +433,8 @@ plot_project_toollanguage_counts_by_center <- function(
         )
 
     ggplotly(p, tooltip='text',width = 1000) %>%
-        layout(margin = list(l = 100, r = 100, b = 55))
+        layout(margin = list(l = 100, r = 100, b = 55)) %>%
+        plotly::config(displayModeBar = F)
 }
 
 # adapted from lines 28-44 in 'pan_stanford_viz.Rmd'
@@ -444,7 +453,8 @@ plot_assay_counts_by_patient <- function(patient_datafile_counts_by_assay) {
               legend.title = element_blank())
 
     ggplotly(p, width = 800) %>%
-        layout(margin = list(l = 100, r = 250))
+        layout(margin = list(l = 100, r = 250)) %>%
+        plotly::config(displayModeBar = F)
 }
 
 # adapted from lines 49-66 in 'pan_stanford_viz.Rmd'
@@ -462,7 +472,8 @@ plot_patient_counts_by_assay <- function(assay_datafile_counts_by_patient) {
               legend.title = element_blank())
 
     ggplotly(p, width = 800) %>%
-        layout(margin = list(l = 150, r = 250))
+        layout(margin = list(l = 150, r = 250)) %>%
+        plotly::config(displayModeBar = F)
 }
 
 
@@ -491,5 +502,6 @@ plot_project_file_counts_by_center <- function(project_stats) {
         )
 
     ggplotly(p, tooltip = 'text', width = 1400) %>%
-        layout(margin = list(l = 280, r = 85, b = 55))
+        layout(margin = list(l = 280, r = 85, b = 55)) %>%
+        plotly::config(displayModeBar = F)
 }
