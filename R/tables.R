@@ -431,7 +431,7 @@ summarize_files_by_annotationkey <- function(
 summarize_files_by_annotationkey_new <- function(
     view_df, annotation_keys, table_id, synproject_key = NULL,
     count_cols = NULL, list_cols = NULL, augment_keys = NULL, link_keys = NULL,
-    filter_missing = TRUE
+    filter_missing = TRUE, queryformat="html"
 ) {
     if (is.null(count_cols)) {
         count_cols <- "id"
@@ -513,7 +513,7 @@ summarize_files_by_annotationkey_new <- function(
         dplyr::mutate(sourceFileview = table_id,
                       query = build_tablequery(sourceFileview,
                                                rlang::UQS(query_cols))) %>%
-        add_queryview_column(format = "html") %>%
+        add_queryview_column(format = queryformat) %>%
         dplyr::select(-query, -sourceFileview) %>%
         dplyr::ungroup()
 

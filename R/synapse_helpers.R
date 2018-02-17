@@ -111,9 +111,10 @@ save_datatable <- function(parent_id, dt_filename, dt_widget) {
     return(syn_entity)
 }
 
-datatable_to_synapse <-function(parent_id, table_name, dt) {
+datatable_to_synapse <-function(dt, parent_id, table_name) {
+    colnames(dt)<-sapply(colnames(dt),function(x) gsub(' ','_',x))
     tcols<-as.tableColumns(dt)$tableColumns
-    tcols[[which(sapply(tcols,function(x) x$name)=='viewFiles')]]$columnType<-'LINK'
+    tcols[[which(sapply(tcols,function(x) x$name)%in%c('viewFiles','View_Files'))]]$columnType<-'LINK'
     schema <- synapseClient::TableSchema(name=table_name,
             columns=tcols,
             parent=parent_id)
@@ -123,6 +124,7 @@ datatable_to_synapse <-function(parent_id, table_name, dt) {
 }
 
 simple_plots_wiki_string <-function(table_id, group_keys,count_cols,title ){
+
 
     md_string <- paste('${plot?query= select ',group_keys[1],',',group_keys[2],',',count_cols[1],' from ',
         table_id,' GROUP BY ',group_keys[1],',',group_keys[2],'&title=',title,'&type=BAR&barmode=STACK&showlegend=true&fill=',group_keys[2],'}',sep='')
