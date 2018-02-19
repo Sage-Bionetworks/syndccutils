@@ -8,6 +8,7 @@ import re
 import requests
 import argparse
 import getpass
+import json
 import six
 from Bio import Entrez
 from bs4 import BeautifulSoup
@@ -447,6 +448,24 @@ def pubmed(args, syn):
         schema = synapseclient.Schema(name=args.tableName, columns=cols, parent=project)
         table = synapseclient.Table(schema, finalTable)
         table = syn.store(table)
+
+
+def inviteMember(syn, teamId, inviteeId):
+    """
+    Makes a membership invitation via a REST API call. see documentation:
+    http://docs.synapse.org/rest/org/sagebionetworks/repo/model/MembershipInvitation.html
+    params required are teamId, inviteeId or inviteeEmail. Here we use an inviteeId.
+
+    :param syn:
+    :param teamId:
+    :param inviteeId:
+    :return:
+    """
+    invite_body = {'concreteType':'org.sagebionetworks.repo.model.MembershipInvitation', 'teamId':teamId,
+                   'inviteeId':inviteeId}
+    post = syn.restPOST(uri='https://repo-prod.prod.sagebase.org/repo/v1/membershipInvitation',
+                        body=json.dumps(invite_body))
+    return post
 
 
 def buildParser():
