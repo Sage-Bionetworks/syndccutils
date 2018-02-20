@@ -468,6 +468,45 @@ def inviteMember(syn, teamId, inviteeId):
     return post
 
 
+def buildTeam(args, syn):
+    """
+
+    :param args:
+    :param syn:
+    :return:
+    """
+    tableSynId = args.tableId
+    teamId = args.teamId
+
+    table = syn.tableQuery('select * from %s' % tableSynId)
+    df = table.asDataFrame()
+
+    if args.csbc:
+        pattern = 'CSBC'
+    else:
+        pattern = 'PSON'
+
+    df = df.fillna('')
+    subset_cols = [col for col in list(df.columns) if pattern in col]
+    subset_cols.append('RDSWG')
+
+    member_list = [item for sublist in [df[c].tolist() for c in subset_cols] for item in sublist]
+    member_list = filter(None, member_list)
+
+    print(df, member_list)
+
+    if member_list:
+        for member in member_list:
+            if isinstance(member, float):
+                print(member)
+                member = str(member)[:-2]
+                print(member)
+            post_dict = inviteMember(syn, teamId=teamId, inviteeId=member)
+            print(post_dict)
+    else:
+        print('Member list is empty')
+
+
 def buildParser():
     """
 
@@ -498,6 +537,17 @@ def buildParser():
     parser_pubmed.add_argument('--tableId', help='Synapse table id that holds the pubmed scrape info', type=str)
 
     parser_pubmed.set_defaults(func=pubmed)
+
+    parser_buildteam = subparsers.add_parser('buildteam', help='adds team members by synapse profile id to an existing '
+                                                               'team on synape')
+
+    parser_buildteam.add_argument('--tableId', help='Synapse table id containing members profile ids', required=True,
+                               type=str)
+    parser_buildteam.add_argument('--teamId', help='Synapse team id', required=True, type=str)
+    parser_buildteam.add_argument('--csbc', action='store_true', help='If members are in CSBC consortium else it would'
+                                                                   'look for PSON members')
+
+    parser_buildteam.set_defaults(func=buildTeam)
 
     return parser
 
