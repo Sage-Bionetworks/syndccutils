@@ -545,19 +545,19 @@ def buildParser():
 
     parser_pubmed.set_defaults(func=pubmed)
 
-    parser_buildteam = subparsers.add_parser('buildteam', help='adds team members by synapse profile id to an existing '
-                                                               'team on synape')
+    parser_invitemembers = subparsers.add_parser('invitemembers', help='adds team members by synapse profile id or emails to'
+                                                               ' an existing team on synape')
 
-    parser_buildteam.add_argument('--tableId', help='Synapse table id containing members profile ids', required=True,
+    parser_invitemembers.add_argument('--tableId', help='Synapse table id containing members profile ids', required=True,
                                type=str)
-    parser_buildteam.add_argument('--teamId', help='Synapse team id', required=True, type=str)
-    parser_buildteam.add_argument('--message', help='Message to be sent along with invitation. Note: This message '
+    parser_invitemembers.add_argument('--teamId', help='Synapse team id', required=True, type=str)
+    parser_invitemembers.add_argument('--message', help='Message to be sent along with invitation. Note: This message '
                                                     'would be in addition to the standard invite template',
                                   required=False, type=str)
-    parser_buildteam.add_argument('--csbc', action='store_true', help='If members are in CSBC consortium else it would'
+    parser_invitemembers.add_argument('--csbc', action='store_true', help='If members are in CSBC consortium else it would'
                                                                    'look for PSON members')
 
-    parser_buildteam.set_defaults(func=inviteMembers)
+    parser_invitemembers.set_defaults(func=inviteMembers)
 
     return parser
 
