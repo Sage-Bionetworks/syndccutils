@@ -1,0 +1,2516 @@
+[
+  {
+    "name": "assay",
+    "description": "The technology used to generate the data in this file",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "ATACSeq",
+        "description": "Open chromatin regions measured by sequencing DNA after assay for transposase-accessible chromatin (ATAC) treatment",
+        "source": "http://purl.obolibrary.org/obo/OBI_0002039"
+      },
+      {
+        "value": "ChIPSeq",
+        "description": "Chromatin immuno-precipitation followed by sequencing",
+        "source": "http://purl.obolibrary.org/obo/OBI_0000716"
+      },
+      {
+        "value": "FIA-MSMS",
+        "description": "Flow injection analysis - tandem mass spectrometer",
+        "source": "https://www.ncbi.nlm.nih.gov/pubmed/28667829"
+      },
+      {
+        "value": "HI-C",
+        "description": "Chromatin interactions detected by HI-C protocol",
+        "source": "http://www.ebi.ac.uk/efo/EFO_0007693"
+      },
+      {
+        "value": "ISOSeq",
+        "description": "Full isoform sequencing",
+        "source": ""
+      },
+      {
+        "value": "LC-MSMS",
+        "description": "A method where a sample mixture is first separated by liquid chromatography before being ionised and characterised by mass-to-charge ratio and relative abundance using two mass spectrometers in series",
+        "source": "http://purl.obolibrary.org/obo/CHMO_0000701"
+      },
+      {
+        "value": "MIB/MS",
+        "description": "Kinomics assay using multiplexed kinase inhibitor beads and mass spectrometry (MIB/MS)",
+        "source": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3328787/"
+      },
+      {
+        "value": "MRI",
+        "description": "Techniques that uses magnetic fields and radiowaves to form images, typically to investigate the anatomy and physiology of the human body.",
+        "source": "http://edamontology.org/topic_3444"
+      },
+      {
+        "value": "MudPIT",
+        "description": "MudPIT is a method for rapid and large-scale protein identification by multidimensional liquid chromatography associated with tandem mass spectrometry",
+        "source": "http://purl.obolibrary.org/obo/MI_0658"
+      },
+      {
+        "value": "NOMeSeq",
+        "description": "Nucleosome occupancy and DNA methylation profiles measured by chemical treatment of DNA followed by sequencing",
+        "source": ""
+      },
+      {
+        "value": "UPLC-MSMS",
+        "description": "Ultra performance liquid chromatography - tandem mass spectrometer.",
+        "source": "https://www.wur.nl/en/show/Ultra-performance-liquid-chromatography-tandem-mass-spectrometer-UPLCMSMS.htm"
+      },
+      {
+        "value": "atomicForceMicroscopy",
+        "description": "Microscopy which uses a sharp spike (known as a 'tip') mounted on the end of a cantilever to scan the surface of the specimen",
+        "source": "http://purl.obolibrary.org/obo/CHMO_0000113"
+      },
+      {
+        "value": "bisulfiteSeq",
+        "description": "Methylation data captured by sequencing of DNA treated by a bisulfite-based chemical process",
+        "source": "http://purl.obolibrary.org/obo/OBI_0000748"
+      },
+      {
+        "value": "brightfieldMicroscopy",
+        "description": "Microscopy where the specimen is illuminated with light transmitted from a source on the opposite side of the specimen from the objective",
+        "source": "http://purl.obolibrary.org/obo/CHMO_0000104"
+      },
+      {
+        "value": "cellViabilityAssay",
+        "description": "This assay type measures the cellular state of living or dying by measuring an indicator of life or death",
+        "source": "http://www.bioassayontology.org/bao#BAO_0003009"
+      },
+      {
+        "value": "errBisulfiteSeq",
+        "description": "Data for enriched reduced representation bisulfite sequencing data",
+        "source": ""
+      },
+      {
+        "value": "exomeSeq",
+        "description": "Data derived from exome sequencing",
+        "source": "http://purl.obolibrary.org/obo/OBI_0002118"
+      },
+      {
+        "value": "jumpingLibrary",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "lncrnaSeq",
+        "description": "Long non-coding RNA measurements collected from RNA-Seq experiments",
+        "source": ""
+      },
+      {
+        "value": "methylationArray",
+        "description": "Methylation data captured by array technology",
+        "source": "http://purl.obolibrary.org/obo/OBI_0001332"
+      },
+      {
+        "value": "mirnaArray",
+        "description": "microRNA measurements captured by array technology",
+        "source": "http://purl.obolibrary.org/obo/OBI_0001335"
+      },
+      {
+        "value": "mirnaSeq",
+        "description": "Small RNA measurements collected from RNA-Seq experiments",
+        "source": "http://purl.obolibrary.org/obo/OBI_0002112"
+      },
+      {
+        "value": "polymeraseChainReaction",
+        "description": "A rapid technique for in vitro amplification of specific DNA or RNA sequences, allowing small quantities of short sequences to be analyzed without cloning",
+        "source": "http://purl.obolibrary.org/obo/MMO_0000459"
+      },
+      {
+        "value": "questionnaire",
+        "description": "A document with a set of printed or written questions with a choice of answers, devised for the purposes of a survey or statistical study.",
+        "source": "http://purl.obolibrary.org/obo/OBI_0001000"
+      },
+      {
+        "value": "rnaArray",
+        "description": "RNA measurements captured by array technology",
+        "source": "http://purl.obolibrary.org/obo/OBI_0001463"
+      },
+      {
+        "value": "rnaSeq",
+        "description": "RNA Sequencing measurements",
+        "source": "http://purl.obolibrary.org/obo/OBI_0001271"
+      },
+      {
+        "value": "snpArray",
+        "description": "SNP measurements captured by array technology",
+        "source": "http://purl.obolibrary.org/obo/OBI_0001204"
+      },
+      {
+        "value": "targetedGeneSeq",
+        "description": "Sequencing of a small set of genes at a generally greater depth than typical WGS methods",
+        "source": "https://www.illumina.com/techniques/sequencing/dna-sequencing/targeted-resequencing/targeted-panels.html"
+      },
+      {
+        "value": "tractionForceMicroscopy",
+        "description": "An experimental method for determining the tractions on the surface of a biological cell by obtaining measurements of the surrounding displacement field within an in vitro extracellular matrix (ECM)",
+        "source": "https://en.wikipedia.org/wiki/Traction_force_microscopy"
+      },
+      {
+        "value": "westernBlot",
+        "description": "A multistep process in which a mixture of proteins is separated by gel electrophoresis",
+        "source": "http://purl.obolibrary.org/obo/MMO_0000338"
+      },
+      {
+        "value": "wholeGenomeSeq",
+        "description": "Laboratory technique to sequence the complete DNA sequence of an organism's genome at a single time",
+        "source": "http://edamontology.org/topic_3673"
+      }
+    ]
+  },
+  {
+    "name": "cellType",
+    "description": "A cell type is a distinct morphological or functional form of cell.",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "B-lymphocytes",
+        "description": "A lymphocyte of B lineage with the phenotype CD19-positive and surface immunoglobulin-positive.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FCL_0000236"
+      },
+      {
+        "value": "CD138+",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "CD8+ T-Cells",
+        "description": " Is a T lymphocyte (a type of white blood cell) that kills cancer cells, cells that are infected (particularly with viruses), or cells that are damaged in other ways.",
+        "source": "https://en.wikipedia.org/wiki/Cytotoxic_T_cell"
+      },
+      {
+        "value": "GABAergic neurons",
+        "description": "A neuron that uses GABA as a vesicular neurotransmitter.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/zfa/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FZFA_0009276"
+      },
+      {
+        "value": "GLUtamatergic neurons",
+        "description": "Have Glutamate receptors, which are synaptic receptors located primarily on the membranes of neuronal cells. Glutamate (the conjugate base of glutamic acid) is abundant in the human body, but particularly in the nervous system and especially prominent in the human brain.",
+        "source": "https://en.wikipedia.org/wiki/Glutamate_receptor"
+      },
+      {
+        "value": "NeuN+",
+        "description": "Is a neuronal nuclear antigen that is commonly used as a biomarker for neurons and NeuN immunoreactivity has been widely used to identify neurons in tissue culture to measure the neuron(positive)/glia(negative) ratio in brain regions.",
+        "source": "https://en.wikipedia.org/wiki/NeuN"
+      },
+      {
+        "value": "NeuN-",
+        "description": "Is a neuronal nuclear antigen that is commonly used as a biomarker for neurons and NeuN immunoreactivity has been widely used to identify neurons in tissue culture to measure the neuron(positive)/glia(negative) ratio in brain regions.",
+        "source": "https://en.wikipedia.org/wiki/NeuN"
+      },
+      {
+        "value": "SH-SY5Y",
+        "description": "Human neuroblastoma clonal subline of the neuroepithelioma cell line SK-N-SH that had been established in 1970 from the bone marrow biopsy of a 4-year-old girl with metastatic neuroblastoma.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0000793"
+      },
+      {
+        "value": "arachnoid",
+        "description": "An arachnoid mater is a delicate membrane that encloses the spinal cord and brain and lies between the pia mater and dura mater.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0001636"
+      },
+      {
+        "value": "astrocytes",
+        "description": "Astrocytes (from 'star' cells) are irregularly shaped with many long processes, including those with end-feet which form the glial (limiting) membrane and directly and indirectly contribute to the blood-brain barrier.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/cl/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FCL_0000127"
+      },
+      {
+        "value": "epithelial",
+        "description": "Somatic cells that cover the surface of the body and line its cavities.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FCL_0000066"
+      },
+      {
+        "value": "epithelial-like",
+        "description": "In cell morphology, epithelial-like cells are polygonal in shape with more regular dimensions, and grow attached to a substrate in discrete patches.",
+        "source": "https://www.thermofisher.com/us/en/home/references/gibco-cell-culture-basics/cell-morphology.html"
+      },
+      {
+        "value": "fibroblast",
+        "description": "A connective tissue cell which secretes an extracellular matrix rich in collagen and other macromolecules. Flattened and irregular in outline with branching processes; appear fusiform or spindle-shaped.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/cl/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FCL_0000057"
+      },
+      {
+        "value": "iPSC",
+        "description": "Induced pluripotent stem cells (iPS cells or iPSCs) are a type of pluripotent stem cell artificially derived from a non-pluripotent cell.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0004905"
+      },
+      {
+        "value": "iPSC-derived telencephalic organoids",
+        "description": "three-dimensional neural cultures (organoids) derived from induced pluripotent stem cells.",
+        "source": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4519016/"
+      },
+      {
+        "value": "lymphoblast",
+        "description": "Often referred to as a blast cell. Unlike other usages of the suffix -blast a lymphoblast is a further differentiation of a lymphocyte, T- or B-, occasioned by an antigenic stimulus. The lymphoblast usually develops by enlargement of a lymphocyte, active re-entry to the S phase of the cell cycle, mitogenesis and production of much m-RNA and ribosomes.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0000772"
+      },
+      {
+        "value": "macrophages",
+        "description": "A mononuclear phagocyte present in variety of tissues, typically differentiated from monocytes, capable of phagocytosing a variety of extracellular particulate material, including immune complexes, microorganisms, and dead cells.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/cl/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FCL_0000235"
+      },
+      {
+        "value": "meningioma",
+        "description": "A central nervous system cancer tissue that are manifested in the central nervous system and arise from the arachnoid 'cap' cells of the arachnoid villi in the meninges.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_3565"
+      },
+      {
+        "value": "microglia",
+        "description": "The small, non-neural, interstitial cells of mesodermal origin that form part of the supporting structure of the central nervous system.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0000078"
+      },
+      {
+        "value": "monocytes",
+        "description": "Myeloid mononuclear recirculating leukocyte that can act as a precursor of tissue macrophages, osteoclasts and some populations of tissue dendritic cells.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FCL_0000576"
+      },
+      {
+        "value": "oligodendrocyte",
+        "description": "A class of large neuroglial (macroglial) cells in the central nervous system. Form the insulating myelin sheath of axons in the central nervous system.",
+        "source": "http://purl.obolibrary.org/obo/CL_0000128"
+      },
+      {
+        "value": "polygonal",
+        "description": "A polygonal face is a polygon bounded by a circuit of polygon edges, and includes the flat (plane) region inside the boundary.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/sio/terms?iri=http%3A%2F%2Fsemanticscience.org%2Fresource%2FSIO_000503"
+      },
+      {
+        "value": "round",
+        "description": "A phenotype observation at the level of the cell shape where the cell is round",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/cmpo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fcmpo%2FCMPO_0000118"
+      },
+      {
+        "value": "schwann",
+        "description": "Schwann cells are a variety of glial cell that keep peripheral nerve fibres (both myelinated and unmyelinated) alive.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0001220"
+      },
+      {
+        "value": "schwannoma",
+        "description": "A neoplasm that arises from SCHWANN CELLS of the cranial, peripheral, and autonomic nerves.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000693"
+      }
+    ]
+  },
+  {
+    "name": "dataSubtype",
+    "description": "Further qualification of dataType, which may be used to indicate the state of processing of the data, aggregation of the data, or presence of metadata.",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "dataMatrix",
+        "description": "A file of data containing multiple values for multiple samples.",
+        "source": ""
+      },
+      {
+        "value": "metadata",
+        "description": "A file of clinical, technical, or other parameters that describe a dataset.",
+        "source": ""
+      },
+      {
+        "value": "processed",
+        "description": "A file of data generated from running one or more bioinformatics methods on a raw file.",
+        "source": ""
+      },
+      {
+        "value": "raw",
+        "description": "A data file produced by an instrument, or one with very little subsequent processing.",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "dataType",
+    "description": "Types of input/output data in bioinformatics pipelines",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "cellularPhysiology",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "chromatinActivity",
+        "description": "Chromatin activity that allow access of condensed genomic DNA and potentially control gene expression.",
+        "source": "https://en.wikipedia.org/wiki/Chromatin_remodeling"
+      },
+      {
+        "value": "drugScreen",
+        "description": "Information on drug sensitivity and molecular markers of drug response",
+        "source": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3531057/"
+      },
+      {
+        "value": "geneExpression",
+        "description": "The analysis of levels and patterns of synthesis of gene products (proteins and functional RNA) including interpretation in functional terms of gene expression data.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/edam/terms?iri=http%3A%2F%2Fedamontology.org%2Ftopic_0203"
+      },
+      {
+        "value": "genomicVariants",
+        "description": "Genomic alterations, including single nucleotide polymorphisms, short indels and structural variants, in a genome sequence.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/edam/terms?iri=http%3A%2F%2Fedamontology.org%2Foperation_3227"
+      },
+      {
+        "value": "image",
+        "description": "Biological or biomedical data that has been rendered into an image.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/edam/terms?iri=http%3A%2F%2Fedamontology.org%2Fdata_2968"
+      },
+      {
+        "value": "isoformExpression",
+        "description": "Expression of protien isoforms formed from alternative splicings or other post-translational modifications of a single gene through RNA splicing mechanisms.",
+        "source": "https://en.wikipedia.org/wiki/Protein_isoform"
+      },
+      {
+        "value": "kinomics",
+        "description": "Kinomics is the study of protein kinases and protein kinase signaling.",
+        "source": "http://www.kinomecore.com/what-is-kinomics/"
+      },
+      {
+        "value": "metabolomics",
+        "description": "The systematic study of metabolites, the chemical processes they are involved, and the chemical fingerprints of specific cellular processes in a whole cell, tissue, organ or organism.",
+        "source": "http://edamontology.org/topic_3172"
+      },
+      {
+        "value": "protein-protein interaction network",
+        "description": "A data set that represents a set of physical interactions between proteins",
+        "source": "http://identifiers.org/mamo/MAMO_0000202"
+      },
+      {
+        "value": "proteomics",
+        "description": "Protein and peptide identification, especially in the study of whole proteomes of organisms.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/edam/terms?iri=http%3A%2F%2Fedamontology.org%2Ftopic_0121"
+      },
+      {
+        "value": "surveyData",
+        "description": "A data set that contains the outcome of a survey.",
+        "source": "http://purl.obolibrary.org/obo/OMIABIS_0000060"
+      }
+    ]
+  },
+  {
+    "name": "diagnosis",
+    "description": "A diagnosis is the result of a medical investigation to identify a disorder from its signs and symptoms.",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "Affective Disorder",
+        "description": "Change in mood is the main underlying feature of these disorders.",
+        "source": "Sage Bionetworks"
+      },
+      {
+        "value": "Alzheimer Disease",
+        "description": "(AD) - Alzheimer disease is a neurodegenerative disorder characterized by progressive dementia, loss of cognitive abilities, and deposition of fibrillar amyloid proteins as intraneuronal neurofibrillary tangles, extracellular amyloid plaques and vascular amyloid deposits.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/cco/terms?iri=http%3A%2F%2Fidentifiers.org%2Fomim%2F104300"
+      },
+      {
+        "value": "Autism Spectrum Disorder",
+        "description": "Wide continuum of associated cognitive and neurobehavioral disorders, including, but not limited to, three core-defining features: impairments in socialization, impairments in verbal and nonverbal communication, and restricted and repetitive patterns of behaviors.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0003756"
+      },
+      {
+        "value": "Bipolar Disorder",
+        "description": "A mood disorder formerly characterised by alternating periods of mania and depression (and in some cases rapid cycling, mixed states, and psychotic symptoms).",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/nbo/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FNBO_0000258"
+      },
+      {
+        "value": "Brain Cancer",
+        "description": "A central nervous system cancer that is characterized by the growth of abnormal cells in the tissues of the brain.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_1319"
+      },
+      {
+        "value": "Breast Cancer",
+        "description": "(BC) - A common malignancy originating from breast epithelial tissue.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/cco/terms?iri=http%3A%2F%2Fidentifiers.org%2Fomim%2F114480"
+      },
+      {
+        "value": "Colon Cancer",
+        "description": "A colorectal cancer that is located_in the colon.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_219"
+      },
+      {
+        "value": "Control",
+        "description": "The act of directing or determining; regulation or maintenance of a function or action; a relation of constraint of one entity (thing or person or group) by another.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0001461"
+      },
+      {
+        "value": "Fibrocystic Breast Disease",
+        "description": "breast fibrocystic disease is a benign mammary displasia characterised by breast discomfort and 'lumpiness'.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0003014"
+      },
+      {
+        "value": "Lung Cancer",
+        "description": "A respiratory system cancer that is located_in the lung.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_1324"
+      },
+      {
+        "value": "Neurofibromatosis 1",
+        "description": "(NF1) - A disease characterized by patches of skin pigmentation (cafe-au-lait spots), Lisch nodules of the iris, tumors in the peripheral nervous system and fibromatous skin tumors. Individuals with the disorder have increased susceptibility to the development of benign and malignant tumors.",
+        "source": ""
+      },
+      {
+        "value": "Neurofibromatosis 2",
+        "description": "(NF2) - Genetic disorder characterized by bilateral vestibular schwannomas (formerly called acoustic neuromas), schwannomas of other cranial and peripheral nerves, meningiomas, and ependymomas. It is inherited in an autosomal dominant fashion with full penetrance.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/cco/terms?iri=http%3A%2F%2Fidentifiers.org%2Fomim%2F101000"
+      },
+      {
+        "value": "Not Applicable",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "Ovary Cancer",
+        "description": "An ovarian cancer that is derives_from ovarian surface epithelium.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_2152"
+      },
+      {
+        "value": "Pancreatic Cancer",
+        "description": "An endocrine gland cancer located_in the pancreas.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_1793"
+      },
+      {
+        "value": "Prostate Cancer",
+        "description": "A male reproductive organ cancer that is located_in the prostate.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_10283"
+      },
+      {
+        "value": "Schizophrenia",
+        "description": "A severe emotional disorder of psychotic depth characteristically marked by a retreat from reality with delusion formation, HALLUCINATIONS, emotional disharmony, and regressive behavior.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000692"
+      },
+      {
+        "value": "Skin Cancer",
+        "description": "An integumentary system cancer located_in the skin that is the uncontrolled growth of abnormal skin cells.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_4159"
+      },
+      {
+        "value": "Tourette Syndrome",
+        "description": "Neurologic disorder manifested particularly by motor and vocal tics and associated with behavioral abnormalities. ",
+        "source": "http://identifiers.org/omim/137580"
+      }
+    ]
+  },
+  {
+    "name": "individualID",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "individualIdSource",
+    "description": "Database or repository to which individual ID maps",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "MSSM",
+        "description": "Mount Sinai NIH Brain and Tissue Repository",
+        "source": "http://icahn.mssm.edu/research/labs/neuropathology-and-brain-banking"
+      },
+      {
+        "value": "NIMH-HBCC",
+        "description": "The NIH Human Brain Collection Core",
+        "source": "https://www.nimh.nih.gov/labs-at-nimh/research-areas/research-support-services/hbcc/human-brain-collection-core-hbcc.shtml"
+      },
+      {
+        "value": "Penn",
+        "description": "The University of Pennsylvania Alzheimer's Disease Core Center (ADCC), Penn Udall Center and the Center for Neurodegenerative Disease Research (CNDR)",
+        "source": "http://www.med.upenn.edu/cndr/biosamples-brainbank.html"
+      },
+      {
+        "value": "Pitt",
+        "description": "The University of Pittsburgh NIH NeuroBioBank Brain and Tissue Repository",
+        "source": "https://neurobiobank.nih.gov/"
+      }
+    ]
+  },
+  {
+    "name": "isCellLine",
+    "description": "Boolean flag indicating whether or not sample source is a cell line",
+    "columnType": "BOOLEAN",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": false,
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": true,
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "isMultiIndividual",
+    "description": "Boolean flag indicating whether or not a file has data for multiple individuals",
+    "columnType": "BOOLEAN",
+    "maximumSize": "",
+    "enumValues": [
+      {
+        "value": false,
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": true,
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "isMultiSpecimen",
+    "description": "Boolean flag indicating whether or not a file has data for multiple specimens",
+    "columnType": "BOOLEAN",
+    "maximumSize": "",
+    "enumValues": [
+      {
+        "value": false,
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": true,
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "isPrimaryCell",
+    "description": "Boolean flag indicating whether or not cellType is primary",
+    "columnType": "BOOLEAN",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": false,
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": true,
+        "description": "A cell taken directly from a living organism, which is not immortalized",
+        "source": "http://purl.obolibrary.org/obo/BTO_0001413"
+      }
+    ]
+  },
+  {
+    "name": "organ",
+    "description": "The organ from which the sample is derived",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "blood",
+        "description": "The fluid that circulates in the heart, arteries, capillaries, and veins of a vertebrate animal carrying nourishment and oxygen to and bringing away waste products from all parts of the body.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000089"
+      },
+      {
+        "value": "bone marrow",
+        "description": "The soft, fatty, vascular tissue that fills most bone cavities and is the source of red blood cells and many white blood cells.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000141"
+      },
+      {
+        "value": "brain",
+        "description": "The portion of the vertebrate central nervous system that constitutes the organ of thought and neural coordination.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000142"
+      },
+      {
+        "value": "breast",
+        "description": "The fore or ventral part of the body between the neck and the abdomen.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000149"
+      },
+      {
+        "value": "colon",
+        "description": "The part of the large intestine that extends from the cecum to the rectum.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000269"
+      },
+      {
+        "value": "lung",
+        "description": "One of the usually paired compound saccular thoracic organs that constitute the basic respiratory organ of air-breathing vertebrates.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000763"
+      },
+      {
+        "value": "nerves",
+        "description": "Any of the filamentous bands of nervous tissue that connect parts of the nervous system with the other organs, conduct nervous impulses, and are made up of axons and dendrites together with protective and supportive structures.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000925"
+      },
+      {
+        "value": "ovary",
+        "description": "One of the typically paired essential female reproductive organs that produce eggs and in vertebrates female sex hormones.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000975"
+      },
+      {
+        "value": "pancreas",
+        "description": "A large lobulated gland of vertebrates that secretes digestive enzymes and the hormones insulin and glucagon.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0000988"
+      },
+      {
+        "value": "prostate",
+        "description": "Lobular organ the parenchyma of which has as its parts glandular acini which are continuous with the prostatic part of the urethra.",
+        "source": "http://purl.obolibrary.org/obo/FMA_9600"
+      },
+      {
+        "value": "skin",
+        "description": "The integument of an animal (as a fur-bearing mammal or a bird) separated from the body usually with its hair or feathers.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0001253"
+      },
+      {
+        "value": "spleen",
+        "description": "A highly vascular ductless organ that is located in the left abdominal region near the stomach or intestine of most vertebrates and is concerned with final destruction of red blood cells, filtration and storage of blood, and production of lymphocytes.",
+        "source": "http://purl.obolibrary.org/obo/BTO_0001281"
+      }
+    ]
+  },
+  {
+    "name": "platform",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "Affy5.0",
+        "description": "Affymetrix Genome-Wide Human SNP 5.0 Array",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL6804"
+      },
+      {
+        "value": "Affy6.0",
+        "description": "Affymetrix Genome-Wide Human SNP 6.0 Array",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL6801"
+      },
+      {
+        "value": "AffymetrixU133AB",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "AffymetrixU133Plus2",
+        "description": "Affymetrix Human Genome U133 Plus 2.0 Array",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL570"
+      },
+      {
+        "value": "Agilent44Karray",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "GAIIx",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "HiSeq2000",
+        "description": "Illumina HiSeq 2000 (Homo sapiens)",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL11154"
+      },
+      {
+        "value": "HiSeq2500",
+        "description": "Illumina HiSeq 2500 (Homo sapiens)",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL16791"
+      },
+      {
+        "value": "HiSeq4000",
+        "description": "Illumina HiSeq 4000 (Homo sapiens)",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL20301"
+      },
+      {
+        "value": "HiSeqX",
+        "description": "Illumina HiSeq X Platform for whole-genome sequencing",
+        "source": "https://www.illumina.com/systems/sequencing-platforms/hiseq-x.html"
+      },
+      {
+        "value": "IlluminaHumanHT-12_V3_0_R1",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "IlluminaHumanHap300",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "IlluminaHumanMethylation450",
+        "description": "Illumina HumanMethylation450 BeadChip ",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL13534"
+      },
+      {
+        "value": "IlluminaWholeGenomeDASL",
+        "description": "Illumina Human Whole-Genome DASL HT",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL13369"
+      },
+      {
+        "value": "Illumina_1M",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "Illumina_HumanOmni1-Quadv1.0",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "Illumina_Omni2pt5M",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "Illumina_Omni5M",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "Illumina_h650",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "Infinium HumanOmniExpressExome",
+        "description": "Infinium HumanOmniExpressExome BeadChip",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL18224"
+      },
+      {
+        "value": "LTQOrbitrapXL",
+        "description": "LTQ Orbitrap XL Hybrid Ion Trap-Orbitrap Mass Spectrometer",
+        "source": "https://www.thermofisher.com/order/catalog/product/IQLAAEGAAPFADBMAOK"
+      },
+      {
+        "value": "MiSeq",
+        "description": "Illumina MiSeq (Homo sapiens)",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL15520"
+      },
+      {
+        "value": "NanostringnCounter",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "NextSeq500",
+        "description": "Illumina NextSeq 500 (Homo sapiens)",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL18573"
+      },
+      {
+        "value": "PacBioRSII",
+        "description": "PacBio RS II (Homo sapiens)",
+        "source": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL21311"
+      },
+      {
+        "value": "Perlegen300Karray",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "PsychChip",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "SequenomMultiplex",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "confocalImaging",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "sex",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "female",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "male",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "species",
+    "description": "The name of a species (typically a taxonomic group) of organism.",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "Drosophila melanogaster",
+        "description": "Drosophila melanogaster with taxonomy ID: 7227 and Genbank common name: fruit fly",
+        "source": "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=7227&lvl=3&p=has_linkout&p=blast_url&p=genome_blast&p=mapview&lin=f&keep=1&srchmode=1&unlock"
+      },
+      {
+        "value": "Human",
+        "description": "Homo sapiens with taxonomy ID: 9606 and Genbank common name: human",
+        "source": "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=9606&lvl=3&lin=f&keep=1&srchmode=1&unlock"
+      },
+      {
+        "value": "Mouse",
+        "description": "Mus musculus with taxonomy ID: 10090 and Genbank common name: house mouse",
+        "source": "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=10090&lvl=3&lin=f&keep=1&srchmode=1&unlock"
+      },
+      {
+        "value": "Rat",
+        "description": "Rattus with taxonomy ID: 10114 and inherited blast name: rodents",
+        "source": "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=10114&lvl=3&lin=f&keep=1&srchmode=1&unlock"
+      },
+      {
+        "value": "Rhesus macaque",
+        "description": "Macaca mulatta with taxonomy ID: 9544 and Genbank common name: Rhesus monkey",
+        "source": "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=9544&lvl=3&p=has_linkout&p=blast_url&p=genome_blast&p=mapview&lin=f&keep=1&srchmode=1&unlock"
+      }
+    ]
+  },
+  {
+    "name": "specimenID",
+    "description": "Identifying string linked to a particular sample or specimen",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "specimenIdSource",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "tissue",
+    "description": "A tissue is a mereologically maximal collection of cells that together perform physiological function.",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "Not Applicable",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "amygdala",
+        "description": "The one of the four basal ganglia in each cerebral hemisphere that is part of the limbic system and consists of an almond-shaped mass of gray matter in the anterior extremity of the temporal lobe.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0001042"
+      },
+      {
+        "value": "amygdaloid complex",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "anterior cingulate cortex",
+        "description": "That portion of the cingulate cortex which is located within the frontal lobe (the remainder being in the parietal lobe).",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0004249"
+      },
+      {
+        "value": "blood",
+        "description": "A fluid that is composed of blood plasma and erythrocytes.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0000178"
+      },
+      {
+        "value": "caudate nucleus",
+        "description": "Subcortical nucleus of telecephalic origin consisting of an elongated gray mass lying lateral to and bordering the lateral ventricle.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0001873"
+      },
+      {
+        "value": "cerebellar cortex",
+        "description": "The superficial gray matter of the cerebellum. It consists of three layers, the stratum moleculare, stratum granulosum, and stratum purkinjense.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0000043"
+      },
+      {
+        "value": "cerebellum",
+        "description": "Part of the metencephalon that lies in the posterior cranial fossa behind the brain stem.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002037"
+      },
+      {
+        "value": "cerebral cortex",
+        "description": "The thin layer of gray matter on the surface of the cerebral hemisphere that develops from the telencephalon.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0000956"
+      },
+      {
+        "value": "dorsolateral prefrontal cortex",
+        "description": "Broadly-defined, consists of the lateral portions of Brodmann areas 9 - 12, of areas 45, 46, and the superior part of area 47.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0009834"
+      },
+      {
+        "value": "forebrain",
+        "description": "The most anterior region the brain including both the telencephalon and diencephalon.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0001890"
+      },
+      {
+        "value": "frontal lobe",
+        "description": "Frontal lobe is the anterior-most of five lobes of the cerebral hemisphere. It is bounded by the central sulcus on its posterior border and by the longitudinal cerebral fissure on its medial border.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0016525"
+      },
+      {
+        "value": "frontal pole",
+        "description": "Component of the frontal lobe. The rostral and caudal boundaries of the frontal pole are the superior frontal gyrus and the rostral division of the middle frontal gyrus respectively (Christine Fennama-Notestine).",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002795"
+      },
+      {
+        "value": "hippocampus",
+        "description": "A curved elongated ridge that extends over the floor of the descending horn of each lateral ventricle of the brain and consists of gray matter covered on the ventricular surface with white matter.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0000601"
+      },
+      {
+        "value": "inferior frontal gyrus",
+        "description": "Component of the frontal lobe, lateral aspect. The rostral boundary is the first appearance of the inferior frontal sulcus whereas the caudal boundary is the precentral gyrus. The medial and lateral boundaries are the lateral bank of the inferior frontal sulcus and the medial bank of the lateral orbital sulcus and/or the circular insular sulcus respectively (Christein Fennema-Notestine).",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002998"
+      },
+      {
+        "value": "inferior temporal gyrus",
+        "description": "Component of the temporal lobe, lateral aspect. The rostral boundary is the rostral extent of the inferior temporal sulcus whereas the caudal boundary is designated as the temporo-occipital incisure on the cortical surface.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002751"
+      },
+      {
+        "value": "inferolateral temporal cortex",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "medial frontal cortex",
+        "description": "Component of the orbtial frontal cortex. The rostral boundary is the first slice where the medial orbital gyrus became visible whereas the caudal boundary is the disappearance of the medial orbital gyrus/gyrus rectus.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0022352"
+      },
+      {
+        "value": "mediodorsal nucleus of thalamus",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "meninges",
+        "description": "The three thin layers of tissue that cover and protect the brain and spinal cord.",
+        "source": "https://www.ncbi.nlm.nih.gov/pubmedhealth/PMHT0024758/"
+      },
+      {
+        "value": "middle temporal gyrus",
+        "description": "Component of the temporal lobe, lateral aspect. The rostral boundary is the rostral extent of the superior temporal sulcus whereas the caudal boundary is the temporo-occipital incisure on the cortical surface.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002771"
+      },
+      {
+        "value": "nerve tissue",
+        "description": "Portion of tissue in the nervous system which consists of neurons and glial cells, and may also contain parts of the vasculature.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0003714"
+      },
+      {
+        "value": "nucleus accumbens",
+        "description": "A region of the brain consisting of a collection of neurons located in the forebrain ventral to the caudate and putamen (caudoputamen in rodent).",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0001882"
+      },
+      {
+        "value": "occipital visual cortex",
+        "description": "The area of the occipital lobe of the cerebral cortex concerned with vision.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0001857"
+      },
+      {
+        "value": "orbitofrontal cortex",
+        "description": "The region of the cerebral cortex covering the basal surface of the frontal lobes.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0004167"
+      },
+      {
+        "value": "parahippocampal gyrus",
+        "description": "A long convolution on the medial surface of the temporal lobe, forming the lower part of the fornicate gyrus, extending from behind the splenium corporis callosi forward along the dentate gyrus of the hippocampus from which it is demarcated by the hippocampal fissure.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0004380"
+      },
+      {
+        "value": "posterior cingulate cortex",
+        "description": "Component of the cingulate cortex. The rostral and caudal extent were the caudal anterior and the isthmus divisions of the cingulate cortex respectively.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0022353"
+      },
+      {
+        "value": "posterior superior temporal cortex",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "posteroinferior parietal cortex",
+        "description": "Gray matter of the parietal region of the neocortex, located in the parietal lobe of gyrencephalic animals.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0016530"
+      },
+      {
+        "value": "precentral gyrus",
+        "description": "Component of the frontal lobe. The appearance and disappearance of the central sulcus is the rostral and caudal boundaries of the precentral gyrus respectively.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002703"
+      },
+      {
+        "value": "prefrontal cortex",
+        "description": "The prefrontal cortex is the anterior part of the frontal lobes of the brain, lying in front of the motor and premotor areas.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0002807"
+      },
+      {
+        "value": "primary auditory cortex",
+        "description": "The part of the auditory cortex that is located on the superior temporal gyrus in the temporal lobe and receives point-to-point input from the ventral division of the medial geniculate complex.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0034751"
+      },
+      {
+        "value": "primary motor cortex",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "primary somatosensory cortex",
+        "description": "The part of the cerebral cortex that receives projections from the motor thalamus and which projects to motor neurons in the brainstem and spinal cord.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0001384"
+      },
+      {
+        "value": "primary tumor",
+        "description": "A primary tumor is the tumor at the initial site of cancer, not where the cancer may have spread or metastasized, called the secondary tumor.",
+        "source": "https://cancergenome.nih.gov/cancersselected/biospeccriteria"
+      },
+      {
+        "value": "primary visual cortex",
+        "description": "A subdivision of the cytoarchitecturally defined occipital region of cerebral cortex in the human.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002436"
+      },
+      {
+        "value": "putamen",
+        "description": "Subcortical nucleus of telencephalic , which together with the caudate nucleus, forms the striatum.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0001874"
+      },
+      {
+        "value": "serum",
+        "description": "Liquid derived from blood plasma that has clotting factors removed.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0001977"
+      },
+      {
+        "value": "splenocyte",
+        "description": "Any leukocyte that is part of a spleen.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/cl/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FCL_2000074"
+      },
+      {
+        "value": "striatum",
+        "description": "A region of the forebrain consisting of the caudate nucleus, putamen and fundus striati.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002435"
+      },
+      {
+        "value": "superior parietal lobe",
+        "description": "A superficial feature of the parietal lobe that extends from the dorsal surface of the superior parietal lobule across the margin of the parietal lobe into the precuneus.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0026724"
+      },
+      {
+        "value": "superior temporal gyrus",
+        "description": "Component of the temporal lobe, lateral aspect. The rostral boundary is the rostral extent of the ssuperior temporal sulcus. The caudal boundary is the cauday portion of the superior temporal gyrus (posterior to becoming continuous with the supramarginal gyrus).",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002769"
+      },
+      {
+        "value": "temporal cortex",
+        "description": "Gray matter of the temporal region of the neocortex, located in the temporal lobe in gyrencephalic animals.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0016538"
+      },
+      {
+        "value": "temporal pole",
+        "description": "Anterior component of the temporal lobe (rostral boundary) extends caudally to the entorhinal cortex.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBERON_0002576"
+      },
+      {
+        "value": "ventrolateral prefrontal cortex",
+        "description": "Is part of the prefrontal cortex, located on the inferior frontal gyrus, bounded superiorly by the inferior frontal sulcus and inferiorly by the lateral sulcus.",
+        "source": "https://en.wikipedia.org/wiki/Ventrolateral_prefrontal_cortex"
+      }
+    ]
+  },
+  {
+    "name": "cellSubType",
+    "description": "This term is to be used when cell type is not specific enough, such as certain classes of T cells",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "experimentalCondition",
+    "description": "This describes the condition under which the data were collected, designed to be free form, extra things that do not fit in pre-defined terms",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "experimentalTimePoint",
+    "description": "Number describing time point at which data was collected",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "genePerturbationTechnology",
+    "description": "Technology used to perform gene perturbation",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "CRE Recombinase",
+        "description": "CRE Recombinase catalyses site-specific recombination between two 34 base pair loxp sites and maintains the phage genome as a monomeric unit-copy plasmid in the lysogenic state.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C17285"
+      },
+      {
+        "value": "CRISPR",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "RNAi",
+        "description": "High throughput sample analysis of RNAi molecules for potential application in gene knockdown or gene silencing of target genes",
+        "source": "http://purl.obolibrary.org/obo/ERO_0001688"
+      }
+    ]
+  },
+  {
+    "name": "genePerturbationType",
+    "description": "Specific way in which a single gene was perturbed in a sample",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "knockdown",
+        "description": "Gene knockdown refers to techniques by which the expression of one or more of an organism's genes is reduced, either through genetic modification (a change in the DNA of one of the organism's chromosomes) or by treatment with a reagent such as a short DNA or RNA oligonucleotide with a sequence complementary to either an mRNA transcript or a gene.",
+        "source": "http://www.bioassayontology.org/bao#BAO_0002433"
+      },
+      {
+        "value": "knockout",
+        "description": "A gene knockout is a genetic technique in which an organism is engineered to carry genes that have been made inoperative (have been 'knocked out' of the organism).",
+        "source": "http://www.bioassayontology.org/bao#BAO_0002441"
+      },
+      {
+        "value": "overexpression",
+        "description": "Gene overexpression refers to genetic techniques in which an organism or cell line is engineered to express increased levels of a gene.",
+        "source": "http://www.bioassayontology.org/bao#BAO_0002442"
+      }
+    ]
+  },
+  {
+    "name": "genePerturbed",
+    "description": "In the case of gene modulation, this describes the gene or genes that were modulated",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "modelSystem",
+    "description": "Name of model system",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "EVOS_FL_AUTO",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "timePointUnit",
+    "description": "For timed experiments this represents the unit of time measured",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "days",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "hours",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "transplantationDonorSpecies",
+    "description": "Species from which donor tissue originated",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "Human",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "Mouse",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "transplantationDonorTissue",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "transplantationRecipientTissue",
+    "description": "In the case of a transplate, this describes the transplant destination",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "transplantationType",
+    "description": "Type of transplantation involved in the experiment, derived from MESH",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "allograft",
+        "description": "Tissues, cells, or organs transplanted between genetically different individuals of the same species",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/68064591"
+      },
+      {
+        "value": "autograft",
+        "description": "Transplant comprised of an individual's own tissue, transferred from one part of the body to another.",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/68064592"
+      },
+      {
+        "value": "isograft",
+        "description": "Tissues, cells or organs transplanted between genetically identical individuals",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/68064596"
+      },
+      {
+        "value": "xenograft",
+        "description": "Tissues, cells or organs transplanted between animals of different species",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/68064593"
+      }
+    ]
+  },
+  {
+    "name": "tumorType",
+    "description": "The type of cells that carcinoma arises from.",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "Adenocarcinoma",
+        "description": "A common cancer characterized by the presence of malignant glandular cells. Morphologically, adenocarcinomas are classified according to the growth pattern (e.g., papillary, alveolar) or according to the secreting product (e.g., mucinous, serous).",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/mp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FNCIT_C2852"
+      },
+      {
+        "value": "Anaplastic Astrocytoma",
+        "description": "A diffusely infiltrating, WHO grade III astrocytoma with focal or dispersed anaplasia, and a marked proliferative potential. It may arise from a low-grade astrocytoma, but it can also be diagnosed at first biopsy, without indication of a less malignant precursor lesion. It has an intrinsic tendency for malignant progression to glioblastoma.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0002499"
+      },
+      {
+        "value": "Carcinoma",
+        "description": "A cell type cancer that has_material_basis_in abnormally proliferating cells derives_from epithelial cells.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/doid/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FDOID_305"
+      },
+      {
+        "value": "Diffuse Astrocytoma",
+        "description": "Also called Low-Grade or Astrocytoma Grade II is a subtype of glial tumor of the brain or spinal cord showing astrocytic differentiation.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000272"
+      },
+      {
+        "value": "Ductal Carcinoma",
+        "description": "Invasive ductal carcinoma (IDC), an infiltrating, malignant and abnormal proliferation of neoplastic cells in the breast tissue, or ductal carcinoma in situ (DCIS), a noninvasive, possibly malignant, neoplasm that is still confined to the milk ducts (lactiferous ducts), where breast cancer most often originates.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/bto/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FBTO_0004851"
+      },
+      {
+        "value": "Glioblastoma",
+        "description": "Develop primarily through increasing anaplasia of well differentiated gliomas, mainly astrocytomas or oligodendrogliomas. Typically large and contain cells of different sizes with irrregular nuclei and atypical mitotic figures.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/mpath/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMPATH_564"
+      },
+      {
+        "value": "Low Grade Glioma",
+        "description": "Low grade gliomas are brain tumors that come from two different types of brain cells known as astrocytes and oligodendrocytes.",
+        "source": "https://www.urmc.rochester.edu/neurosurgery/specialties/neurooncology/conditions/low-grade-glioma.aspx"
+      },
+      {
+        "value": "Malignant Peripheral Nerve Sheath Tumor",
+        "description": "The tumors usually develop along peripheral or cranial nerves and are a central feature of NEUROFIBROMATOSIS 1, where they may occur intracranially or involve spinal roots.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000622"
+      },
+      {
+        "value": "Melanoma",
+        "description": "A malignant, usually aggressive tumor composed of atypical, neoplastic melanocytes.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/mp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FNCIT_C3224"
+      },
+      {
+        "value": "Meningioma",
+        "description": "A generally slow growing tumor attached to the dura mater. It is composed of neoplastic meningothelial (arachnoidal) cells.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/mp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FNCIT_C3230"
+      },
+      {
+        "value": "Myeloma",
+        "description": "A bone marrow cancer that is formed of any one of the bone marrow cells belonging to the granulocytic (neutrophil, eosinophil, basophil), monocytic/macrophage, erythroid, megakaryocytic and mast cell lineages.",
+        "source": "http://purl.obolibrary.org/obo/DOID_0070004"
+      },
+      {
+        "value": "Neurofibroma Atypical",
+        "description": "An intraneural or extraneural neoplasm arising from nerve tissues and neural sheaths that does not belong to a known subtype.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000622"
+      },
+      {
+        "value": "Neurofibroma Cutaneous",
+        "description": "An intraneural or extraneural neoplasm arising from nerve tissues and neural sheaths of skin.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000622"
+      },
+      {
+        "value": "Neurofibroma Plexiform",
+        "description": "Plexiform neurofibromas are larger, more extensive tumors that grow from nerves anywhere in the body.",
+        "source": "https://nfcenter.wustl.edu/what-is-nf/neurofibromatosis-type-1/nerve-tumors/"
+      },
+      {
+        "value": "Neurofibroma Subcutaneous",
+        "description": "An intraneural neoplasm arising from nerve tissues and neural sheaths laying under the skin.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000622"
+      },
+      {
+        "value": "Not Applicable",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "Optic Nerve Glioma",
+        "description": "Optic pathway glioma (OPG) is a benign tumor that develop along the optic nerve (chiasm, tracts, and radiations) characterized by impairment or loss of vision and may be accompanied by diencephalic symptoms such as reduced growth and alteration in sleeping patterns. OPG are often linked to neurofibromatosis type 1.",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/ordo/terms?iri=http%3A%2F%2Fwww.orpha.net%2FORDO%2FOrphanet_2086"
+      },
+      {
+        "value": "Schwannoma",
+        "description": "A neoplasm that arises from SCHWANN CELLS of the cranial, peripheral, and autonomic nerves. ",
+        "source": "https://www.ebi.ac.uk/ols/ontologies/efo/terms?iri=http%3A%2F%2Fwww.ebi.ac.uk%2Fefo%2FEFO_0000693"
+      }
+    ]
+  },
+  {
+    "name": "compoundDose",
+    "description": "",
+    "columnType": "DOUBLE",
+    "maximumSize": "",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "compoundDoseUnit",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "compoundName",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "A-1210477",
+        "description": "An MCL-1 inhibitor.",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/2015744"
+      },
+      {
+        "value": "ABBVIE1",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE2",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE3",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE4",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE5",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE6",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE7",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE8",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABT-199",
+        "description": "An orally bioavailable, selective small molecule inhibitor of the anti-apoptotic protein Bcl-2, with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C103147"
+      },
+      {
+        "value": "BI2536",
+        "description": "https://www.ncbi.nlm.nih.gov/mesh/67518477",
+        "source": "Polo-like kinase 1 inhibitor."
+      },
+      {
+        "value": "BORTEZOMIB",
+        "description": "A dipeptide boronic acid analogue with antineoplastic activity. Bortezomib reversibly inhibits the 26S proteasome, a large protease complex that degrades ubiquinated proteins.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C1851"
+      },
+      {
+        "value": "CARFILZOMIB",
+        "description": "An epoxomicin derivate with potential antineoplastic activity. Carfilzomib irreversibly binds to and inhibits the chymotrypsin-like activity of the 20S catalytic core subunit of the proteasome, a protease complex responsible for degrading a large variety of cellular proteins.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C52196"
+      },
+      {
+        "value": "CPD22",
+        "description": "A novel ILK inhibitor, which exhibit[s] high in vitro potency against a panel of prostate and breast cancer cell lines.",
+        "source": "https://www.ncbi.nlm.nih.gov/pubmed/21823616"
+      },
+      {
+        "value": "CRIZOTINIB",
+        "description": "An orally available aminopyridine-based inhibitor of the receptor tyrosine kinase anaplastic lymphoma kinase (ALK) and the c-Met/hepatocyte growth factor receptor (HGFR) with antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C74061"
+      },
+      {
+        "value": "CURCUMIN",
+        "description": "A phytopolylphenol pigment isolated from the plant Curcuma longa, commonly known as turmeric, with a variety of pharmacologic properties.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C401"
+      },
+      {
+        "value": "DARATUMUMAB",
+        "description": "A fully human monoclonal antibody directed against the cell surface glycoprotein CD-38 with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C74007"
+      },
+      {
+        "value": "DEFACTINIB",
+        "description": "An orally bioavailable, small-molecule focal adhesion kinase (FAK) inhibitor with potential antiangiogenic and antineoplastic activities.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C79809"
+      },
+      {
+        "value": "DEXAMETHASONE",
+        "description": "A synthetic adrenal corticosteroid with potent anti-inflammatory properties.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C422"
+      },
+      {
+        "value": "DINACICLIB",
+        "description": "A pyrazolo[1,5-a]pyrimidine with potential antineoplastic activity. Dinaciclib selectively inhibits cyclin dependent kinases CDK1, CDK2, CDK5, and CDK9.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C78854"
+      },
+      {
+        "value": "DMSO",
+        "description": "A highly polar organic liquid that is used widely as a chemical solvent and a free radical scavenger.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C437"
+      },
+      {
+        "value": "DOXORUBICIN",
+        "description": "An anthracycline antibiotic with antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C456"
+      },
+      {
+        "value": "GGTI-2418",
+        "description": "A substance that inhibits protein geranylgeranyltransferase type 1 (GGTase-I), with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C104414"
+      },
+      {
+        "value": "INCB054329",
+        "description": "An inhibitor of the Bromodomain and Extra-Terminal (BET) family of bromodomain-containing proteins with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C121948"
+      },
+      {
+        "value": "INK128",
+        "description": "An orally bioavailable inhibitor of raptor-mTOR (TOR complex 1 or TORC1) and rictor-mTOR (TOR complex 2 or TORC2) with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C90548"
+      },
+      {
+        "value": "IRAK1-4(INHIBITOR)407601",
+        "description": "Interleukin-1 Receptor-Associated-Kinase-1/4 Inhibitor.",
+        "source": "https://pubchem.ncbi.nlm.nih.gov/compound/IRAK-1_4_Inhibitor"
+      },
+      {
+        "value": "IXAZOMIB",
+        "description": "An active metabolite of MLN9708, a second generation, boron containing peptide proteasome inhibitor (PI) with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C97940"
+      },
+      {
+        "value": "KPT-330",
+        "description": "An orally available, small molecule inhibitor of CRM1 (chromosome region maintenance 1 protein, exportin 1 or XPO1), with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C102546"
+      },
+      {
+        "value": "LENALIDOMIDE",
+        "description": "A thalidomide analog with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C2668"
+      },
+      {
+        "value": "MA7-038",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "MEDIA",
+        "description": "A liquid or gel containing nutrients, salts, and other factors formulated to support the growth of microorganisms, cells, or plants.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C85504"
+      },
+      {
+        "value": "MELPHALAN",
+        "description": "A phenylalanine derivative of nitrogen mustard with antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C633"
+      },
+      {
+        "value": "MK2206",
+        "description": "An orally bioavailable allosteric inhibitor of the serine/threonine protein kinase Akt (protein kinase B) with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C90581"
+      },
+      {
+        "value": "MTI101",
+        "description": "MTI-101 (cyclized HYD1) binds a CD44 containing complex.",
+        "source": "https://www.ncbi.nlm.nih.gov/pubmed/24048737"
+      },
+      {
+        "value": "PANOBINOSTAT",
+        "description": "A cinnamic hydroxamic acid analogue with potential antineoplastic activity. Panobinostat selectively inhibits histone deacetylase (HDAC).",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C66948"
+      },
+      {
+        "value": "POMALIDOMIDE",
+        "description": "An orally bioavailable derivative of thalidomide with potential immunomodulating, antiangiogenic and antineoplastic activities.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C72560"
+      },
+      {
+        "value": "PONATINIB",
+        "description": "An orally bioavailable multitargeted receptor tyrosine kinase (RTK) inhibitor with potential antiangiogenic and antineoplastic activities.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C95777"
+      },
+      {
+        "value": "RICOLINOSTAT",
+        "description": "An orally bioavailable, specific inhibitor of histone deacetylase 6 (HDAC6) with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C96431"
+      },
+      {
+        "value": "SILMITASERTIB",
+        "description": "Silmitasertib selectively binds to and inhibits the enzyme casein kinase II (CK2)",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C85460"
+      },
+      {
+        "value": "SNS-032",
+        "description": "A small aminothiazole molecule and cyclin dependent kinase (CDK) inhibitor with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C62523"
+      },
+      {
+        "value": "SR3029",
+        "description": "Highly selective casein kinase 1delta/1epsilon inhibitor with potent antiproliferative properties.",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/67585785"
+      },
+      {
+        "value": "THZ1",
+        "description": "A low nanomolar inhibitor of cell proliferation and biochemical CDK7 activity.",
+        "source": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4244910/"
+      },
+      {
+        "value": "UMI-77",
+        "description": "An Mcl-1 inhibitor.",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/2003359"
+      },
+      {
+        "value": "VOLASERTIB",
+        "description": "A dihydropteridinone Polo-like kinase 1 (Plk1) inhibitor with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C79844"
+      },
+      {
+        "value": "iGG",
+        "description": "An immunoglobulin isotype (subclass) that characterizes secondary immune responses.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C568"
+      }
+    ]
+  },
+  {
+    "name": "drugScreenType",
+    "description": "String describing general class of drug screen",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "combinationLibraryScreen",
+        "description": "High throughput sample analysis of collections of compounds that provide a variety of chemically diverse structures that can be used to identify structure types that have affinity with pharmacological targets.",
+        "source": "http://purl.obolibrary.org/obo/ERO_0001686"
+      },
+      {
+        "value": "combinationScreen",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "singleMolecule",
+        "description": "An experiment in which a single molecule was used in an assay",
+        "source": ""
+      },
+      {
+        "value": "smallMoleculeLibraryScreen",
+        "description": "High throughput sample analysis of small molecules for purpose such as drug discovery, or biochemical, genetic or pharmacological tests.",
+        "source": " http://purl.obolibrary.org/obo/ERO_0001726"
+      }
+    ]
+  },
+  {
+    "name": "secondCompoundDose",
+    "description": "",
+    "columnType": "DOUBLE",
+    "maximumSize": "",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "secondCompoundDoseUnit",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "secondCompoundName",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "A-1210477",
+        "description": "An MCL-1 inhibitor.",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/2015744"
+      },
+      {
+        "value": "ABBVIE1",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE2",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE3",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE4",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE5",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE6",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE7",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABBVIE8",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "ABT-199",
+        "description": "An orally bioavailable, selective small molecule inhibitor of the anti-apoptotic protein Bcl-2, with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C103147"
+      },
+      {
+        "value": "BI2536",
+        "description": "https://www.ncbi.nlm.nih.gov/mesh/67518477",
+        "source": "Polo-like kinase 1 inhibitor."
+      },
+      {
+        "value": "BORTEZOMIB",
+        "description": "A dipeptide boronic acid analogue with antineoplastic activity. Bortezomib reversibly inhibits the 26S proteasome, a large protease complex that degrades ubiquinated proteins.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C1851"
+      },
+      {
+        "value": "CARFILZOMIB",
+        "description": "An epoxomicin derivate with potential antineoplastic activity. Carfilzomib irreversibly binds to and inhibits the chymotrypsin-like activity of the 20S catalytic core subunit of the proteasome, a protease complex responsible for degrading a large variety of cellular proteins.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C52196"
+      },
+      {
+        "value": "CPD22",
+        "description": "A novel ILK inhibitor, which exhibit[s] high in vitro potency against a panel of prostate and breast cancer cell lines.",
+        "source": "https://www.ncbi.nlm.nih.gov/pubmed/21823616"
+      },
+      {
+        "value": "CRIZOTINIB",
+        "description": "An orally available aminopyridine-based inhibitor of the receptor tyrosine kinase anaplastic lymphoma kinase (ALK) and the c-Met/hepatocyte growth factor receptor (HGFR) with antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C74061"
+      },
+      {
+        "value": "CURCUMIN",
+        "description": "A phytopolylphenol pigment isolated from the plant Curcuma longa, commonly known as turmeric, with a variety of pharmacologic properties.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C401"
+      },
+      {
+        "value": "DARATUMUMAB",
+        "description": "A fully human monoclonal antibody directed against the cell surface glycoprotein CD-38 with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C74007"
+      },
+      {
+        "value": "DEFACTINIB",
+        "description": "An orally bioavailable, small-molecule focal adhesion kinase (FAK) inhibitor with potential antiangiogenic and antineoplastic activities.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C79809"
+      },
+      {
+        "value": "DEXAMETHASONE",
+        "description": "A synthetic adrenal corticosteroid with potent anti-inflammatory properties.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C422"
+      },
+      {
+        "value": "DINACICLIB",
+        "description": "A pyrazolo[1,5-a]pyrimidine with potential antineoplastic activity. Dinaciclib selectively inhibits cyclin dependent kinases CDK1, CDK2, CDK5, and CDK9.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C78854"
+      },
+      {
+        "value": "DMSO",
+        "description": "A highly polar organic liquid that is used widely as a chemical solvent and a free radical scavenger.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C437"
+      },
+      {
+        "value": "DOXORUBICIN",
+        "description": "An anthracycline antibiotic with antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C456"
+      },
+      {
+        "value": "GGTI-2418",
+        "description": "A substance that inhibits protein geranylgeranyltransferase type 1 (GGTase-I), with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C104414"
+      },
+      {
+        "value": "INCB054329",
+        "description": "An inhibitor of the Bromodomain and Extra-Terminal (BET) family of bromodomain-containing proteins with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C121948"
+      },
+      {
+        "value": "INK128",
+        "description": "An orally bioavailable inhibitor of raptor-mTOR (TOR complex 1 or TORC1) and rictor-mTOR (TOR complex 2 or TORC2) with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C90548"
+      },
+      {
+        "value": "IRAK1-4(INHIBITOR)407601",
+        "description": "Interleukin-1 Receptor-Associated-Kinase-1/4 Inhibitor.",
+        "source": "https://pubchem.ncbi.nlm.nih.gov/compound/IRAK-1_4_Inhibitor"
+      },
+      {
+        "value": "IXAZOMIB",
+        "description": "An active metabolite of MLN9708, a second generation, boron containing peptide proteasome inhibitor (PI) with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C97940"
+      },
+      {
+        "value": "KPT-330",
+        "description": "An orally available, small molecule inhibitor of CRM1 (chromosome region maintenance 1 protein, exportin 1 or XPO1), with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C102546"
+      },
+      {
+        "value": "LENALIDOMIDE",
+        "description": "A thalidomide analog with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C2668"
+      },
+      {
+        "value": "MA7-038",
+        "description": "Internal research compound.",
+        "source": "Moffitt"
+      },
+      {
+        "value": "MEDIA",
+        "description": "A liquid or gel containing nutrients, salts, and other factors formulated to support the growth of microorganisms, cells, or plants.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C85504"
+      },
+      {
+        "value": "MELPHALAN",
+        "description": "A phenylalanine derivative of nitrogen mustard with antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C633"
+      },
+      {
+        "value": "MK2206",
+        "description": "An orally bioavailable allosteric inhibitor of the serine/threonine protein kinase Akt (protein kinase B) with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C90581"
+      },
+      {
+        "value": "MTI101",
+        "description": "MTI-101 (cyclized HYD1) binds a CD44 containing complex.",
+        "source": "https://www.ncbi.nlm.nih.gov/pubmed/24048737"
+      },
+      {
+        "value": "PANOBINOSTAT",
+        "description": "A cinnamic hydroxamic acid analogue with potential antineoplastic activity. Panobinostat selectively inhibits histone deacetylase (HDAC).",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C66948"
+      },
+      {
+        "value": "POMALIDOMIDE",
+        "description": "An orally bioavailable derivative of thalidomide with potential immunomodulating, antiangiogenic and antineoplastic activities.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C72560"
+      },
+      {
+        "value": "PONATINIB",
+        "description": "An orally bioavailable multitargeted receptor tyrosine kinase (RTK) inhibitor with potential antiangiogenic and antineoplastic activities.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C95777"
+      },
+      {
+        "value": "RICOLINOSTAT",
+        "description": "An orally bioavailable, specific inhibitor of histone deacetylase 6 (HDAC6) with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C96431"
+      },
+      {
+        "value": "SILMITASERTIB",
+        "description": "Silmitasertib selectively binds to and inhibits the enzyme casein kinase II (CK2)",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C85460"
+      },
+      {
+        "value": "SNS-032",
+        "description": "A small aminothiazole molecule and cyclin dependent kinase (CDK) inhibitor with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C62523"
+      },
+      {
+        "value": "SR3029",
+        "description": "Highly selective casein kinase 1delta/1epsilon inhibitor with potent antiproliferative properties.",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/67585785"
+      },
+      {
+        "value": "THZ1",
+        "description": "A low nanomolar inhibitor of cell proliferation and biochemical CDK7 activity.",
+        "source": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4244910/"
+      },
+      {
+        "value": "UMI-77",
+        "description": "An Mcl-1 inhibitor.",
+        "source": "https://www.ncbi.nlm.nih.gov/mesh/2003359"
+      },
+      {
+        "value": "VOLASERTIB",
+        "description": "A dihydropteridinone Polo-like kinase 1 (Plk1) inhibitor with potential antineoplastic activity.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C79844"
+      },
+      {
+        "value": "iGG",
+        "description": "An immunoglobulin isotype (subclass) that characterizes secondary immune responses.",
+        "source": "http://purl.obolibrary.org/obo/NCIT_C568"
+      }
+    ]
+  },
+  {
+    "name": "consortium",
+    "description": "The name of the consortium",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "AMP-AD",
+        "description": "Accelerating Medicines Partnership-Alzheimer's Disease",
+        "source": "https://www.synapse.org/ampad"
+      },
+      {
+        "value": "BSMN",
+        "description": "Brain Somatic Mosaicism Network",
+        "source": "https://www.synapse.org/bsmn"
+      },
+      {
+        "value": "CMC",
+        "description": "CommonMind Consortium",
+        "source": "https://www.synapse.org/cmc"
+      },
+      {
+        "value": "CSBC",
+        "description": "Cancer Systems Biology Consortium",
+        "source": "https://csbconsortium.org/"
+      },
+      {
+        "value": "DHART SPORE",
+        "description": "Data from the D-HART SPORE",
+        "source": "http://www.synapse.org/dhart"
+      },
+      {
+        "value": "GENIE",
+        "description": "Genomics Evidence Neoplasia Information Exchange",
+        "source": "http://www.aacr.org/Research/Research/Pages/aacr-project-genie.aspx#.WOQS9RIrKF0"
+      },
+      {
+        "value": "M2OVE-AD",
+        "description": "Molecular Mechanisms of the Vascular Etiology of Alzheimer's Disease ",
+        "source": "https://www.synapse.org/ampad"
+      },
+      {
+        "value": "MODEL-AD",
+        "description": "Model Development and Evaluation for Late Onset AD",
+        "source": "https://www.synapse.org/ampad"
+      },
+      {
+        "value": "Not Applicable",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "PEC",
+        "description": "PsychENCODE Consortium",
+        "source": "https://www.synapse.org/pec"
+      },
+      {
+        "value": "PSON",
+        "description": "Physical Science in Oncology",
+        "source": "https://physics.cancer.gov/"
+      },
+      {
+        "value": "Synodos LGG",
+        "description": "Data derived from the CTF-funded NF1 LGG Synodos project",
+        "source": "http://www.synapse.org/nf1lgg"
+      },
+      {
+        "value": "Synodos NF1",
+        "description": "Data derived from the CTF-funded NF1 pre-clinical model Synodos project",
+        "source": "https://www.synapse.org/ctf"
+      },
+      {
+        "value": "Synodos NF2",
+        "description": "Data derived from the CTF-funded NF2 Synodos project",
+        "source": "https://www.synapse.org/syndosnf2"
+      }
+    ]
+  },
+  {
+    "name": "fileFormat",
+    "description": "Defined format of the data file, typically corresponding to extension, but sometimes indicating more general group of files produced by the same tool or software",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "R script",
+        "description": "R Script",
+        "source": "Sage Bionetworks"
+      },
+      {
+        "value": "abf",
+        "description": "The Axon™ Binary File format (ABF) was created for the storage of binary experimental data.",
+        "source": "https://mdc.custhelp.com/euf/assets/content/ABFHelp.pdf"
+      },
+      {
+        "value": "avi",
+        "description": "AVI files can contain both audio and video data in a file container that allows synchronous audio-with-video playback.",
+        "source": "https://en.wikipedia.org/wiki/Audio_Video_Interleave"
+      },
+      {
+        "value": "bai",
+        "description": "BAM indexing format",
+        "source": "http://edamontology.org/format_3327"
+      },
+      {
+        "value": "bam",
+        "description": "BAM format, the binary, BGZF-formatted compressed version of SAM format for alignment of nucleotide sequences (e.g. sequencing reads) to (a) reference sequence(s)",
+        "source": "http://edamontology.org/format_2572"
+      },
+      {
+        "value": "bash script",
+        "description": "Bash Shell Script",
+        "source": "https://en.wikipedia.org/wiki/Shell_script"
+      },
+      {
+        "value": "bcf",
+        "description": "BCF, the binary version of Variant Call Format (VCF) for sequence variation (indels, polymorphisms, structural variation)",
+        "source": "http://edamontology.org/format_3016"
+      },
+      {
+        "value": "bed",
+        "description": "Browser Extensible Data (BED) format of sequence annotation track, typically to be displayed in a genome browser",
+        "source": "http://edamontology.org/format_3003"
+      },
+      {
+        "value": "bed broadPeak",
+        "description": "This format is used to provide called regions of signal enrichment based on pooled, normalized (interpreted) data. It is a BED 6+3 format.",
+        "source": "http://genome.ucsc.edu/FAQ/FAQformat.html#format13"
+      },
+      {
+        "value": "bed gappedPeak",
+        "description": "This format is used to provide called regions of signal enrichment based on pooled, normalized (interpreted) data where the regions may be spliced or incorporate gaps in the genomic sequence. It is a BED12+3 format.",
+        "source": "http://genome.ucsc.edu/FAQ/FAQformat.html#format14"
+      },
+      {
+        "value": "bed narrowPeak",
+        "description": "This format is used to provide called peaks of signal enrichment based on pooled, normalized (interpreted) data. It is a BED6+4 format.",
+        "source": "http://genome.ucsc.edu/FAQ/FAQformat.html#format12"
+      },
+      {
+        "value": "bedgraph",
+        "description": "Holds a tab-delimited chromosome /start /end / datavalue dataset. The bedGraph format allows display of continuous-valued data in track format. This display type is useful for probability scores and transcriptome data",
+        "source": "http://edamontology.org/format_3583"
+      },
+      {
+        "value": "bgzip",
+        "description": "Blocked GNU Zip format",
+        "source": "http://edamontology.org/format_3615"
+      },
+      {
+        "value": "bigwig",
+        "description": "bigWig format for large sequence annotation tracks that consist of a value for each sequence position",
+        "source": "http://edamontology.org/format_3006"
+      },
+      {
+        "value": "bpm",
+        "description": "A beaded pool manifest. Describe the SNP or probe content on a BeadChip or in an assay pool.",
+        "source": "https://support.illumina.com/datafiles.html"
+      },
+      {
+        "value": "cel",
+        "description": "Format of Affymetrix data file of information about (raw) expression levels of the individual probes",
+        "source": "http://edamontology.org/format_1638"
+      },
+      {
+        "value": "chp",
+        "description": "CHP file contains probe set analysis results generated from Affymetrix software",
+        "source": ""
+      },
+      {
+        "value": "csv",
+        "description": "Tabular data represented as comma-separated values in a text file",
+        "source": "http://edamontology.org/format_3752"
+      },
+      {
+        "value": "dat",
+        "description": "Format of Affymetrix data file of raw image data.",
+        "source": "http://edamontology.org/format_1637"
+      },
+      {
+        "value": "doc",
+        "description": "Microsoft Word document format",
+        "source": ""
+      },
+      {
+        "value": "excel",
+        "description": "Microsoft Excel spreadsheet format",
+        "source": ""
+      },
+      {
+        "value": "fasta",
+        "description": "FASTA format is a text-based format for representing either nucleotide sequences or peptide sequences, in which nucleotides or amino acids are represented using single-letter codes",
+        "source": "https://en.wikipedia.org/wiki/FASTA_format"
+      },
+      {
+        "value": "fastq",
+        "description": "FASTQ format is a text-based format for storing both a biological sequence (usually nucleotide sequence) and its corresponding quality scores. Both the sequence letter and quality score are each encoded with a single ASCII character for brevity",
+        "source": "https://en.wikipedia.org/wiki/FASTQ_format"
+      },
+      {
+        "value": "fig",
+        "description": "Line drawing saved in the Xfig format; stored as a vector image that may include lines, shapes, arcs, splines, arrows, and text objects; may also include images, colors, and patterns.",
+        "source": "https://fileinfo.com/extension/fig"
+      },
+      {
+        "value": "flagstat",
+        "description": "Output of samtools flagstat tool",
+        "source": ""
+      },
+      {
+        "value": "gct",
+        "description": "Tab-delimited text files of GenePattern that contain a column for each sample, a row for each gene, and an expression value for each gene in each sample",
+        "source": "http://edamontology.org/format_3709"
+      },
+      {
+        "value": "gtf",
+        "description": "Gene transfer format (GTF) is a file format used to hold information about gene structure",
+        "source": "https://en.wikipedia.org/wiki/Gene_transfer_format"
+      },
+      {
+        "value": "hdf",
+        "description": "Hierarchical Data Format (HDF) is a set of file formats (HDF4, HDF5) designed to store and organize large amounts of data",
+        "source": "https://en.wikipedia.org/wiki/Hierarchical_Data_Format"
+      },
+      {
+        "value": "html",
+        "description": "HTML format",
+        "source": "http://edamontology.org/format_2331"
+      },
+      {
+        "value": "idat",
+        "description": "Proprietary file format for (raw) BeadArray data used by genomewide profiling platforms from Illumina Inc. This format is output directly from the scanner and stores summary intensities for each probe-type on an array.",
+        "source": "http://edamontology.org/format_3578"
+      },
+      {
+        "value": "idx",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "jpg",
+        "description": "Joint Picture Group file format for lossy graphics file.",
+        "source": "http://edamontology.org/format_3579"
+      },
+      {
+        "value": "locs",
+        "description": "Illumina iScan bead location file.",
+        "source": "https://support.illumina.com/content/dam/illumina-support/documents/documentation/system_documentation/iscan/iscan-system-guide-11313539-01.pdf"
+      },
+      {
+        "value": "maf",
+        "description": "Multiple Alignment Format (MAF) supporting alignments of whole genomes with rearrangements, directions, multiple pieces to the alignment, and so forth",
+        "source": "http://edamontology.org/format_3008"
+      },
+      {
+        "value": "md",
+        "description": "Markdown (MD) is a lightweight markup language with plain text formatting syntax",
+        "source": "https://en.wikipedia.org/wiki/Markdown"
+      },
+      {
+        "value": "msf",
+        "description": "Proprietary mass-spectrometry format of Thermo Scientific's ProteomeDiscoverer software",
+        "source": "http://edamontology.org/format_3702"
+      },
+      {
+        "value": "pdf",
+        "description": "Portable Document Format",
+        "source": "http://edamontology.org/format_3508"
+      },
+      {
+        "value": "plink",
+        "description": "Any Plink file format (MAP/PED/BED)",
+        "source": ""
+      },
+      {
+        "value": "png",
+        "description": "PNG is a file format for image compression",
+        "source": "http://edamontology.org/format_3603"
+      },
+      {
+        "value": "powerpoint",
+        "description": "Microsoft Powerpoint slide format",
+        "source": ""
+      },
+      {
+        "value": "pzfx",
+        "description": "A PZFX file is a Prism project created by GraphPad Prism, a scientific application used to analyze and graph data. It contains project data including graphs and layouts, notes, and tables.",
+        "source": "https://fileinfo.com/extension/pzfx"
+      },
+      {
+        "value": "raw",
+        "description": "Proprietary file format for mass spectrometry data from Thermo Scientific",
+        "source": "http://edamontology.org/format_3712"
+      },
+      {
+        "value": "rmd",
+        "description": "markdown document specific to r analyses",
+        "source": "http://rmarkdown.rstudio.com/developer_document_templates.html"
+      },
+      {
+        "value": "sam",
+        "description": "Sequence Alignment/Map (SAM) format for alignment of nucleotide sequences (e.g. sequencing reads) to (a) reference sequence(s)",
+        "source": "http://edamontology.org/format_2573"
+      },
+      {
+        "value": "seg",
+        "description": "SEG file (segmented data; .seg or .cbs) is a tab-delimited text file that lists loci and associated numeric values",
+        "source": "https://software.broadinstitute.org/software/igv/SEG"
+      },
+      {
+        "value": "sif",
+        "description": "SIF (simple interaction file) Format - a network/pathway format used for instance in cytoscape",
+        "source": "http://edamontology.org/format_3619"
+      },
+      {
+        "value": "tar",
+        "description": "tape archive",
+        "source": "https://en.wikipedia.org/wiki/Tar_(computing)"
+      },
+      {
+        "value": "tif",
+        "description": "Tagged Image File Format, abbreviated TIFF or TIF, is a computer file format for storing raster graphics images",
+        "source": "https://en.wikipedia.org/wiki/TIFF"
+      },
+      {
+        "value": "tsv",
+        "description": "Tabular data represented as tab-separated values in a text file",
+        "source": "http://edamontology.org/format_3475"
+      },
+      {
+        "value": "txt",
+        "description": "Textual format",
+        "source": "http://edamontology.org/format_2330"
+      },
+      {
+        "value": "vcf",
+        "description": "Variant Call Format (VCF) for sequence variation (indels, polymorphisms, structural variation)",
+        "source": "http://edamontology.org/format_3016"
+      },
+      {
+        "value": "wiggle",
+        "description": "Wiggle format (WIG) of a sequence annotation track that consists of a value for each sequence position",
+        "source": "http://edamontology.org/format_3005"
+      },
+      {
+        "value": "xml",
+        "description": "eXtensible Markup Language (XML) format.",
+        "source": "http://edamontology.org/format_2332"
+      }
+    ]
+  },
+  {
+    "name": "fundingAgency",
+    "description": "The organization providing financial support for generation of this data.",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "AACR",
+        "description": "American Association for Cancer Research",
+        "source": "http://www.aacr.org"
+      },
+      {
+        "value": "CTF",
+        "description": "Childrens' Tumor Foundation",
+        "source": "http://www.ctf.org"
+      },
+      {
+        "value": "NIH-NCI",
+        "description": "National Institutes of Health - National Cancer Institute",
+        "source": "https://www.cancer.gov"
+      },
+      {
+        "value": "NIH-NIA",
+        "description": "National Institutes of Health - National Institute of Aging",
+        "source": "https://www.nia.nih.gov"
+      },
+      {
+        "value": "NIH-NIMH",
+        "description": "National Institutes of Health - National Institute of Mental Health",
+        "source": "https://www.nimh.nih.gov"
+      },
+      {
+        "value": "NTAP",
+        "description": "Neurofibromatosis Therapeutic Acceleration Program",
+        "source": "http://www.n-tap.org"
+      }
+    ]
+  },
+  {
+    "name": "resourceType",
+    "description": "The type of resource being stored and annotated",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "analysis",
+        "description": "Any file derived from analysis such that the analysis annotations might apply, possibly disease-related",
+        "source": "Sage Bionetworks"
+      },
+      {
+        "value": "experimentalData",
+        "description": "Any file derived from or pertaining to a scientific experiment. experimentalData annotations should be applied, possibly disease-related",
+        "source": "Sage Bionetworks"
+      },
+      {
+        "value": "tool",
+        "description": "Any file or link that represents a tool, model, or algorithm; the tool annotations could be applied",
+        "source": "Sage Bionetworks"
+      }
+    ]
+  },
+  {
+    "name": "isStranded",
+    "description": "",
+    "columnType": "BOOLEAN",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": false,
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": true,
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "libraryPrep",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "lncRNAenrichment",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "miRNAenrichment",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "polyAselection",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "rRNAdepletion",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "readLength",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "",
+        "description": "",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "readPairOrientation",
+    "description": "the relative orientation of the reads in a paired-end protocol",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "inward",
+        "description": "reads face each other",
+        "source": ""
+      },
+      {
+        "value": "matching",
+        "description": "reads face the same direction",
+        "source": ""
+      },
+      {
+        "value": "outward",
+        "description": "reads face away from each other",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "readStrandOrigin",
+    "description": "the strand from which the read originates in a strand-specific protocol",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "forward",
+        "description": "read 1 (or unpaired read) comes from the forward strand and read 2 (if applicable) comes from the reverse strand; equivalent to Tophat 'fr-secondstrand' type",
+        "source": ""
+      },
+      {
+        "value": "reverse",
+        "description": "read 1 (or unpaired read) comes from the reverse strand and read 2 (if applicable) comes from the forward strand; equivalent to Tophat 'fr-firststrand' type",
+        "source": ""
+      }
+    ]
+  },
+  {
+    "name": "runType",
+    "description": "",
+    "columnType": "STRING",
+    "maximumSize": "250",
+    "enumValues": [
+      {
+        "value": "pairedEnd",
+        "description": "",
+        "source": ""
+      },
+      {
+        "value": "singleEnd",
+        "description": "",
+        "source": ""
+      }
+    ]
+  }
+]

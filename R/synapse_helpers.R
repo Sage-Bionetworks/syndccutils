@@ -118,7 +118,13 @@ datatable_to_synapse <-function(dt, parent_id, table_name) {
     schema <- synapseClient::TableSchema(name=table_name,
             columns=tcols,
             parent=parent_id)
-    syn_id <-synapseClient::synStore(Table(schema,dt))
+    syn_id <- synapseClient::synStore(synapseClient::Table(schema,dt))
+
+    #all.rows <-synapseClient::synTableQuery(paste('select * from',syn_id))
+
+    #synapseClient::synDeleteRows(all.rows)
+    syn_id <-synapseClient::synStore(synapseClient::Table(schema,dt))
+
     return(syn_id)
 
 }
