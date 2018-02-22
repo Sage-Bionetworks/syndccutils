@@ -450,27 +450,32 @@ def pubmed(args, syn):
         table = syn.store(table)
 
 
-def inviteMember(syn, teamId, inviteeId):
+def sendRequest(syn, teamId, invitee, message=None):
     """
     Makes a membership invitation via a REST API call. see documentation:
     http://docs.synapse.org/rest/org/sagebionetworks/repo/model/MembershipInvitation.html
-    params required are teamId, inviteeId or inviteeEmail. Here we use an inviteeId.
+    params required are teamId, inviteeId or inviteeEmail.
 
     :param syn:
     :param teamId:
     :param inviteeId:
     :return:
     """
-    invite_body = {'concreteType':'org.sagebionetworks.repo.model.MembershipInvitation', 'teamId':teamId,
-                   'inviteeId':inviteeId}
-    post = syn.restPOST(uri='https://repo-prod.prod.sagebase.org/repo/v1/membershipInvitation',
-                        body=json.dumps(invite_body))
+    body = dict(teamId=teamId, message=message)
+
+    if not isinstance(invitee, int) and invitee.find("@"):
+        body.update(inviteeEmail=invitee)
+    else:
+        body.update(inviteeId=invitee)
+
+    post = syn.restPOST("/membershipInvitation", body=json.dumps(body))
+
     return post
 
 
-def buildTeam(args, syn):
+def inviteMembers(args, syn):
     """
-    Given a synapse table with member Ids, invites members of CSBC or PSON to the synapse team of interest.
+    Given a synapse table with member profileIds or emails, invites members of CSBC or PSON to the synapse team of interest.
 
     :param args:
     :param syn:
@@ -487,6 +492,11 @@ def buildTeam(args, syn):
     else:
         pattern = 'PSON'
 
+    if args.message:
+        message = args.message
+    else:
+        message = None
+
     df = df.fillna('')
     subset_cols = [col for col in list(df.columns) if pattern in col]
     subset_cols.append('RDSWG')
@@ -497,8 +507,8 @@ def buildTeam(args, syn):
     if member_list:
         for member in member_list:
             if isinstance(member, float):
-                member = str(member)[:-2]
-            post_dict = inviteMember(syn, teamId=teamId, inviteeId=member)
+                member = int(str(member)[:-2])
+            post_dict = sendRequest(syn, teamId=teamId, invitee=member, message=message)
             print(post_dict)
     else:
         print('Member list is empty')
@@ -541,10 +551,13 @@ def buildParser():
     parser_buildteam.add_argument('--tableId', help='Synapse table id containing members profile ids', required=True,
                                type=str)
     parser_buildteam.add_argument('--teamId', help='Synapse team id', required=True, type=str)
+    parser_buildteam.add_argument('--message', help='Message to be sent along with invitation. Note: This message '
+                                                    'would be in addition to the standard invite template',
+                                  required=False, type=str)
     parser_buildteam.add_argument('--csbc', action='store_true', help='If members are in CSBC consortium else it would'
                                                                    'look for PSON members')
 
-    parser_buildteam.set_defaults(func=buildTeam)
+    parser_buildteam.set_defaults(func=inviteMembers)
 
     return parser
 
