@@ -4,7 +4,7 @@ source("R/synapse_helpers.R")
 ##NTAP SITE
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
+synLogin()
 
 
 # Config ------------------------------------------------------------------
@@ -33,8 +33,6 @@ new_fileview_df <- fileview_df %>%
     left_join(synproject_df, by = "projectId") %>%
     left_join(hierarchy_df, by = c("study" = "Study Name")) %>%
     rename(studyId = "Study")
-
-#ok.
 
 #ok. in the code you have `list(projectId="Project")` — the function doesn’t know that “Center” ~ “Project”, you have to give it an actual column name :)
 

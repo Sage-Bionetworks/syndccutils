@@ -4,7 +4,7 @@ source("R/synapse_helpers.R")
 ##CTF SITE
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
+synLogin()
 
 
 # Config ------------------------------------------------------------------
@@ -14,11 +14,9 @@ consortium_id <- "syn6135075" # Synapse folder associated with consortium
 parent_id <- "syn10901483" # consortium 'Reporting' folder where files should be stored
 master_fileview_id <- "syn11614206" # Synapse fileview associated with consortium data
 
-
 # Collect data ------------------------------------------------------------
 
 fileview_df <- get_table_df(master_fileview_id)
-
 
 # Add Synapse project info --------------------------------------------
 

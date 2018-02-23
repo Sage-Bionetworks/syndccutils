@@ -4,7 +4,7 @@ source("R/synapse_helpers.R")
 ##NEXUS work
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
+synLogin()
 
 
 # Config ------------------------------------------------------------------

@@ -1,6 +1,6 @@
 library(tidyverse)
 library(stringr)
-library(synapseClient)
+library(synapser)
 library(DT)
 
 # Table utility functions -------------------------------------------------
@@ -533,12 +533,13 @@ summarize_project_info <- function(view_df) {
         sapply(unique(c(view_df$projectId)),
                function(x) {
                    res = synGet(x)
+                   annotations = synGetAnnotations(x)
                    c(
                        projectId = x,
-                       projectName = ifelse(is.null(res@properties$name),"",res@properties$name),
-                       Center = ifelse(is.null(res@properties$name),"",res@properties$name),
-                       Program = ifelse(is.null(res@annotations$consortium),"",res@annotations$consortium),
-                       Institution = ifelse(is.null(res@annotations$institution),"",res@annotations$institution)
+                       projectName = ifelse(is.null(res$properties$name),"",res$properties$name),
+                       Center = ifelse(is.null(res$properties$name),"",res$properties$name),
+                       Program = ifelse(is.null(annotations$consortium[[1]]),"",annotations$consortium[[1]]),
+                       Institution = ifelse(is.null(annotations$institution[[1]]),"",annotations$institution[[1]])
                    )
                })
 
