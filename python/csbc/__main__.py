@@ -8,6 +8,7 @@ import re
 import requests
 import argparse
 import getpass
+import json
 import six
 from Bio import Entrez
 from bs4 import BeautifulSoup
@@ -449,6 +450,70 @@ def pubmed(args, syn):
         table = syn.store(table)
 
 
+def sendRequest(syn, teamId, invitee, message=None):
+    """
+    Makes a membership invitation via a REST API call. see documentation:
+    http://docs.synapse.org/rest/org/sagebionetworks/repo/model/MembershipInvitation.html
+    params required are teamId, inviteeId or inviteeEmail.
+
+    :param syn:
+    :param teamId:
+    :param inviteeId:
+    :return:
+    """
+    body = dict(teamId=teamId, message=message)
+
+    if not isinstance(invitee, int) and invitee.find("@"):
+        body.update(inviteeEmail=invitee)
+    else:
+        body.update(inviteeId=invitee)
+
+    post = syn.restPOST("/membershipInvitation", body=json.dumps(body))
+
+    return post
+
+
+def inviteMembers(args, syn):
+    """
+    Given a synapse table with member profileIds or emails, invites members of CSBC or PSON to the synapse team of interest.
+
+    :param args:
+    :param syn:
+    :return:
+    """
+    tableSynId = args.tableId
+    teamId = args.teamId
+
+    table = syn.tableQuery('select * from %s' % tableSynId)
+    df = table.asDataFrame()
+
+    if args.csbc:
+        pattern = 'CSBC'
+    else:
+        pattern = 'PSON'
+
+    if args.message:
+        message = args.message
+    else:
+        message = None
+
+    df = df.fillna('')
+    subset_cols = [col for col in list(df.columns) if pattern in col]
+    subset_cols.append('RDSWG')
+
+    member_list = [item for sublist in [df[c].tolist() for c in subset_cols] for item in sublist]
+    member_list = filter(None, member_list)
+
+    if member_list:
+        for member in member_list:
+            if isinstance(member, float):
+                member = int(str(member)[:-2])
+            post_dict = sendRequest(syn, teamId=teamId, invitee=member, message=message)
+            print(post_dict)
+    else:
+        print('Member list is empty')
+
+
 def buildParser():
     """
 
@@ -479,6 +544,20 @@ def buildParser():
     parser_pubmed.add_argument('--tableId', help='Synapse table id that holds the pubmed scrape info', type=str)
 
     parser_pubmed.set_defaults(func=pubmed)
+
+    parser_invitemembers = subparsers.add_parser('invitemembers', help='adds team members by synapse profile id or emails to'
+                                                               ' an existing team on synape')
+
+    parser_invitemembers.add_argument('--tableId', help='Synapse table id containing members profile ids', required=True,
+                               type=str)
+    parser_invitemembers.add_argument('--teamId', help='Synapse team id', required=True, type=str)
+    parser_invitemembers.add_argument('--message', help='Message to be sent along with invitation. Note: This message '
+                                                    'would be in addition to the standard invite template',
+                                  required=False, type=str)
+    parser_invitemembers.add_argument('--csbc', action='store_true', help='If members are in CSBC consortium else it would'
+                                                                   'look for PSON members')
+
+    parser_invitemembers.set_defaults(func=inviteMembers)
 
     return parser
 
