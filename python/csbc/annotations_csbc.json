@@ -569,7 +569,7 @@
                 "value": true
             }
         ], 
-        "maximumSize": "250", 
+        "maximumSize": "5", 
         "name": "isCellLine"
     }, 
     {
@@ -587,7 +587,7 @@
                 "value": true
             }
         ], 
-        "maximumSize": "", 
+        "maximumSize": "5", 
         "name": "isMultiIndividual"
     }, 
     {
@@ -605,7 +605,7 @@
                 "value": true
             }
         ], 
-        "maximumSize": "", 
+        "maximumSize": "5", 
         "name": "isMultiSpecimen"
     }, 
     {
@@ -623,7 +623,7 @@
                 "value": true
             }
         ], 
-        "maximumSize": "250", 
+        "maximumSize": "5", 
         "name": "isPrimaryCell"
     }, 
     {
@@ -2412,7 +2412,7 @@
                 "value": true
             }
         ], 
-        "maximumSize": "250", 
+        "maximumSize": "5", 
         "name": "isStranded"
     }, 
     {
