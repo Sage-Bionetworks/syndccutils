@@ -10,3 +10,6 @@ mock_fileview_df <- tibble(
     random_annotation = str_c("feature_", sample(LETTERS, 10, replace = TRUE)),
     incomplete_annotation = str_c("variable_", rep(c("X", NA), 5))
 )
+
+# paths to mocked files
+mock_chart_filename <- "testdata/mock_chart.html"

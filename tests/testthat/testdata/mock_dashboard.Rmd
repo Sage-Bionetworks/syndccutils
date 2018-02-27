@@ -1,0 +1,38 @@
+---
+title: "mock dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    self_contained: FALSE
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+workflows <- 25
+valueBox(workflows, icon = "fa-cogs")
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+gauge(10, min = 0, max = 20)
+```
+
+### Chart C
+
+```{r}
+
+```
+
