@@ -81,9 +81,20 @@ cdn_search <- function(js_file, js_version) {
     } else {
         tibble(name = character(), latest = character(), version = character())
     }
-
 }
+# example code for CDN lookup ---------------------------------------------
 
+# script_lines <- get_script_lines(mock_chart_filename)
+
+# script_data <- script_lines %>%
+#     mutate(src_parts = map(target_attr, parse_js_src)) %>%
+#     unnest(src_parts)
+
+# script_data %>%
+#     mutate(match = map2(target_file, target_version, function(x, y) {cdn_search(x, y)})) %>%
+#     unnest(match)
+
+# GitHub path replacement
 path_replace_gh <- function(path,
                             repo = "Sage-Bionetworks/js-host-test",
                             folder = "inst/www") {
@@ -97,46 +108,45 @@ path_replace_gh <- function(path,
     file.path(gh_base, path_folder)
 }
 
+# CDN path replacement
+path_replace_cdn <- function(path,
+                             repo = "https://cdn-www.synapse.org",
+                             folder = "research") {
 
-# test scripts ------------------------------------------------------------
+    path_root <- str_c(str_split(path, "/")[[1]][1], "/")
+    path_folder <- str_replace(path, path_root, "")
+    file.path(repo, folder, path_folder)
+}
 
-script_lines <- get_script_lines(mock_chart_filename)
 
-# script_data <- script_lines %>%
-#     mutate(src_parts = map(target_attr, parse_js_src)) %>%
-#     unnest(src_parts)
+# replace paths for a set of HTML lines
+update_html_lines <- function(html_lines, target_lines) {
+    update_target_lines <- target_lines %>%
+        mutate(replacement_attr = path_replace_cdn(target_attr),
+               updated_html = walk2(
+                   target_attr, replacement_attr, function(x, y) {
+                       html_lines <<- str_replace(html_lines, x, y)
+                   }
+               )
+        ) %>%
+        select(-updated_html)
+    html_lines
+}
 
-# script_data %>%
-#     mutate(match = map2(target_file, target_version, function(x, y) {cdn_search(x, y)})) %>%
-#     unnest(match)
+fix_js_assets <- function(html_path) {
 
-script_lines %>%
-    mutate(replacement_attr = path_replace_gh(target_attr)) %>%
-    select(replacement_attr)
+    fixed_html_path <- file.path(
+        dirname(html_path),
+        str_c("fixed_", basename(html_path))
+    )
+    html_lines <- read_lines(html_path)
+    script_lines <- get_script_lines(html_path)
+    link_lines <- get_link_lines(html_path)
 
-# test links --------------------------------------------------------------
+    html_lines <- html_lines %>%
+        update_html_lines(script_lines) %>%
+        update_html_lines(link_lines)
 
-link_lines <- get_link_lines(mock_chart_filename)
-
-link_lines %>%
-    mutate(replacement_attr = path_replace_gh(target_attr)) %>%
-    select(replacement_attr)
-
-# test html edit ----------------------------------------------------------
-
-html_lines <- read_lines(mock_chart_filename)
-update_script_lines <- script_lines %>%
-    mutate(replacement_attr = path_replace_gh(target_attr),
-           fixed_html = walk2(target_attr, replacement_attr, function(x, y) {
-               html_lines <<- str_replace(html_lines, x, y)
-           })) %>%
-    select(-fixed_html)
-update_link_lines <- link_lines %>%
-    mutate(replacement_attr = path_replace_gh(target_attr),
-           fixed_html = walk2(target_attr, replacement_attr, function(x, y) {
-               html_lines <<- str_replace(html_lines, x, y)
-           })) %>%
-    select(-fixed_html)
-
-new_chart_filename <- str_c("fixed_", mock_chart_filename)
-write_lines(html_lines, new_chart_filename)
+    write_lines(html_lines, fixed_html_path)
+    fixed_html_path
+}
