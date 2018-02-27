@@ -106,8 +106,11 @@ save_datatable <- function(parent_id, dt_filename, dt_widget) {
         dir.create("html")
     }
     htmlwidgets::saveWidget(dt_widget, dt_filename)
-    syn_entity <- synStore(File(path = dt_filename, parentId = parent_id))
-    file.rename(dt_filename, file.path("html", dt_filename))
+    fixed_dt_filename <- fix_js_assets(dt_filename)
+
+    syn_entity <- synStore(File(path = fixed_dt_filename,
+                                parentId = parent_id))
+    file.rename(fixed_dt_filename, file.path("html", fixed_dt_filename))
     return(syn_entity)
 }
 
