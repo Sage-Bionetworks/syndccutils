@@ -1,4 +1,5 @@
 library(tidyverse)
+library(fs)
 
 mock_fileview_df <- tibble(
     id = str_c("syn", c(1:10)),
@@ -11,5 +12,19 @@ mock_fileview_df <- tibble(
     incomplete_annotation = str_c("variable_", rep(c("X", NA), 5))
 )
 
+
 # paths to mocked files
-mock_chart_filename <- "testdata/mock_chart.html"
+mock_chart_filename <- "mock_chart.html"
+
+# create and save mock chart
+plot_keys <- list(data_annotation = "Assay", status_annotation = "Disease")
+mock_chart <- mock_fileview_df %>%
+    plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
+
+saveWidget(mock_chart, mock_chart_filename,
+           selfcontained = FALSE)
+file.rename(mock_chart_filename,
+            file.path("tests/testthat/testdata", mock_chart_filename))
+dir_delete("mock_chart_files/")
+
+
