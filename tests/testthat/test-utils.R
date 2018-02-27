@@ -24,6 +24,14 @@ test_that("path_replace_cdn correctly replaces local path with CDN path", {
     expect_equal(test_result, expected_result)
 })
 
+test_that("path_replace_cdn correctly replaces local path with CDN path for a public asset", {
+    mock_path <- "mock_chart_files/plotlyjs-1.29.2/plotly-latest.min.js"
+    expected_result <- "https://cdn.plot.ly/plotly-1.29.2.min.js"
+    test_result <- path_replace_cdn(mock_path)
+
+    expect_equal(test_result, expected_result)
+})
+
 test_that("update_html_lines replaces path for all script lines", {
     mock_html_lines <- read_lines(mock_chart_filename)
     mock_target_lines <- get_script_lines(mock_chart_filename)
@@ -32,11 +40,15 @@ test_that("update_html_lines replaces path for all script lines", {
     test_updated_count <- sum(
         str_detect(test_html_lines, "<script src=\"https://cdn-www.synapse.org/research/")
     )
+    test_public_count <- sum(
+        str_detect(test_html_lines, "<script src=\"https://ajax.googleapis.com/ajax/libs/")
+    )
     test_target_count <- sum(
         str_detect(test_html_lines, "<script src=\"mock_chart_files/")
     )
 
-    expect_equal(test_updated_count, 6)
+    expect_equal(test_updated_count, 4)
+    expect_equal(test_public_count, 1)
     expect_equal(test_target_count, 0)
 })
 

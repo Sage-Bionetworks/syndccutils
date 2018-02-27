@@ -7,7 +7,7 @@ library(httr)
 
 # get script lines
 get_script_lines <- function(html_path) {
-    read_html(mock_chart_filename) %>%
+    read_html(html_path) %>%
         html_node("head") %>%
         html_children() %>%
         keep(function(x) {
@@ -25,7 +25,7 @@ get_script_lines <- function(html_path) {
 }
 
 get_link_lines <- function(html_path) {
-    read_html(mock_chart_filename) %>%
+    read_html(html_path) %>%
         html_node("head") %>%
         html_children() %>%
         keep(function(x) {
@@ -113,8 +113,20 @@ path_replace_cdn <- function(path,
                              repo = "https://cdn-www.synapse.org",
                              folder = "research") {
 
+    public_assets <- list(
+        "plotlyjs-1.29.2/plotly-latest.min.js" = "https://cdn.plot.ly/plotly-1.29.2.min.js",
+        "jquery-1.11.3/jquery.min.js" = "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js",
+        "font-awesome-4.5.0/css/font-awesome.min.css" = "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css",
+        "bootstrap-3.3.5/css/bootstrap.min.css" = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+    )
+
     path_root <- str_c(str_split(path, "/")[[1]][1], "/")
     path_folder <- str_replace(path, path_root, "")
+
+    if (path_folder %in% names(public_assets)) {
+        return(public_assets[[path_folder]])
+    }
+
     file.path(repo, folder, path_folder)
 }
 
@@ -122,6 +134,7 @@ path_replace_cdn <- function(path,
 # replace paths for a set of HTML lines
 update_html_lines <- function(html_lines, target_lines) {
     update_target_lines <- target_lines %>%
+        rowwise() %>%
         mutate(replacement_attr = path_replace_cdn(target_attr),
                updated_html = walk2(
                    target_attr, replacement_attr, function(x, y) {
@@ -129,10 +142,12 @@ update_html_lines <- function(html_lines, target_lines) {
                    }
                )
         ) %>%
+        ungroup() %>%
         select(-updated_html)
     html_lines
 }
 
+# update HTML files to use hosted JS assets
 fix_js_assets <- function(html_path) {
 
     fixed_html_path <- file.path(
