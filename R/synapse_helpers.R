@@ -95,8 +95,9 @@ save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
                             selfcontained = FALSE)
     fixed_chart_filename <- fix_js_assets(chart_filename)
 
-    syn_entity <- synStore(File(path = chart_filename, parentId = parent_id))
-    file.rename(chart_filename, file.path("html", chart_filename))
+    syn_entity <- synStore(File(path = fixed_chart_filename,
+                                parentId = parent_id))
+    file.rename(fixed_chart_filename, file.path("html", fixed_chart_filename))
     return(syn_entity)
 }
 
