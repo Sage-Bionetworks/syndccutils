@@ -36,3 +36,7 @@ vignettes/*.pdf
 # Local copies of HTML files
 html
 data
+
+# Other
+examples
+dashboards
