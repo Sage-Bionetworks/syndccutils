@@ -37,6 +37,9 @@ vignettes/*.pdf
 html
 data
 
-# Other
+# Other local stuff
 examples
 dashboards
+presentations
+images
+.DS_Store
