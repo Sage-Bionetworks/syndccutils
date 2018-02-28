@@ -41,7 +41,7 @@ mock_datafile_counts <- mock_fileview_df %>%
         list_cols = list_cols
     )
 
-mock_datafile_counts_dt <- datafile_counts %>%
+mock_datafile_counts_dt <- mock_datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
