@@ -515,6 +515,22 @@ def inviteMembers(args, syn):
         print('Member list is empty')
 
 
+def countPublications(syn, pub_med_view_id, project_ids):
+    """
+    Gets the publication view, slices the df by project id and gets the row number of the project and returns a list
+    of publication count that matches project_ids list
+
+    :param syn:
+    :param pub_med_view_id:
+    :param project_ids:
+    :return:
+    """
+    pubmed_view = syn.tableQuery('select * from {id}'.format(id=pub_med_view_id))
+    pubmed_df = pubmed_view.asDataFrame()
+
+    return [pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]), ].shape[0] for p_id in project_ids]
+
+
 def countNonSponsorTeamMembers(syn, project_ids, sponsor_or_public=[273948, 273949, 3334658, 3346139, 1418096, 3333546, 3346401, 2223305]):
     """
     Initial module to count team members of a project that are not sponsor or public
