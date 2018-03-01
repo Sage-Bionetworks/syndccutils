@@ -515,6 +515,20 @@ def inviteMembers(args, syn):
         print('Member list is empty')
 
 
+def getConsortiumProjectSynIds(syn, ID='syn10142562', sponsor_projects=['Multiple','Sage Bionetworks', 'Leidos']):
+    """
+
+    :param syn:
+    :param ID:
+    :param sponsor_projects:
+    :return:
+    """
+    view = syn.tableQuery('select * from {id}'.format(id=ID))
+    df = view.asDataFrame()
+    df = df.loc[~df.institution.isin(sponsor_projects)]
+    return df.id
+
+
 def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_files=['placeholder.txt']):
     """
     For a synapse project, walks through the folder hierarchy top-down and finds latest version of
