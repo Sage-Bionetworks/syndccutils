@@ -515,7 +515,30 @@ def inviteMembers(args, syn):
         print('Member list is empty')
 
 
-def getConsortiumProjectSynIds(syn, ID='syn10142562', sponsor_projects=['Multiple','Sage Bionetworks', 'Leidos']):
+def countNonSponsorTeamMembers(syn, project_ids, sponsor_or_public=[273948, 273949, 3334658, 3346139, 1418096, 3333546, 3346401, 2223305]):
+    """
+    Initial module to count team members of a project that are not sponsor or public
+
+    :param syn:
+    :param project_ids:
+    :param sponsor_or_public:
+    :return:
+    """
+
+    for i, synId in enumerate(project_ids):
+        acl = syn.restGET('/entity/{id}/acl'.format(id=synId))
+        pIds = acl['resourceAccess']
+        teams = [p['principalId'] for p in pIds if p['principalId'] not in sponsor_or_public]
+        for team_id in teams:
+            member_result = syn.restGET('/teamMembers/{id}'.format(id=team_id))
+            if member_result['totalNumberOfResults'] != 0:
+                members = [m['member'] for m in member_result['results']]
+                nonsponsor_ids = [int(m['ownerId']) for m in members if int(m['ownerId']) not in sponsor_or_public]
+            # print df.iloc[[i]], '\n', synId, team_id, member_result, nonsponsor_ids, len(nonsponsor_ids)
+            print(nonsponsor_ids, len(nonsponsor_ids))
+
+
+def getConsortiumProjectSynIds(syn, ID='syn10142562', sponsor_projects=['Multiple', 'Sage Bionetworks', 'Leidos']):
     """
 
     :param syn:
