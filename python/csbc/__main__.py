@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
+from future.utils import iteritems
 import csbc
 import os
 import re
@@ -512,6 +513,56 @@ def inviteMembers(args, syn):
             print(post_dict)
     else:
         print('Member list is empty')
+
+
+def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_files=['placeholder.txt']):
+    """
+    For a synapse project, walks through the folder hierarchy top-down and finds latest version of
+    file and folder synapse types for counting purposes.
+
+    :param syn:
+    :param id:
+    :param sponsors_folder:
+    :param dummy_files:
+    :return:
+    """
+    project_tree = {}
+    has_children = []
+    file_or_folder = ['org.sagebionetworks.repo.model.Folder', 'org.sagebionetworks.repo.model.FileEntity']
+
+    # Get the list of project parent tree-node children filtered by file or folder type
+    project_tree_parent_nodes = [entity for entity in list(syn.getChildren(ID)) if entity['type'] in file_or_folder]
+
+    # Get parent folders that are not in CSBC reporting folder
+    parent_folders = [(f['name'], f['id']) for f in project_tree_parent_nodes if f['type'] in
+                      'org.sagebionetworks.repo.model.Folder' and f['name'] not in sponsors_folder]
+
+    # Initialize a semi B-tree struct for the project hierarchy
+    project_tree = {k: [] for k in parent_folders}
+
+    for head, tail in iteritems(project_tree):
+        # Go through the head node: get the synapse id of folder and add it's folder children to has children list
+        extended_tail = [entity for entity in list(syn.getChildren(head[1])) if entity['type'] in file_or_folder]
+        tail.extend(extended_tail)
+        has_children.extend([f['id']for f in extended_tail if f['type'] in 'org.sagebionetworks.repo.model.Folder' and
+                             f['name'] not in sponsors_folder])
+
+        # Now enter the tail node list and walk through the hierarchy
+        while len(has_children) > 0:
+            for folder_synId in has_children:
+                extended_tail = [entity for entity in list(syn.getChildren(folder_synId)) if entity['type'] in
+                                 file_or_folder]
+                tail.extend(extended_tail)
+                has_children.remove(folder_synId)
+                has_children.extend([f['id']for f in extended_tail if f['type'] in
+                                     'org.sagebionetworks.repo.model.Folder' and f['name'] not in sponsors_folder])
+        #print head, tail, has_children
+
+    for key, value in project_tree.items():
+        print(key[0], len([v for v in value if v['type'] in 'org.sagebionetworks.repo.model.FileEntity' and
+                           v['name'] not in dummy_files]))
+
+    return project_tree
 
 
 def buildParser():
