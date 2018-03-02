@@ -235,6 +235,7 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
         citation = soup.find_all(attrs={"class": "cit"})[0].get_text()
         print(citation)
 
+        date = None
         try:
             date = citation[1 + citation.index('.'):citation.index(';')].split()
         except:
@@ -243,7 +244,13 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
         if date is None:
             try:
                 date = citation[1 + citation.index('.'):citation.index('.')].split()
+            except:
+                pass
 
+        if date is not None and len(date) == 0:
+            try:
+                date = citation[1 + citation.index('.'):].strip()
+                date = date[:date.index('.')].strip().split()
             except:
                 pass
 
@@ -642,8 +649,7 @@ def buildParser():
 
     parser_pubmed.add_argument('--projectId', help='Synapse project to create the data policy table', required=True,
                                type=str)
-    parser_pubmed.add_argument('--grantviewId', help='A table synapse id containing the grantNumber field',
-                               required=True, type=str)
+    parser_pubmed.add_argument('--grantviewId', help='A table synapse id containing the grantNumber field', type=str)
     parser_pubmed.add_argument('--tableName', help='Synapse table name that would hold pubmed scrape info', type=str)
     parser_pubmed.add_argument('--tableId', help='Synapse table id that holds the pubmed scrape info', type=str)
 
