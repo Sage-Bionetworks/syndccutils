@@ -572,7 +572,7 @@ def getConsortiumProjectSynIds(syn, ID='syn10142562', sponsor_projects=['Multipl
     view = syn.tableQuery('select * from {id}'.format(id=ID))
     df = view.asDataFrame()
     df = df.loc[~df.institution.isin(sponsor_projects)]
-    return df.id
+    return list(df.id)
 
 
 def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_files=['placeholder.txt']):
