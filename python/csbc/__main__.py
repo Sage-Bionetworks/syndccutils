@@ -575,6 +575,16 @@ def getConsortiumProjectSynIds(syn, ID='syn10142562', sponsor_projects=['Multipl
     return list(df.id)
 
 
+def info(syn, ID):
+    """
+    Gets the latest version information with annotations and initial cretedon and modifiedby date
+    :param ID:
+    :return:
+    """
+    uri = '/entity/{id}'.format(id=ID)
+    return syn.restGET(uri)
+
+
 def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_files=['placeholder.txt']):
     """
     For a synapse project, walks through the folder hierarchy top-down and finds latest version of
