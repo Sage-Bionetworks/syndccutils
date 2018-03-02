@@ -12,7 +12,7 @@ library(synapser)
 #' @examples
 get_table_df <- function(table_id) {
     syn_table_data <- synTableQuery(sprintf("select * from %s", table_id))
-    return(as.data.frame(syn_table_data))
+    return(as.data.frame(syn_table_data)%>%select(-ROW_ID,-ROW_VERSION))
 }
 
 
@@ -46,7 +46,7 @@ save_table <- function(project_id, table_name, table_df) {
         message(sprintf("updating table: %s", table_id))
         # if table exists, get data from Synapse before updating
         syn_table_data <- synTableQuery(sprintf("select * from %s", table_id))
-        syn_table_df <- as.data.frame(syn_table_data)
+        syn_table_df <- as.data.frame(syn_table_data)%>%select(-ROW_ID,-ROW_VERSION)
 
         # check whether table values have changed at all before updating
         if (!all_equal(platform_workflow_df, syn_table_df) == TRUE) {
@@ -120,23 +120,29 @@ datatable_to_synapse <-function(dt, parent_id, table_name) {
             integer='INTEGER',
             factor='STRING')})
 
-    tcols<-sapply(1:ncol(dt),function(x) Column(name=col.name[[x]],type=col.type[x],maximumSize=256))
+    tcols<-sapply(1:ncol(dt),function(x) {
+        if(col.type[x]=='STRING'){
+            if(col.name[x]%in%c('viewFiles','View_Files'))
+                Column(name=col.name[[x]],columnType='LINK',maximumSize=as.integer(512))
+            else
+                Column(name=col.name[[x]],columnType=col.type[x],maximumSize=as.integer(256))
+        }else
+            Column(name=col.name[[x]],columnType=col.type[x])
+    })
 
-    #current jira open for this: https://sagebionetworks.jira.com/browse/SYNPY-603
-  #  tcols[[which(sapply(tcols,function(x) x$name)%in%c('viewFiles','View_Files'))]]$type<-'LINK'
-
-    schema <- Schema(name=table_name,
+     schema.obj <- Schema(name=table_name,
             columns=tcols,
             parent=synGet(parent_id))
 
-    tab<-synapser::Table(schema,as.data.frame(dt))
+    tab<-synapser::Table(schema.obj,as.data.frame(dt))
 
     syn_id <- synapser::synStore(tab)
+#this is the jira:  https://sagebionetworks.jira.com/browse/SYNPY-603
+#    all.rows <-synapser::synTableQuery(paste('select * from',syn_id$tableId))
 
-    all.rows <-synapser::synTableQuery(paste('select * from',syn_id))
-    synDelete(all.res$asRowSet())
-    #synapseClient::synDeleteRows(all.rows)
-    syn_id <-synapser::synStore(synapser::Table(schema,dt))
+    #synDelete(all.rows$asRowSet())
+
+#    syn_id <-synapser::synStore(synapser::Table(schema,dt))
 
     return(syn_id)
 

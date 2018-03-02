@@ -100,8 +100,8 @@ datafile_counts_dt <- datafile_counts %>%
 
 syn_dt_entity <- datatable_to_synapse(datafile_counts_dt,synproject_id, 'Assays By Project')
 #    save_datatable(parent_id, table_filename, .)
-tcolnames<-sapply(syn_dt_entity@schema@columns@content,function(x) x$name)
-wiki_string <- simple_plots_wiki_string(syn_dt_entity@schema@properties$id,tcolnames[1:2],tcolnames[3],title='Assays By Project')
+tcolnames<-names(as.data.frame(syn_dt_entity))
+wiki_string <- simple_plots_wiki_string(syn_dt_entity$tableId,tcolnames[1:2],tcolnames[3],title='Assays By Project')
 # view table
 
 datafile_counts <- new_fileview_df %>%
