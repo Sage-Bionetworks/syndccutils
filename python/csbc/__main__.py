@@ -577,7 +577,7 @@ def getConsortiumProjectSynIds(syn, ID='syn10142562', sponsor_projects=['Multipl
 
 def info(syn, ID):
     """
-    Gets the latest version information with annotations and initial cretedon and modifiedby date
+    Gets the latest version information with annotations and initial createdon and modifiedby date
     :param ID:
     :return:
     """
