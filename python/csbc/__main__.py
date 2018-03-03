@@ -647,6 +647,47 @@ def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_file
     return project_tree
 
 
+def summaryReport(args, syn):
+    """
+
+    :param args:
+    :param syn:
+    :return:
+    """
+    dummy_files = ['placeholder.txt']
+
+    df = getConsortiumProjectDF(syn)
+    team_info = countNonSponsorTeamMembers(syn, df.id)
+
+    info = pandas.DataFrame(dict(
+        project_ids=df.id,
+        institution=df.institution,
+        team_profileId=team_info['team_ids'],
+        team_members_profileId=team_info['member_ids'],
+        team_members_count=team_info['member_count']))
+
+    project_trees = [getFolderAndFileHierarchy(syn, id) for id in info.project_ids]
+    project_frames = []
+
+    for i, tree in enumerate(project_trees):
+        d = []
+        for key, value in tree.items():
+            files = [v for v in value if
+                     v['type'] in 'org.sagebionetworks.repo.model.FileEntity' and v['name'] not in dummy_files]
+            file_info = [syn.restGET('/entity/{id}'.format(id=f['id'])) for f in files]
+            file_annotations_count = [
+                (len(syn.restGET('/entity/{id}/annotations'.format(id=f['id']))['stringAnnotations']) > 0) for f in
+                files]
+            d.append(dict(folder=key[0], file_count=len(files), file_with_annotations_count=sum(file_annotations_count),
+                          file_info=file_info, project_ids=info.project_ids.iloc[i],
+                          institution=info.institution.iloc[i], team_profileId=info.team_profileId.iloc[i],
+                          team_members_profileId=info.team_members_profileId.iloc[i],
+                          team_members_count=info.team_members_count.iloc[i]))
+        project_frames.append(pandas.DataFrame(d))
+    result = pandas.concat(project_frames)
+    result.to_csv('csbc_summary.csv')
+
+
 def buildParser():
     """
 
@@ -688,8 +729,10 @@ def buildParser():
                                   required=False, type=str)
     parser_invitemembers.add_argument('--csbc', action='store_true', help='If members are in CSBC consortium else it would'
                                                                    'look for PSON members')
-
     parser_invitemembers.set_defaults(func=inviteMembers)
+
+    parser_summary = subparsers.add_parser('summary', help='Create consortium summary table on progress counts')
+    parser_summary.set_defaults(func=summaryReport)
 
     return parser
 
