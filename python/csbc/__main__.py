@@ -547,7 +547,9 @@ def countNonSponsorTeamMembers(syn, project_ids, sponsor_or_public=[273948, 2739
     :param sponsor_or_public:
     :return:
     """
-
+    ids = []
+    count = []
+    team_ids = []
     for i, synId in enumerate(project_ids):
         acl = syn.restGET('/entity/{id}/acl'.format(id=synId))
         pIds = acl['resourceAccess']
@@ -558,10 +560,14 @@ def countNonSponsorTeamMembers(syn, project_ids, sponsor_or_public=[273948, 2739
                 members = [m['member'] for m in member_result['results']]
                 nonsponsor_ids = [int(m['ownerId']) for m in members if int(m['ownerId']) not in sponsor_or_public]
             # print df.iloc[[i]], '\n', synId, team_id, member_result, nonsponsor_ids, len(nonsponsor_ids)
-            print(nonsponsor_ids, len(nonsponsor_ids))
+            # print(nonsponsor_ids, len(nonsponsor_ids))
+                ids.append(nonsponsor_ids)
+                count.append(len(nonsponsor_ids))
+                team_ids.append(team_id)
+    return dict(team_ids=team_ids, member_ids=ids, member_count=count)
 
 
-def getConsortiumProjectSynIds(syn, ID='syn10142562', sponsor_projects=['Multiple', 'Sage Bionetworks', 'Leidos']):
+def getConsortiumProjectDF(syn, ID='syn10142562', sponsor_projects=['Multiple', 'Sage Bionetworks', 'Leidos']):
     """
 
     :param syn:
@@ -572,7 +578,8 @@ def getConsortiumProjectSynIds(syn, ID='syn10142562', sponsor_projects=['Multipl
     view = syn.tableQuery('select * from {id}'.format(id=ID))
     df = view.asDataFrame()
     df = df.loc[~df.institution.isin(sponsor_projects)]
-    return list(df.id)
+    df.reset_index(inplace=True)
+    return df
 
 
 def info(syn, ID):
@@ -602,6 +609,11 @@ def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_file
 
     # Get the list of project parent tree-node children filtered by file or folder type
     project_tree_parent_nodes = [entity for entity in list(syn.getChildren(ID)) if entity['type'] in file_or_folder]
+
+    organize_files = [(f['name'], f['id']) for f in project_tree_parent_nodes if f['type'] in
+                      'org.sagebionetworks.repo.model.FileEntity']
+    if organize_files:
+        print('files of project ', ID, '\n', 'posibly need to be placed in folders. \n', organize_files)
 
     # Get parent folders that are not in CSBC reporting folder
     parent_folders = [(f['name'], f['id']) for f in project_tree_parent_nodes if f['type'] in
