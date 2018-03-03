@@ -687,9 +687,19 @@ def summaryReport(args, syn):
             file_annotations_count = [
                 (len(syn.restGET('/entity/{id}/annotations'.format(id=f['id']))['stringAnnotations']) > 0) for f in
                 files]
-            d.append(dict(folder=key[0], file_count=len(files), file_with_annotations_count=sum(file_annotations_count),
-                          file_info=file_info, project_ids=info.project_ids.iloc[i],
-                          institution=info.institution.iloc[i], team_profileId=info.team_profileId.iloc[i],
+            if file_annotations_count:
+                file_annotations = [syn.restGET('/entity/{id}/annotations'.format(id=f['id']))['stringAnnotations']
+                                    for f in files]
+            else:
+                file_annotations = None
+            d.append(dict(folder=key[0],
+                          file_count=len(files),
+                          file_annotations_count=sum(file_annotations_count),
+                          file_annotations=file_annotations,
+                          file_info=file_info,
+                          project_ids=info.project_ids.iloc[i],
+                          institution=info.institution.iloc[i],
+                          team_profileId=info.team_profileId.iloc[i],
                           team_members_profileId=info.team_members_profileId.iloc[i],
                           team_members_count=info.team_members_count.iloc[i],
                           pubmed_publication=info.pubmed_publication.iloc[i],
