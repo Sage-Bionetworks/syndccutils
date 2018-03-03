@@ -522,7 +522,7 @@ def inviteMembers(args, syn):
         print('Member list is empty')
 
 
-def countPublications(syn, pub_med_view_id, project_ids):
+def countPublications(syn, project_ids, pub_med_view_id='syn10923842'):
     """
     Gets the publication view, slices the df by project id and gets the row number of the project and returns a list
     of publication count that matches project_ids list
@@ -535,7 +535,12 @@ def countPublications(syn, pub_med_view_id, project_ids):
     pubmed_view = syn.tableQuery('select * from {id}'.format(id=pub_med_view_id))
     pubmed_df = pubmed_view.asDataFrame()
 
-    return [pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]), ].shape[0] for p_id in project_ids]
+    pubmed_counts = dict(
+        publication_count=[pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]),].shape[0] for p_id in project_ids],
+        geodata_produced_count=[len(pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(','))
+                                 for p_id in project_ids])
+
+    return pubmed_counts
 
 
 def countNonSponsorTeamMembers(syn, project_ids, sponsor_or_public=[273948, 273949, 3334658, 3346139, 1418096, 3333546, 3346401, 2223305]):
@@ -658,18 +663,22 @@ def summaryReport(args, syn):
 
     df = getConsortiumProjectDF(syn)
     team_info = countNonSponsorTeamMembers(syn, df.id)
+    pubmed_info = countPublications(syn, df.id)
 
     info = pandas.DataFrame(dict(
         project_ids=df.id,
         institution=df.institution,
         team_profileId=team_info['team_ids'],
         team_members_profileId=team_info['member_ids'],
-        team_members_count=team_info['member_count']))
+        team_members_count=team_info['member_count'],
+        pubmed_publication=pubmed_info['publication_count'],
+        geodata_produced_count=pubmed_info['geodata_produced_count']))
 
     project_trees = [getFolderAndFileHierarchy(syn, id) for id in info.project_ids]
     project_frames = []
 
     for i, tree in enumerate(project_trees):
+        print(info.project_ids.iloc[i])
         d = []
         for key, value in tree.items():
             files = [v for v in value if
@@ -682,8 +691,11 @@ def summaryReport(args, syn):
                           file_info=file_info, project_ids=info.project_ids.iloc[i],
                           institution=info.institution.iloc[i], team_profileId=info.team_profileId.iloc[i],
                           team_members_profileId=info.team_members_profileId.iloc[i],
-                          team_members_count=info.team_members_count.iloc[i]))
+                          team_members_count=info.team_members_count.iloc[i],
+                          pubmed_publication=info.pubmed_publication.iloc[i],
+                          geodata_produced_count=info.geodata_produced_count.iloc[i]))
         project_frames.append(pandas.DataFrame(d))
+        print(project_frames)
     result = pandas.concat(project_frames)
     result.to_csv('csbc_summary.csv')
 
