@@ -537,7 +537,7 @@ def countPublications(syn, project_ids, pub_med_view_id='syn10923842'):
 
     pubmed_counts = dict(
         publication_count=[pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]),].shape[0] for p_id in project_ids],
-        geodata_produced_count=[len(pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(','))
+        geodata_produced_count=[len(pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(',')) - 1
                                  for p_id in project_ids])
 
     return pubmed_counts
