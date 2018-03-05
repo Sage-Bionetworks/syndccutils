@@ -678,7 +678,7 @@ def getAnnotationCounts(annotList, annotation):
         annot_files_per_study = [len([v for v in values if v in item]) for item in annot_files]
 
         annot_info = dict(annot_files=annot_files,
-                          annot_file_counts=annot_file_counts,
+                          annot_files_counts=annot_file_counts,
                           annot_files_per_annot_counts=annot_files_per_study)
     return annot_info
 
