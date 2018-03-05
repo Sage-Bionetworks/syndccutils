@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 from future.utils import iteritems
+from itertools import chain
 import csbc
 import os
 import re
@@ -122,7 +123,7 @@ def template(args, syn):
     else:
         teamId = None
 
-    if consortium not in ['U54','U01']:
+    if consortium not in ['U54', 'U01']:
 
         print("Please provide an existing consortium Id")
 
@@ -324,7 +325,7 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
 
                 if '/' not in g.split()[1] and '/' in g.split()[2]:
                     g = ' '.join([grants[0].split()[0], ''.join(grants[0].split()[1:3]), grants[0].split()[3],
-                              grants[0].split()[4]])
+                                  grants[0].split()[4]])
 
                 cleangrants.append(g)
 
@@ -373,7 +374,8 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
             gseIds = ''
 
         rowDf = pandas.DataFrame(
-            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, 'No', '']], columns=columns)
+            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, 'No', '']],
+            columns=columns)
         rows.append(rowDf)
 
     tableDf = pandas.concat(rows)
@@ -537,13 +539,18 @@ def countPublications(syn, project_ids, pub_med_view_id='syn10923842'):
 
     pubmed_counts = dict(
         publication_count=[pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]),].shape[0] for p_id in project_ids],
-        geodata_produced_count=[len(pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(',')) - 1
-                                 for p_id in project_ids])
+        geodata_produced_count=[len(
+            pubmed_df.loc[pubmed_df['CSBC PSON Center'].isin([p_id]), 'Data Location'].str.cat(sep=', ',
+                                                                                               na_rep=None).split(
+                ',')) - 1
+                                for p_id in project_ids])
 
     return pubmed_counts
 
 
-def countNonSponsorTeamMembers(syn, project_ids, sponsor_or_public=[273948, 273949, 3334658, 3346139, 1418096, 3333546, 3346401, 2223305]):
+def countNonSponsorTeamMembers(syn, project_ids,
+                               sponsor_or_public=[273948, 273949, 3334658, 3346139, 1418096, 3333546, 3346401,
+                                                  2223305]):
     """
     Initial module to count team members of a project that are not sponsor or public
 
@@ -564,8 +571,8 @@ def countNonSponsorTeamMembers(syn, project_ids, sponsor_or_public=[273948, 2739
             if member_result['totalNumberOfResults'] != 0:
                 members = [m['member'] for m in member_result['results']]
                 nonsponsor_ids = [int(m['ownerId']) for m in members if int(m['ownerId']) not in sponsor_or_public]
-            # print df.iloc[[i]], '\n', synId, team_id, member_result, nonsponsor_ids, len(nonsponsor_ids)
-            # print(nonsponsor_ids, len(nonsponsor_ids))
+                # print df.iloc[[i]], '\n', synId, team_id, member_result, nonsponsor_ids, len(nonsponsor_ids)
+                # print(nonsponsor_ids, len(nonsponsor_ids))
                 ids.append(nonsponsor_ids)
                 count.append(len(nonsponsor_ids))
                 team_ids.append(team_id)
@@ -631,7 +638,7 @@ def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_file
         # Go through the head node: get the synapse id of folder and add it's folder children to has children list
         extended_tail = [entity for entity in list(syn.getChildren(head[1])) if entity['type'] in file_or_folder]
         tail.extend(extended_tail)
-        has_children.extend([f['id']for f in extended_tail if f['type'] in 'org.sagebionetworks.repo.model.Folder' and
+        has_children.extend([f['id'] for f in extended_tail if f['type'] in 'org.sagebionetworks.repo.model.Folder' and
                              f['name'] not in sponsors_folder])
 
         # Now enter the tail node list and walk through the hierarchy
@@ -641,15 +648,39 @@ def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_file
                                  file_or_folder]
                 tail.extend(extended_tail)
                 has_children.remove(folder_synId)
-                has_children.extend([f['id']for f in extended_tail if f['type'] in
+                has_children.extend([f['id'] for f in extended_tail if f['type'] in
                                      'org.sagebionetworks.repo.model.Folder' and f['name'] not in sponsors_folder])
-        #print head, tail, has_children
+                # print head, tail, has_children
 
     for key, value in project_tree.items():
         print(key[0], len([v for v in value if v['type'] in 'org.sagebionetworks.repo.model.FileEntity' and
                            v['name'] not in dummy_files]))
 
     return project_tree
+
+
+def getAnnotationCounts(annotList, annotation):
+    """
+
+    :param annotList:
+    :param annotation:
+    :return:
+    """
+    df = pandas.DataFrame.from_records(annotList)
+    annot_info = None
+
+    if not df.empty and annotation in df.columns:
+        values = list(chain(*df[annotation]))
+
+        annot_files = list(set(values))
+        annot_file_counts = len(annot_files)
+
+        annot_files_per_study = [len([v for v in values if v in item]) for item in annot_files]
+
+        annot_info = dict(annot_files=annot_files,
+                          annot_file_counts=annot_file_counts,
+                          annot_files_per_study_counts=annot_files_per_study)
+    return annot_info
 
 
 def summaryReport(args, syn):
@@ -740,17 +771,20 @@ def buildParser():
 
     parser_pubmed.set_defaults(func=pubmed)
 
-    parser_invitemembers = subparsers.add_parser('invitemembers', help='adds team members by synapse profile id or emails to'
-                                                               ' an existing team on synape')
+    parser_invitemembers = subparsers.add_parser('invitemembers',
+                                                 help='adds team members by synapse profile id or emails to'
+                                                      ' an existing team on synape')
 
-    parser_invitemembers.add_argument('--tableId', help='Synapse table id containing members profile ids', required=True,
-                               type=str)
+    parser_invitemembers.add_argument('--tableId', help='Synapse table id containing members profile ids',
+                                      required=True,
+                                      type=str)
     parser_invitemembers.add_argument('--teamId', help='Synapse team id', required=True, type=str)
     parser_invitemembers.add_argument('--message', help='Message to be sent along with invitation. Note: This message '
-                                                    'would be in addition to the standard invite template',
-                                  required=False, type=str)
-    parser_invitemembers.add_argument('--csbc', action='store_true', help='If members are in CSBC consortium else it would'
-                                                                   'look for PSON members')
+                                                        'would be in addition to the standard invite template',
+                                      required=False, type=str)
+    parser_invitemembers.add_argument('--csbc', action='store_true',
+                                      help='If members are in CSBC consortium else it would'
+                                           'look for PSON members')
     parser_invitemembers.set_defaults(func=inviteMembers)
 
     parser_summary = subparsers.add_parser('summary', help='Create consortium summary table on progress counts')
