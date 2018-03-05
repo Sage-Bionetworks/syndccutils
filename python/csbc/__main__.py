@@ -726,9 +726,9 @@ def summaryReport(args, syn):
                                     for f in files]
                 study_dict = getAnnotationCounts(file_annotations, 'study')
                 if study_dict:
-                    annot_files_per_study_counts = study_dict.annot_files_per_annot_counts
-                    annot_files = study_dict.annot_files
-                    annot_files_count = study_dict.annot_files_count
+                    annot_files_per_study_counts = study_dict['annot_files_per_annot_counts']
+                    annot_files = study_dict['annot_files']
+                    annot_files_count = study_dict['annot_files_count']
                 else:
                     annot_files_per_study_counts = None
                     annot_files = None
