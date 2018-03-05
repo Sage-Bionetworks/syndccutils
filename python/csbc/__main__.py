@@ -679,7 +679,7 @@ def getAnnotationCounts(annotList, annotation):
 
         annot_info = dict(annot_files=annot_files,
                           annot_file_counts=annot_file_counts,
-                          annot_files_per_study_counts=annot_files_per_study)
+                          annot_files_per_annot_counts=annot_files_per_study)
     return annot_info
 
 
@@ -699,6 +699,9 @@ def summaryReport(args, syn):
     info = pandas.DataFrame(dict(
         project_ids=df.id,
         institution=df.institution,
+        grantNumber=df.grantNumber,
+        grantType=df.grantType,
+        consortium=df.consortium,
         team_profileId=team_info['team_ids'],
         team_members_profileId=team_info['member_ids'],
         team_members_count=team_info['member_count'],
@@ -721,15 +724,34 @@ def summaryReport(args, syn):
             if file_annotations_count:
                 file_annotations = [syn.restGET('/entity/{id}/annotations'.format(id=f['id']))['stringAnnotations']
                                     for f in files]
+                study_dict = getAnnotationCounts(file_annotations, 'study')
+                if study_dict:
+                    annot_files_per_study_counts = study_dict.annot_files_per_annot_counts
+                    annot_files = study_dict.annot_files
+                    annot_files_count = study_dict.annot_files_count
+                else:
+                    annot_files_per_study_counts = None
+                    annot_files = None
+                    annot_files_count = None
             else:
                 file_annotations = None
+                annot_files_per_study_counts = None
+                annot_files = None
+                annot_files_count = None
+
             d.append(dict(folder=key[0],
                           file_count=len(files),
                           file_annotations_count=sum(file_annotations_count),
                           file_annotations=file_annotations,
+                          annot_files=None,
+                          annot_files_count=None,
+                          annot_files_per_study_counts=None,
                           file_info=file_info,
                           project_ids=info.project_ids.iloc[i],
                           institution=info.institution.iloc[i],
+                          grantNumber=info.grantNumber.iloc[i],
+                          grantType=info.grantType.iloc[i],
+                          consortium=info.consortium.iloc[i],
                           team_profileId=info.team_profileId.iloc[i],
                           team_members_profileId=info.team_members_profileId.iloc[i],
                           team_members_count=info.team_members_count.iloc[i],
