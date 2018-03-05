@@ -36,3 +36,10 @@ vignettes/*.pdf
 # Local copies of HTML files
 html
 data
+
+# Other local stuff
+examples
+dashboards
+presentations
+images
+.DS_Store

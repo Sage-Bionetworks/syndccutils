@@ -89,15 +89,15 @@ save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
     if (!dir.exists("html")) {
         dir.create("html")
     }
-    defaultHeight <- plot_object$sizingPolicy$defaultHeight
-    chartHeight <- plot_object$height
-  #  if (!is.null(defaultHeight) && (defaultHeight != chartHeight)) {
-  #      plot_object$sizingPolicy$defaultHeight <- chartHeight
-  #  }
+
     chart_widget <- plotly::as_widget(plot_object)
-    htmlwidgets::saveWidget(chart_widget, chart_filename)
-    syn_entity <- synStore(File(path = chart_filename, parentId = parent_id))
-    file.rename(chart_filename, file.path("html", chart_filename))
+    htmlwidgets::saveWidget(chart_widget, chart_filename,
+                            selfcontained = FALSE)
+    fixed_chart_filename <- fix_js_assets(chart_filename)
+
+    syn_entity <- synStore(File(path = fixed_chart_filename,
+                                parentId = parent_id))
+    file.rename(fixed_chart_filename, file.path("html", fixed_chart_filename))
     return(syn_entity)
 }
 
@@ -106,8 +106,11 @@ save_datatable <- function(parent_id, dt_filename, dt_widget) {
         dir.create("html")
     }
     htmlwidgets::saveWidget(dt_widget, dt_filename)
-    syn_entity <- synStore(File(path = dt_filename, parentId = parent_id))
-    file.rename(dt_filename, file.path("html", dt_filename))
+    fixed_dt_filename <- fix_js_assets(dt_filename)
+
+    syn_entity <- synStore(File(path = fixed_dt_filename,
+                                parentId = parent_id))
+    file.rename(fixed_dt_filename, file.path("html", fixed_dt_filename))
     return(syn_entity)
 }
 
