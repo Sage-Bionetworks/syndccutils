@@ -711,7 +711,7 @@ def summaryReport(args, syn):
     project_trees = [getFolderAndFileHierarchy(syn, id) for id in info.project_ids]
     project_frames = []
 
-    for i, tree in enumerate(project_trees[0:1]):
+    for i, tree in enumerate(project_trees):
         print(info.project_ids.iloc[i])
         d = []
         for key, value in tree.items():
