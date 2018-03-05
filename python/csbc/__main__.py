@@ -673,13 +673,13 @@ def getAnnotationCounts(annotList, annotation):
         values = list(chain(*df[annotation]))
 
         annot_files = list(set(values))
-        annot_file_counts = len(annot_files)
+        annot_file_count = len(annot_files)
 
-        annot_files_per_study = [len([v for v in values if v in item]) for item in annot_files]
+        annot_files_per_annot = [len([v for v in values if v in item]) for item in annot_files]
 
         annot_info = dict(annot_files=annot_files,
-                          annot_files_counts=annot_file_counts,
-                          annot_files_per_annot_counts=annot_files_per_study)
+                          annot_files_count=annot_file_count,
+                          annot_files_per_annot_count=annot_files_per_annot)
     return annot_info
 
 
@@ -711,7 +711,7 @@ def summaryReport(args, syn):
     project_trees = [getFolderAndFileHierarchy(syn, id) for id in info.project_ids]
     project_frames = []
 
-    for i, tree in enumerate(project_trees):
+    for i, tree in enumerate(project_trees[0:1]):
         print(info.project_ids.iloc[i])
         d = []
         for key, value in tree.items():
@@ -726,16 +726,16 @@ def summaryReport(args, syn):
                                     for f in files]
                 study_dict = getAnnotationCounts(file_annotations, 'study')
                 if study_dict:
-                    annot_files_per_study_counts = study_dict['annot_files_per_annot_counts']
+                    annot_files_per_study_count = study_dict['annot_files_per_annot_count']
                     annot_files = study_dict['annot_files']
                     annot_files_count = study_dict['annot_files_count']
                 else:
-                    annot_files_per_study_counts = None
+                    annot_files_per_study_count = None
                     annot_files = None
                     annot_files_count = None
             else:
                 file_annotations = None
-                annot_files_per_study_counts = None
+                annot_files_per_study_count = None
                 annot_files = None
                 annot_files_count = None
 
@@ -743,9 +743,9 @@ def summaryReport(args, syn):
                           file_count=len(files),
                           file_annotations_count=sum(file_annotations_count),
                           file_annotations=file_annotations,
-                          annot_files=None,
-                          annot_files_count=None,
-                          annot_files_per_study_counts=None,
+                          annot_files=annot_files,
+                          annot_files_count=annot_files_count,
+                          annot_files_per_study_count=annot_files_per_study_count,
                           file_info=file_info,
                           project_ids=info.project_ids.iloc[i],
                           institution=info.institution.iloc[i],
@@ -760,7 +760,7 @@ def summaryReport(args, syn):
         project_frames.append(pandas.DataFrame(d))
         print(project_frames)
     result = pandas.concat(project_frames)
-    result.to_csv('csbc_summary.csv')
+    result.to_csv('csbc_summary_iter2.csv')
 
 
 def buildParser():
