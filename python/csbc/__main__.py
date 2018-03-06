@@ -731,7 +731,8 @@ def summaryReport(args, syn):
         d = []
         for key, value in tree.items():
             files = [v for v in value if
-                     v['type'] in 'org.sagebionetworks.repo.model.FileEntity' and v['name'] not in dummy_files]
+                     v['type'] in 'org.sagebionetworks.repo.model.FileEntity' and v['name'] not in dummy_files and
+                     v['createdOn'] <= '2017-04-01T00:00:00.000Z']
             file_info = [syn.restGET('/entity/{id}'.format(id=f['id'])) for f in files]
             file_annotations_count = [
                 (len(syn.restGET('/entity/{id}/annotations'.format(id=f['id']))['stringAnnotations']) > 0) for f in
