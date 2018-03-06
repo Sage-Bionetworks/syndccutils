@@ -16,6 +16,7 @@ import six
 from Bio import Entrez
 from bs4 import BeautifulSoup
 import pandas
+import numpy
 import datetime
 import synapseutils
 import synapseclient
@@ -668,6 +669,7 @@ def getAnnotationCounts(annotList, annotation):
     :return:
     """
     df = pandas.DataFrame.from_records(annotList)
+    df = df.astype(object).replace(numpy.nan, '')
     annot_info = None
 
     if not df.empty and annotation in df.columns:
