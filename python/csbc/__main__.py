@@ -7,6 +7,7 @@ from itertools import chain
 import csbc
 import os
 import re
+import sys
 import requests
 import argparse
 import getpass
