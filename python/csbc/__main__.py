@@ -683,6 +683,21 @@ def getAnnotationCounts(annotList, annotation):
     return annot_info
 
 
+def unlist(column):
+    """
+
+    :param column:
+    :return:
+    """
+    l = []
+    for i, o in enumerate(column):
+        if column.iloc[i]:
+            l.append(", ".join(map(str, column.iloc[i])))
+        else:
+            l.append(None)
+    return l
+
+
 def summaryReport(args, syn):
     """
 
