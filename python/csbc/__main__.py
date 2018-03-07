@@ -581,7 +581,7 @@ def countNonSponsorTeamMembers(syn, project_ids,
     return dict(team_ids=team_ids, member_ids=ids, member_count=count)
 
 
-def getConsortiumProjectDF(syn, ID='syn10142562', sponsor_projects=['Multiple', 'Sage Bionetworks', 'Leidos']):
+def getConsortiumProjectDF(syn, ID='syn10142562', sponsor_projects=['Multiple', 'Sage Bionetworks']):
     """
 
     :param syn:
