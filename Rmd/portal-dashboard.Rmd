@@ -1,0 +1,159 @@
+---
+title: "CSBC/PS-ON Knowledge Portal"
+subtitle: "Resource & Activity Overview"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: lumen
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(DT)
+```
+
+```{r, include=FALSE}
+# csbc_summary_df <- readr::read_tsv("../data/csbc_summary_wo_metadata.tsv")
+csbc_summary_df <- readr::read_tsv("../data/csbc_summary/csbc_summary.tsv",
+                                   na = c("", "NA", "null", "[]"))
+```
+
+```{r}
+file_annotations_df <- csbc_summary_df %>% 
+    select(X1, file_annotations) %>% 
+    mutate(file_annotations = map(file_annotations, function(x) {
+        if (is.na(x)) {
+            data.frame()
+        } else {
+            jsonlite::fromJSON(x)
+        }
+    })) %>% 
+    unnest(file_annotations)
+file_info_df <- csbc_summary_df %>% 
+    select(file_info) %>% 
+    mutate(file_info = map(file_info, function(x) {
+        if (is.na(x)) {
+            data.frame()
+        } else {
+            jsonlite::fromJSON(x)
+        }
+    })) %>% 
+    unnest(file_info)
+csbc_file_df <- bind_cols(file_annotations_df, file_info_df)
+```
+
+```{r}
+csbc_all_df <- csbc_summary_df %>% 
+    select(-file_annotations, file_info) %>% 
+    left_join(csbc_file_df, by = "X1")
+```
+
+
+Resource Summary
+=====================================
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+---
+
+**About**
+
+We can use this space to include some descriptive/introductory text as needed.
+
+---
+
+
+Row
+-----------------------------------------------------------------------
+
+### Centers
+
+```{r}
+centers <- n_distinct(csbc_summary_df$project_ids)
+valueBox(centers, icon = "fa-university")
+```
+
+### Files
+
+```{r}
+files <- sum(csbc_summary_df$file_count)
+valueBox(files, icon = "fa-file")
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Data Shared
+
+```{r}
+centers_w_files <- csbc_summary_df %>% 
+    group_by(project_ids) %>% 
+    summarize(file_count = sum(file_count)) %>%
+    filter(file_count > 0) %>% nrow()
+gauge(centers_w_files, min = 0, max = centers)
+```
+
+> (out of all Centers)
+
+
+### Files Annotated
+
+```{r}
+files_w_annotation <- sum(csbc_summary_df$file_annotations_count)
+gauge(files_w_annotation, min = 0, max = files)
+```
+
+> (out of all files)
+
+Row {.tabset}
+-----------------------------------------------------------------------
+
+### Files by Center
+
+```{r}
+p <- csbc_summary_df %>% 
+    gather(files, count, file_count, file_annotations_count) %>% 
+    group_by(project_ids, files) %>% 
+    summarize(count = sum(count)) %>% 
+    ungroup() %>% 
+    ggplot(aes(x = project_ids, y = count)) + 
+    geom_col(aes(fill = files), position = "dodge") +
+    guides(fill = FALSE) + 
+    xlab("") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplotly(p) %>% 
+    layout(showlegend = FALSE,
+           font = list(family = "Roboto, Open Sans, sans-serif"))
+```
+
+### Studies by Center
+
+```{r}
+p <- csbc_summary_df %>% 
+    group_by(project_ids) %>% 
+    summarize(count = n_distinct(folder)) %>% 
+    ungroup() %>% 
+    ggplot(aes(x = project_ids, y = count)) + 
+    geom_col() +
+    guides(fill = FALSE) + 
+    xlab("") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplotly(p) %>% 
+    layout(showlegend = FALSE,
+           font = list(family = "Roboto, Open Sans, sans-serif"))
+```
+
+
+Data
+=====================================
+
+```{r}
+datatable(csbc_summary_df)
+```
+
