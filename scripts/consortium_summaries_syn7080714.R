@@ -115,7 +115,8 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 
 chart <- fileview_df %>%
     plot_sample_counts_by_annotationkey_2d(sample_key = "cellLine",
-                                           annotation_keys = plot_keys)
+                                           annotation_keys = plot_keys,
+                                           filter_missing = TRUE)
 
 syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
