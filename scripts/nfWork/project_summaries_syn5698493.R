@@ -19,7 +19,7 @@ fileview_df <- get_table_df(master_fileview_id)
 # Summarize -------------------------------------------------------
 
 # summarize by assay
-table_filename <- glue::glue("{source_id}samplesBySpeciesAssay",
+table_filename <- glue::glue("{source_id}samplesBySpeciesAssay.html",
                              source_id = source_id)
 
 
@@ -27,8 +27,8 @@ table_filename <- glue::glue("{source_id}samplesBySpeciesAssay",
 #    source_id = project_id)
 
 # create and save table
-group_keys <- c("assay","species")
-count_cols <- c("specimenID")
+group_keys <- c("assay","tumorType")
+count_cols <- c("individualID")
 
 datafile_counts <- fileview_df %>%
     summarize_files_by_annotationkey_new(
@@ -50,31 +50,11 @@ datafile_counts_dt
 
 
 # summarize by species
-files_by_species_table_filename <- glue::glue("{source_id}_samplesBySpeciesDataType.html",
-                                              source_id = source_id)
-
-group_keys=c('species','dataType')
-datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey_new(
-        annotation_keys = group_keys,
-        table_id = master_fileview_id,
-        count_cols = count_cols
-    )
-
-datafile_counts_dt <- datafile_counts %>%
-    format_summarytable_columns(group_keys) %>%
-    as_datatable()
-
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
-
-# view table
-datafile_counts_dt
 
 # summarize by species
 files_by_dataType_table_filename <- glue::glue("{source_id}_samplesBySpeciesDataType.html",
                                                source_id = source_id)
-group_keys=c('dataType')
+group_keys=c('dataType','tumorType')
 datafile_counts <- fileview_df %>%
     summarize_files_by_annotationkey_new(
         annotation_keys = group_keys,
@@ -98,7 +78,7 @@ datafile_counts_dt
 chart_filename <- glue::glue("{source_id}_AllDataFilesByCategory.html",
                              source_id = source_id)
 plot_keys <- list(assay = "Assay",
-                  species = "Species",
+                  tumorType = "Tumor Type",
                   study = "Study")
 
 chart <- fileview_df %>%
@@ -113,6 +93,6 @@ chart_filename <- glue::glue("{source_id}_samplesByDataTypeSpeciesChart.html",
     source_id = source_id)
 
 chart <- fileview_df%>%plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
-    annotation_keys=list(dataType='Data Type',species='Species'), filter_missing = FALSE)
+    annotation_keys=list(dataType='Data Type',tumorType='Tumor Type'), filter_missing = FALSE)
 chart
 syn_entity <- save_chart(parent_id,chart_filename,chart)

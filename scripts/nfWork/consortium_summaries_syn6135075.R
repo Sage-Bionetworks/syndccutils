@@ -6,7 +6,6 @@ source("R/synapse_helpers.R")
 
 synLogin()
 
-
 # Config ------------------------------------------------------------------
 
 synproject_id <- "syn6135075" # Synapse project for consortium
@@ -36,7 +35,7 @@ nf2_table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndNF2Genotyp
     source_id = consortium_id)
 
 # create and save table - NF1
-group_keys <- c("assay", "nf1Genotype")
+group_keys <- c("assay", "diagnosis")
 count_cols <- c("id", "cellType", "individualID")
 list_cols <- c("Center")
 link_keys <-list(Center="projectId")
@@ -61,7 +60,7 @@ syn_dt_entity <- datafile_counts_dt %>%
 datafile_counts_dt
 
 ###now create and save table for NF2
-group_keys <- c("assay", "nf2Genotype")
+group_keys <- c("assay", "tumorType")
 count_cols <- c("id", "cellType", "individualID")
 
 list_cols <- c("Center")
