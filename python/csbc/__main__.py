@@ -779,7 +779,184 @@ def summaryReport(args, syn):
         project_frames.append(pandas.DataFrame(d))
         print(project_frames)
     result = pandas.concat(project_frames)
-    result.to_csv('csbc_summary_iter2.csv')
+    result.to_csv('csbc_summary_iter.csv')
+
+
+ def getdf(syn, id):
+        df = syn.tableQuery('select * from {id}'.format(id=id)).asDataFrame()
+        return df
+
+
+def changeFloatToInt(final_df, col):
+    final_df[col] = final_df[col].fillna(0).astype(int)
+    final_df[col].replace(0, '', inplace=True)
+
+
+def meltinfo(args, syn):
+    # project attributes
+    p_atr = ['projectId',
+             'Consortium',
+             'institution',
+             'grantNumber',
+             'grantType',
+             'teamMembersProfileId',
+             'teamProfileId',
+             'name_project',
+             'createdOn_project',
+             'modifiedOn_project',
+             'PubMed',
+             'Title',
+             'Authors',
+             'Journal',
+             'Keywords',
+             'Publication Year',
+             'Data Location',
+             'Synapse Location']
+
+    # file attributes
+    f_atr = ['cellSubType',
+             'cellLine',
+             'softwareType',
+             'tumorType',
+             'transplantationRecipientTissue',
+             'individualID',
+             'sex',
+             'transcriptQuantificationMethod',
+             'isStranded',
+             'tissue',
+             'platform',
+             'softwareLanguage',
+             'species',
+             'Data_Location',
+             'rnaAlignmentMethod',
+             'specimenID',
+             'fundingAgency',
+             'isCellLine',
+             'individualIdSource',
+             'libraryPrep',
+             'inputDataType',
+             'compoundDose',
+             'runType',
+             'softwareRepositoryType',
+             'transplantationDonorTissue',
+             'peakCallingMethod',
+             'fileFormat',
+             'dnaAlignmentMethod',
+             'assay',
+             'softwareRepository',
+             'compoundName',
+             'transplantationType',
+             'dataType',
+             'softwareAuthor',
+             'transplantationDonorSpecies',
+             'readLength',
+             'Synapse_Location',
+             'modelSystem',
+             'scriptLanguageVersion',
+             'analysisType',
+             'concreteType',
+             'fileId',
+             'dataSubtype',
+             'organ',
+             'isPrimaryCell',
+             'resourceType',
+             'outputDataType',
+             'study',
+             'Publication_Year',
+             'diseaseSubtype',
+             'experimentalCondition',
+             'diagnosis',
+             'cellType',
+             'experimentalTimePoint',
+             'age',
+             'name_file',
+             'createdOn_file',
+             'modifiedOn_file',
+             'projectId']
+
+    # merging all the things
+    # 0 publications view syn10923842
+    # 1 project view  syn10142562
+    # 2 all data files syn9630847
+    # 3 tools syn9898965
+    views = ['syn10923842', 'syn10142562', 'syn9630847', 'syn9898965']
+
+    dfs = [getdf(syn, synid) for synid in views]
+    [d.reset_index(inplace=True, drop=True) for d in dfs]
+
+    # Project attributes
+    # change columns to represent project attributes and unify key name to be projectId
+    dfs[0].rename(index=str, columns={"CSBC PSON Center": "projectId"}, inplace=True)
+    dfs[1].rename(index=str, columns={"id": "projectId", "name": "name_project", "createdOn": "createdOn_project",
+                                      "modifiedOn": "modifiedOn_project", "modifiedBy": "modifiedBy_project"},
+                  inplace=True)
+
+    # take out organizational projects
+    dfs[1] = dfs[1][~dfs[1].institution.isin(['Sage Bionetworks', 'Multiple'])]
+
+    # there are projects without publications
+    set(dfs[1].projectId.unique()) - set(dfs[0].projectId.unique())
+
+    # Associate publications information to projects
+    # new_df with project info
+    project_info_df = pandas.merge(dfs[1], dfs[0], on='projectId', how='left')
+    project_info_df = project_info_df[p_atr]
+
+    # test counts publication counts
+    # test = list(project_info_df.groupby(['projectId']))
+    # [len(x[1]) if len(x[1]) != 1 else 0 for x in test]
+
+    # save project info data frame
+    # project_info_df.to_csv('project_info.csv', index=False)
+
+    # double check if we didn't loose a project
+    if len(set(dfs[1].projectId.unique()) - set(project_info_df.projectId.unique())) == 0:
+        print("Publications were successfully associated with project's view")
+
+    # File attributes
+    # remove tools files (subset of all datafiles) from all datafiles
+    tools_files_id = list(set(dfs[2].id.unique()).intersection(set(dfs[3].id.unique())))
+    dfs[3] = dfs[3][~dfs[3].id.isin(tools_files_id)]
+
+    dfs[2].rename(index=str, columns={"id": "fileId", "name": "name_file", "createdOn": "createdOn_file",
+                                      "modifiedOn": "modifiedOn_file", "modifiedBy": "modifiedBy_file"}, inplace=True)
+    dfs[3].rename(index=str, columns={"id": "fileId", "name": "name_file", "createdOn": "createdOn_file",
+                                      "modifiedOn": "modifiedOn_file", "modifiedBy": "modifiedBy_file"}, inplace=True)
+
+    # subset schemas by desired annotations and columns
+    dfs[2] = dfs[2][[cols for cols in list(dfs[2].columns) if cols in f_atr]]
+    dfs[3] = dfs[3][[cols for cols in list(dfs[3].columns) if cols in f_atr]]
+
+    # double check if tools files are not duplicated
+    if len(set(dfs[2].fileId.unique()).intersection(set(dfs[3].fileId.unique()))) == 0:
+        print("Tools files were removed successfully from all data files view")
+
+    # Unify schemas to concat
+    cols_to_add2 = dfs[3].columns.difference(dfs[2].columns)
+    cols_to_add3 = dfs[2].columns.difference(dfs[3].columns)
+
+    dfs[2] = pandas.concat([dfs[2], pandas.DataFrame(columns=cols_to_add2)])
+    dfs[3] = pandas.concat([dfs[3], pandas.DataFrame(columns=cols_to_add3)])
+
+    # concat them to get all the files information data frame
+    file_info_df = pandas.concat([dfs[3], dfs[2]])
+
+    final_df = pandas.merge(project_info_df[p_atr], file_info_df, on='projectId', how='left')
+
+    with_out_files = list(set(dfs[1].projectId.unique()) - set(final_df.projectId.unique()))
+    if not with_out_files:
+        print("All files and projects information were merged successfully")
+
+    changeFloatToInt(final_df, 'modifiedOn_file')
+    changeFloatToInt(final_df, 'modifiedOn_project')
+    changeFloatToInt(final_df, 'createdOn_file')
+    changeFloatToInt(final_df, 'createdOn_project')
+    changeFloatToInt(final_df, 'age')
+    changeFloatToInt(final_df, 'Publication Year')
+    changeFloatToInt(final_df, 'readLength')
+
+    # save then upload csv to table for now
+    final_df.to_csv('final_df.csv', index=False)
 
 
 def buildParser():
@@ -830,6 +1007,9 @@ def buildParser():
 
     parser_summary = subparsers.add_parser('summary', help='Create consortium summary table on progress counts')
     parser_summary.set_defaults(func=summaryReport)
+
+    parser_meltinfo = subparsers.add_parser('meltinfo', help='Create consortium summary table on progress counts')
+    parser_meltinfo.set_defaults(func=meltinfo)
 
     return parser
 
