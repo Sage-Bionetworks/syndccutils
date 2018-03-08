@@ -1,6 +1,7 @@
 source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
+source("R/utils.R")
 
 # Script/template to create summary tables and charts for a "project"
 
@@ -47,6 +48,14 @@ tool_fileview_df <- tool_fileview_df %>%
     left_join(tool_synproject_df, by = c("Center" = "projectId")) %>%
     rename(`Center Name` = `Center.y`)
 
+
+# Clean up factors --------------------------------------------------------
+
+fileview_df <- fileview_df %>%
+    mutate_if(is.factor, as.character)
+
+tool_fileview_df <- tool_fileview_df %>%
+    mutate_if(is.factor, as.character)
 
 # Data files by assay and tumor type --------------------------------------
 
@@ -106,7 +115,8 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 
 chart <- fileview_df %>%
     plot_sample_counts_by_annotationkey_2d(sample_key = "cellLine",
-                                           annotation_keys = plot_keys)
+                                           annotation_keys = plot_keys,
+                                           filter_missing = TRUE)
 
 syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
 
@@ -156,7 +166,7 @@ chart <- fileview_df %>%
     plot_file_counts_by_annotationkey_2d(
         annotation_keys = plot_keys,
         synproject_key = "Center Name",
-        filter_missing = TRUE,
+        filter_missing = FALSE,
         log_counts = TRUE
     )
 

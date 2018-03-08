@@ -116,10 +116,20 @@ plot_sample_counts_by_annotationkey_2d <- function(
                           specimenID = "Specimens",
                           cellLine = "Cell Lines",
                           id = "Files")
+
+    replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
         dplyr::group_by(.dots = names(annotation_keys)) %>%
         dplyr::summarize(n = n_distinct(rlang::UQ(as.name(sample_key)))) %>%
         ungroup() %>%
+        dplyr::mutate_at(.vars = names(annotation_keys),
+                         funs(replace(., is.na(.), replace_missing))) %>%
+        dplyr::mutate_at(.vars = names(annotation_keys),
+                         funs(forcats::fct_infreq(.))) %>%
+        dplyr::mutate_at(.vars = names(annotation_keys),
+                         funs(forcats::fct_rev(.))) %>%
+        # dplyr::mutate_at(.vars = names(annotation_keys),
+        #                  funs(forcats::fct_relevel(., "Not Annotated"))) %>%
         dplyr::mutate(label = glue::glue(
             "<b>{assay}:</b>\n{count} {samples}",
             assay = rlang::UQ(as.name(names(annotation_keys)[1])),
@@ -140,12 +150,13 @@ plot_sample_counts_by_annotationkey_2d <- function(
         ggplot2::coord_flip() +
         custom_theme_bw()
 
-    plotly::ggplotly(p, tooltip = 'text', height = num_bars * 50 + 155) %>%
+    plotly::ggplotly(p, tooltip = 'text', height = num_bars * 40 + 155) %>%
         plotly::layout(margin = list(l = 10 + bar_margin * 6,
-                                     r = 10 + fill_margin * 6,
+                                     r = 10 + fill_margin * 0,
                                      b = 55),
                        font = list(family = "Roboto, Open Sans, sans-serif"),
-                       legend = list(tracegroupgap = 10, yanchor = "top")) %>%
+                       legend = list(tracegroupgap = 3, traceorder = "reversed",
+                                     yanchor = "top", y = 1)) %>%
         plotly::config(displayModeBar = F)
 }
 
@@ -168,13 +179,11 @@ plot_file_counts_by_annotationkey_2d <- function(
 
     fill_vals <- unique(view_df[[names(annotation_keys)[1]]])
     bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
-    print(bar_vals)
     num_bars <- length(bar_vals)
 
     fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
-    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length))
+    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length), na.rm = TRUE)
 
-    print(bar_margin)
     group_cols <- sapply(names(annotation_keys), as.name)
 
     replace_missing <- "Not Annotated"
@@ -184,12 +193,17 @@ plot_file_counts_by_annotationkey_2d <- function(
         ungroup() %>%
         dplyr::mutate_at(.vars = names(annotation_keys),
                          funs(replace(., is.na(.), replace_missing))) %>%
+        dplyr::mutate_at(.vars = names(annotation_keys),
+                           funs(forcats::fct_infreq(.))) %>%
+        dplyr::mutate_at(.vars = names(annotation_keys),
+                         funs(forcats::fct_rev(.))) %>%
+        dplyr::mutate_at(.vars = names(annotation_keys),
+                         funs(forcats::fct_relevel(., "Not Annotated"))) %>%
         dplyr::mutate(label = glue::glue(
-            "<b>{assay}:</b>\n{count} files",
-            assay = rlang::UQ(as.name(names(annotation_keys)[1])),
+            "<b>{fill_val}:</b>\n{count} files",
+            fill_val = rlang::UQ(as.name(names(annotation_keys)[1])),
             count = n)
-        ) %>%
-        I
+        )
 
     scale_note <- ""
     if (log_counts) {
@@ -199,23 +213,26 @@ plot_file_counts_by_annotationkey_2d <- function(
     }
 
     p <- plot_df %>%
-        ggplot2::ggplot(aes_(x = rlang::UQ(group_cols[[2]]), y = as.name("n"),
+        ggplot2::ggplot(aes_(x = group_cols[[2]], y = as.name("n"),
                                    text = as.name("label"))) +
-        ggplot2::geom_col(aes_(fill = rlang::UQ(group_cols[[1]])),
+        ggplot2::geom_col(aes_(fill = group_cols[[1]]),
                           colour = "white", size = 0.2) +
         ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
+        ggplot2::guides(fill = guide_legend(reverse = T)) +
         ggplot2::xlab("") +
         ggplot2::ylab(glue::glue("Number of Files{scale}", scale = scale_note)) +
         ggplot2::scale_y_continuous(expand = c(0, 0)) +
         ggplot2::coord_flip() +
         custom_theme_bw()
 
-    plotly::ggplotly(p, tooltip = 'text', height = num_bars * 50 + 155) %>%
+    plotly::ggplotly(p, tooltip = 'text', height = num_bars * 40 + 155) %>%
         plotly::layout(margin = list(l = 10 + bar_margin * 6,
-                                     r = 10 + fill_margin * 6,
+                                     r = 10 + fill_margin * 0,
                                      b = 55),
                        font = list(family = "Roboto, Open Sans, sans-serif"),
-                       legend = list(tracegroupgap = 10, yanchor = "top")) %>%
+                       legend = list(tracegroupgap = 3, traceorder = "reversed",
+                                     xanchor = "left", yanchor = "bottom",
+                                     x = 0, y = 100)) %>%
         plotly::config(displayModeBar = F)
 }
 
@@ -239,13 +256,11 @@ plot_study_counts_by_annotationkey_2d <- function(
 
     fill_vals <- unique(view_df[[names(annotation_keys)[1]]])
     bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
-    print(bar_vals)
     num_bars <- length(bar_vals)
 
     fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
     bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length))
 
-    print(bar_margin)
     group_cols <- sapply(names(annotation_keys), as.name)
 
     replace_missing <- "Not Annotated"

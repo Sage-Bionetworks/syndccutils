@@ -148,12 +148,16 @@ update_html_lines <- function(html_lines, target_lines) {
 }
 
 # update HTML files to use hosted JS assets
-fix_js_assets <- function(html_path) {
+fix_js_assets <- function(html_path, rename_file = FALSE) {
 
-    fixed_html_path <- file.path(
-        dirname(html_path),
-        str_c("fixed_", basename(html_path))
-    )
+    if (rename_file) {
+        fixed_html_path <- file.path(
+            dirname(html_path),
+            str_c("fixed_", basename(html_path))
+        )
+    } else {
+        fixed_html_path <- html_path
+    }
     html_lines <- read_lines(html_path)
     script_lines <- get_script_lines(html_path)
     link_lines <- get_link_lines(html_path)
