@@ -983,13 +983,13 @@ def meltinfo(args, syn):
     if len(final_df.projectId.unique()) == len(dfs[1].projectId):
         print("All projects were successfully associated with files")
 
-    changeFloatToInt(final_df, 'modifiedOn_file')
-    changeFloatToInt(final_df, 'modifiedOn_project')
-    changeFloatToInt(final_df, 'createdOn_file')
-    changeFloatToInt(final_df, 'createdOn_project')
-    changeFloatToInt(final_df, 'age')
-    changeFloatToInt(final_df, 'readLength')
-    changeFloatToInt(final_df, 'teamProfileId')
+    # check types
+    col_types = [col for col in list( final_df.columns ) if final_df[col].dtype == numpy.float64]
+    print("column names of type numpy.float64 \n:", col_types)
+
+    cols = ['modifiedOn_file', 'modifiedOn_project', 'createdOn_file', 'createdOn_project', 'age', 'readLength',
+            'teamProfileId']
+    [changeFloatToInt(final_df, col) for col in cols]
 
     # save then upload csv to table - for now
     # asRowSet() of this table may also be used for Ipython jupyter
