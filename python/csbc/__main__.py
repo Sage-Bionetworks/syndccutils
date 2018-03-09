@@ -42,30 +42,6 @@ def synapseLogin():
     return syn
 
 
-def setPermissionForAll(syn, entity, permission):
-    """
-    only an admin can execute this
-
-    permissions: view/read, download, edit
-    CSBC Education and Outreach 3346987
-    PSON Education and Outreach 3346986
-    CSBC PSON Resource and Data Sharing 3346396
-
-    :param syn:
-    :param entity:
-    :return:
-    """
-    teams = [3346396, 3346986, 3346987]
-    if permission in ['read', 'Read', 'READ', 'view', 'View', 'VIEW']:
-        accessType = ['READ']
-    if permission in ['download', 'Download', 'DOWNLOAD']:
-        accessType = ['READ', 'DOWNLOAD']
-    if permission in ['edit', 'Edit', 'EDIT']:
-        accessType = ['READ', 'DOWNLOAD', 'CREATE', 'DELETE', 'UPDATE']
-
-    [syn.setPermissions(entity=entity, principalId=pid, accessType=accessType) for pid in teams]
-
-
 def createProject(syn, project_name, teamId=None, adminId=None):
     """
     Given a project name, creates a synapse project and sets permissions for All registered Synapse users and Anyone
@@ -1018,6 +994,33 @@ def meltinfo(args, syn):
     # save then upload csv to table - for now
     # asRowSet() of this table may also be used for Ipython jupyter
     final_df.to_csv('final_df.csv', index=False)
+
+
+def setPermissionForAll(args, syn):
+    """
+    only an admin can execute this
+
+    permissions: view/read, download, edit
+    CSBC Education and Outreach 3346987
+    PSON Education and Outreach 3346986
+    CSBC PSON Resource and Data Sharing 3346396
+
+    :param syn:
+    :param entity:
+    :return:
+    """
+    entity = args.entity
+    permission = args.permission
+
+    teams = [3346396, 3346986, 3346987]
+    if permission in ['read', 'Read', 'READ', 'view', 'View', 'VIEW']:
+        accessType = ['READ']
+    if permission in ['download', 'Download', 'DOWNLOAD']:
+        accessType = ['READ', 'DOWNLOAD']
+    if permission in ['edit', 'Edit', 'EDIT']:
+        accessType = ['READ', 'DOWNLOAD', 'CREATE', 'DELETE', 'UPDATE']
+
+    [syn.setPermissions(entity=entity, principalId=pid, accessType=accessType) for pid in teams]
 
 
 def buildParser():
