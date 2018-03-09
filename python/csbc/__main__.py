@@ -42,6 +42,27 @@ def synapseLogin():
     return syn
 
 
+def setPermissionForAll(syn, entity, permission):
+    """
+    only an admin can execute this
+
+    permissions: view/read, download, edit
+
+    :param syn:
+    :param entity:
+    :return:
+    """
+    teams = [3346396, 3346986, 3346987, 3346139]
+    if permission in ['read', 'Read', 'READ', 'view', 'View', 'VIEW']:
+        accessType = ['READ']
+    if permission in ['download', 'Download', 'DOWNLOAD']:
+        accessType = ['READ', 'DOWNLOAD']
+    if permission in ['edit', 'Edit', 'EDIT']:
+        accessType = ['READ', 'DOWNLOAD', 'CREATE', 'DELETE', 'UPDATE']
+
+    [syn.setPermissions(entity=entity, principalId=pid, accessType=accessType) for pid in teams]
+
+
 def createProject(syn, project_name, teamId=None, adminId=None):
     """
     Given a project name, creates a synapse project and sets permissions for All registered Synapse users and Anyone
