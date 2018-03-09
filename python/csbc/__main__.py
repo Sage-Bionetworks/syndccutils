@@ -1073,8 +1073,7 @@ def buildParser():
                                                              'publication counts information')
     parser_meltinfo.set_defaults(func=meltinfo)
 
-    parser_permit = subparsers.add_parser('permit', help='Scrape pubMed publication information based on consortium '
-                                                         'grant number')
+    parser_permit = subparsers.add_parser('permit', help='Set sponsors (local) permission on an entity')
 
     parser_permit.add_argument('--entity', help='Synapse entity to set sponsors (local) permission on', required=True,
                                type=str)
