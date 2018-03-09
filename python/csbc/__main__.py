@@ -958,6 +958,8 @@ def meltinfo(args, syn):
     dfs[2] = dfs[2][[cols for cols in list(dfs[2].columns) if cols in f_atr]]
     dfs[3] = dfs[3][[cols for cols in list(dfs[3].columns) if cols in f_atr]]
 
+    dfs[2] = dfs[2][~dfs[2].name_file.isin(['placeholder.txt'])]
+
     # double check if tools files are not duplicated
     if len(set(dfs[2].fileId.unique()).intersection(set(dfs[3].fileId.unique()))) == 0:
         print("Tools files were removed successfully from all data files view")
@@ -974,8 +976,8 @@ def meltinfo(args, syn):
 
     final_df = pandas.merge(dfs[1][p_view_atr], file_info_df, on='projectId', how='left')
 
-    final_df.loc[final_df.fileId.isin( list( dfs[3].fileId ) ), 'resourceType'] = 'tool'
-    final_df = final_df[~final_df.name_file.isin(['placeholder.txt'])]
+    final_df.loc[final_df.fileId.isin(list(dfs[3].fileId)), 'resourceType'] = 'tool'
+
     # double check if we didn't loose a project
     if len(final_df.projectId.unique()) == len(dfs[1].projectId):
         print("All projects were successfully associated with files")
@@ -985,7 +987,6 @@ def meltinfo(args, syn):
     changeFloatToInt(final_df, 'createdOn_file')
     changeFloatToInt(final_df, 'createdOn_project')
     changeFloatToInt(final_df, 'age')
-    changeFloatToInt(final_df, 'Publication Year')
     changeFloatToInt(final_df, 'readLength')
     changeFloatToInt(final_df, 'teamProfileId')
 
