@@ -47,12 +47,15 @@ def setPermissionForAll(syn, entity, permission):
     only an admin can execute this
 
     permissions: view/read, download, edit
+    CSBC Education and Outreach 3346987
+    PSON Education and Outreach 3346986
+    CSBC PSON Resource and Data Sharing 3346396
 
     :param syn:
     :param entity:
     :return:
     """
-    teams = [3346396, 3346986, 3346987, 3346139]
+    teams = [3346396, 3346986, 3346987]
     if permission in ['read', 'Read', 'READ', 'view', 'View', 'VIEW']:
         accessType = ['READ']
     if permission in ['download', 'Download', 'DOWNLOAD']:
@@ -1069,6 +1072,16 @@ def buildParser():
     parser_meltinfo = subparsers.add_parser('meltinfo', help='Create melted table on csbc projects and files with '
                                                              'publication counts information')
     parser_meltinfo.set_defaults(func=meltinfo)
+
+    parser_permit = subparsers.add_parser('permit', help='Scrape pubMed publication information based on consortium '
+                                                         'grant number')
+
+    parser_permit.add_argument('--entity', help='Synapse entity to set sponsors (local) permission on', required=True,
+                               type=str)
+    parser_permit.add_argument('--permission', help='read/view, download, edit', type=str, required=True)
+
+    parser_permit.set_defaults(func=setPermissionForAll)
+
 
     return parser
 
