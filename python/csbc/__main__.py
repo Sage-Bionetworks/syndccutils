@@ -782,18 +782,36 @@ def summaryReport(args, syn):
     result.to_csv('csbc_summary_iter.csv')
 
 
- def getdf(syn, id):
-        df = syn.tableQuery('select * from {id}'.format(id=id)).asDataFrame()
-        return df
+def getdf(syn, id):
+    """
+
+    :param syn:
+    :param id:
+    :return:
+    """
+    df = syn.tableQuery('select * from {id}'.format(id=id)).asDataFrame()
+    return df
 
 
 def changeFloatToInt(final_df, col):
+    """
+
+    :param final_df:
+    :param col:
+    :return:
+    """
     final_df[col] = final_df[col].fillna(0).astype(int)
     final_df[col].replace(0, '', inplace=True)
 
 
 def meltinfo(args, syn):
-    # project attributes
+    """
+
+    :param args:
+    :param syn:
+    :return:
+    """
+    # project and publication attributes
     p_atr = ['projectId',
              'Consortium',
              'institution',
@@ -812,6 +830,20 @@ def meltinfo(args, syn):
              'Publication Year',
              'Data Location',
              'Synapse Location']
+
+    # project attributes
+    p_view_atr = ['projectId',
+                  'consortium',
+                  'institution',
+                  'grantNumber',
+                  'grantType',
+                  'teamMembersProfileId',
+                  'teamProfileId',
+                  'name_project',
+                  'createdOn_project',
+                  'modifiedOn_project',
+                  'publication_count',
+                  'publication_geodata_produced']
 
     # file attributes
     f_atr = ['cellSubType',
@@ -902,16 +934,15 @@ def meltinfo(args, syn):
     project_info_df = pandas.merge(dfs[1], dfs[0], on='projectId', how='left')
     project_info_df = project_info_df[p_atr]
 
-    # test counts publication counts
-    # test = list(project_info_df.groupby(['projectId']))
-    # [len(x[1]) if len(x[1]) != 1 else 0 for x in test]
+    publication_count = list(project_info_df.groupby(['projectId']))
+    dfs[1]['publication_count'] = [len(x[1]) if len(x[1]) != 1 else 0 for x in publication_count]
 
-    # save project info data frame
-    # project_info_df.to_csv('project_info.csv', index=False)
+    dfs[0] = dfs[0].astype(object).replace(numpy.nan, '')
 
-    # double check if we didn't loose a project
-    if len(set(dfs[1].projectId.unique()) - set(project_info_df.projectId.unique())) == 0:
-        print("Publications were successfully associated with project's view")
+    dfs[1]['publication_geodata_produced'] = [len(filter(None, dfs[0].loc[
+        dfs[0].projectId.isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(', '))) if len(
+        dfs[0].loc[dfs[0].projectId.isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(
+            ',')) > 1 else 0 for p_id in list(dfs[1]['projectId'])]
 
     # File attributes
     # remove tools files (subset of all datafiles) from all datafiles
@@ -941,11 +972,11 @@ def meltinfo(args, syn):
     # concat them to get all the files information data frame
     file_info_df = pandas.concat([dfs[3], dfs[2]])
 
-    final_df = pandas.merge(project_info_df[p_atr], file_info_df, on='projectId', how='left')
+    final_df = pandas.merge(dfs[1][p_view_atr], file_info_df, on='projectId', how='left')
 
-    with_out_files = list(set(dfs[1].projectId.unique()) - set(final_df.projectId.unique()))
-    if not with_out_files:
-        print("All files and projects information were merged successfully")
+    # double check if we didn't loose a project
+    if len(final_df.projectId.unique()) == len(dfs[1].projectId):
+        print("All projects were successfully associated with files")
 
     changeFloatToInt(final_df, 'modifiedOn_file')
     changeFloatToInt(final_df, 'modifiedOn_project')
@@ -954,6 +985,7 @@ def meltinfo(args, syn):
     changeFloatToInt(final_df, 'age')
     changeFloatToInt(final_df, 'Publication Year')
     changeFloatToInt(final_df, 'readLength')
+    changeFloatToInt(final_df, 'teamProfileId')
 
     # save then upload csv to table for now
     final_df.to_csv('final_df.csv', index=False)
