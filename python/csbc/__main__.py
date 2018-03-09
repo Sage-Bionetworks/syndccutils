@@ -930,7 +930,6 @@ def meltinfo(args, syn):
     set(dfs[1].projectId.unique()) - set(dfs[0].projectId.unique())
 
     # Associate publications information to projects
-    # new_df with project info
     project_info_df = pandas.merge(dfs[1], dfs[0], on='projectId', how='left')
     project_info_df = project_info_df[p_atr]
 
@@ -958,13 +957,14 @@ def meltinfo(args, syn):
     dfs[2] = dfs[2][[cols for cols in list(dfs[2].columns) if cols in f_atr]]
     dfs[3] = dfs[3][[cols for cols in list(dfs[3].columns) if cols in f_atr]]
 
+    # remove dummy files
     dfs[2] = dfs[2][~dfs[2].name_file.isin(['placeholder.txt'])]
 
     # double check if tools files are not duplicated
     if len(set(dfs[2].fileId.unique()).intersection(set(dfs[3].fileId.unique()))) == 0:
         print("Tools files were removed successfully from all data files view")
 
-    # Unify schemas to concat
+    # unify schemas to concat
     cols_to_add2 = dfs[3].columns.difference(dfs[2].columns)
     cols_to_add3 = dfs[2].columns.difference(dfs[3].columns)
 
@@ -976,6 +976,7 @@ def meltinfo(args, syn):
 
     final_df = pandas.merge(dfs[1][p_view_atr], file_info_df, on='projectId', how='left')
 
+    # annotate tools files to be a resourceType tool - for now
     final_df.loc[final_df.fileId.isin(list(dfs[3].fileId)), 'resourceType'] = 'tool'
 
     # double check if we didn't loose a project
@@ -990,7 +991,8 @@ def meltinfo(args, syn):
     changeFloatToInt(final_df, 'readLength')
     changeFloatToInt(final_df, 'teamProfileId')
 
-    # save then upload csv to table for now
+    # save then upload csv to table - for now
+    # asRowSet() of this table may also be used for Ipython jupyter
     final_df.to_csv('final_df.csv', index=False)
 
 
@@ -1043,7 +1045,8 @@ def buildParser():
     parser_summary = subparsers.add_parser('summary', help='Create consortium summary table on progress counts')
     parser_summary.set_defaults(func=summaryReport)
 
-    parser_meltinfo = subparsers.add_parser('meltinfo', help='Create consortium summary table on progress counts')
+    parser_meltinfo = subparsers.add_parser('meltinfo', help='Create melted table on csbc projects and files with '
+                                                             'publication counts information')
     parser_meltinfo.set_defaults(func=meltinfo)
 
     return parser
