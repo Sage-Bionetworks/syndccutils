@@ -974,6 +974,8 @@ def meltinfo(args, syn):
 
     final_df = pandas.merge(dfs[1][p_view_atr], file_info_df, on='projectId', how='left')
 
+    final_df.loc[final_df.fileId.isin( list( dfs[3].fileId ) ), 'resourceType'] = 'tool'
+    final_df = final_df[~final_df.name_file.isin(['placeholder.txt'])]
     # double check if we didn't loose a project
     if len(final_df.projectId.unique()) == len(dfs[1].projectId):
         print("All projects were successfully associated with files")
