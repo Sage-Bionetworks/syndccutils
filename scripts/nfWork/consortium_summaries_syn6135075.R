@@ -1,6 +1,7 @@
 source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
+source("R/utils.R")
 ##CTF SITE
 # Script/template to create summary tables and charts for a "project"
 
