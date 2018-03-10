@@ -4,55 +4,59 @@ subtitle: "Resource & Activity Overview"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
-    vertical_layout: fill
+    vertical_layout: scroll
     theme: lumen
+    runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
 library(plotly)
+library(shiny)
+library(crosstalk)
 library(DT)
 ```
 
 ```{r, include=FALSE}
-# csbc_summary_df <- readr::read_tsv("../data/csbc_summary_wo_metadata.tsv")
-csbc_summary_df <- readr::read_tsv("../data/csbc_summary/csbc_summary.tsv",
-                                   na = c("", "NA", "null", "[]"))
+force_reload <- FALSE
+csbc_summary_df <- readr::read_tsv("../data/csbc_summary/2018-03-09_syn11958165.tsv")
 ```
 
 ```{r}
-file_annotations_df <- csbc_summary_df %>% 
-    select(X1, file_annotations) %>% 
-    mutate(file_annotations = map(file_annotations, function(x) {
-        if (is.na(x)) {
-            data.frame()
-        } else {
-            jsonlite::fromJSON(x)
-        }
-    })) %>% 
-    unnest(file_annotations)
-file_info_df <- csbc_summary_df %>% 
-    select(file_info) %>% 
-    mutate(file_info = map(file_info, function(x) {
-        if (is.na(x)) {
-            data.frame()
-        } else {
-            jsonlite::fromJSON(x)
-        }
-    })) %>% 
-    unnest(file_info)
-csbc_file_df <- bind_cols(file_annotations_df, file_info_df)
+project_vars <- c("projectId", "name_project", "institution", "consortium",
+                  "grantNumber", "grantType", "teamMembersProfileId",
+                  "teamProfileId", "createdOn_project", "modifiedOn_project",
+                  "publication_count", "publication_geodata_produced")
+count_vars <- c("fileId", "individualID", "specimenID", "cellLine",
+                "assay", "tool")
+center_study_summary_df <- csbc_summary_df %>% 
+    mutate(tool = ifelse(!is.na(softwareLanguage), study, NA)) %>% 
+    group_by(.dots = c(project_vars, "study")) %>% 
+    summarise_at(.vars = count_vars,
+                 .funs = funs(n_distinct(., na.rm = TRUE))) %>% 
+    replace_na(list(study = "Not Annotated")) %>% 
+    mutate(study = ifelse(fileId == 0, NA, study))
 ```
+
 
 ```{r}
-csbc_all_df <- csbc_summary_df %>% 
-    select(-file_annotations, file_info) %>% 
-    left_join(csbc_file_df, by = "X1")
+center_summary_df <- center_study_summary_df %>% 
+    group_by(projectId) %>% 
+    summarise(study = n_distinct(study, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    left_join(
+        center_study_summary_df %>% 
+            select(-study) %>% 
+            group_by(.dots = project_vars) %>% 
+            summarise_all(sum),
+        by = "projectId"
+    )
 ```
 
 
-Resource Summary
+
+Portal at a Glance
 =====================================
 
 Sidebar {.sidebar}
@@ -62,7 +66,7 @@ Sidebar {.sidebar}
 
 **About**
 
-We can use this space to include some descriptive/introductory text as needed.
+Welcome to the CSBC/PS-ON Knowledge Portal Dashboard!
 
 ---
 
@@ -73,16 +77,36 @@ Row
 ### Centers
 
 ```{r}
-centers <- n_distinct(csbc_summary_df$project_ids)
+centers <- n_distinct(center_study_summary_df$projectId)
 valueBox(centers, icon = "fa-university")
 ```
 
 ### Files
 
 ```{r}
-files <- sum(csbc_summary_df$file_count)
+files <- sum(center_study_summary_df$fileId)
 valueBox(files, icon = "fa-file")
 ```
+
+### Samples
+
+```{r}
+samples <- sum(
+    sum(center_study_summary_df$individualID),
+    sum(center_study_summary_df$cellLine),
+    sum(center_study_summary_df$specimenID)
+)
+valueBox(samples, icon = "fa-tag")
+```
+
+
+### Publications
+
+```{r}
+pubs <- sum(center_study_summary_df$publication_count)
+valueBox(pubs, icon = "fa-pencil")
+```
+
 
 Row
 -----------------------------------------------------------------------
@@ -90,9 +114,9 @@ Row
 ### Data Shared
 
 ```{r}
-centers_w_files <- csbc_summary_df %>% 
-    group_by(project_ids) %>% 
-    summarize(file_count = sum(file_count)) %>%
+centers_w_files <- center_summary_df %>%
+    group_by(projectId) %>%
+    summarize(file_count = sum(fileId)) %>%
     filter(file_count > 0) %>% nrow()
 gauge(centers_w_files, min = 0, max = centers)
 ```
@@ -100,60 +124,140 @@ gauge(centers_w_files, min = 0, max = centers)
 > (out of all Centers)
 
 
-### Files Annotated
+### Files in Studies
 
 ```{r}
-files_w_annotation <- sum(csbc_summary_df$file_annotations_count)
-gauge(files_w_annotation, min = 0, max = files)
+files_w_study <- center_study_summary_df %>% 
+    filter(!is.na(study),
+           study != "Not Annotated") %>% 
+    .[["fileId"]] %>% 
+    sum()
+    
+gauge(files_w_study, min = 0, max = files)
 ```
 
 > (out of all files)
 
+
+Center Summaries
+=====================================
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+---
+
+**Center Activity**
+
+Select a row in the table to view details about a Center.
+
+---
+
+```{r}
+# followed example here... can probably simplify
+# https://github.com/rstudio/DT/issues/300
+
+UpdateInputs <- function(data, session) {
+    updateTextInput(session, "projectId", value = unname(data["projectId"]))
+}
+
+textInput("projectId", "Project", "")
+
+formData <- reactive({
+    sapply(c("projectId"), function(x) input[[x]])
+})
+
+observeEvent(input$center_summary_rows_selected, {
+    if (length(input$center_summary_rows_selected) > 0) {
+        data <- center_summary_df[input$center_summary_rows_selected, ]
+        UpdateInputs(data, session)
+    }
+})
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Center Snapshot
+
+```{r}
+fillRow(
+    DT::dataTableOutput("center_summary", width = "100%")
+)
+
+output$center_summary <- DT::renderDT({
+    datatable(center_summary_df, 
+              selection = 'single',
+              options = list(
+                  scrollX = TRUE
+              )
+    ) %>%
+        formatStyle(
+            'fileId',
+            backgroundColor = styleEqual(0.0, 'lightpink')
+        )
+}, server = FALSE
+)
+```
+
+
 Row {.tabset}
 -----------------------------------------------------------------------
 
-### Files by Center
+### Overall Center Contributions
 
 ```{r}
-p <- csbc_summary_df %>% 
-    gather(files, count, file_count, file_annotations_count) %>% 
-    group_by(project_ids, files) %>% 
-    summarize(count = sum(count)) %>% 
-    ungroup() %>% 
-    ggplot(aes(x = project_ids, y = count)) + 
-    geom_col(aes(fill = files), position = "dodge") +
-    guides(fill = FALSE) + 
-    xlab("") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-ggplotly(p) %>% 
-    layout(showlegend = FALSE,
-           font = list(family = "Roboto, Open Sans, sans-serif"))
+plotly::plotlyOutput("center_details")
+output$center_details <- plotly::renderPlotly({
+    if (length(input$center_summary_rows_selected)) {
+        selected_project <- center_summary_df[[input$center_summary_rows_selected, "projectId"]]
+        center_df <- center_summary_df %>% 
+            filter(projectId == selected_project)
+        print(center_df)
+        
+        p <- center_df %>% 
+            select(-one_of(project_vars)) %>% 
+            gather(attr, count) %>% 
+            ggplot(aes(x = 1, y = count)) +
+            geom_col() +
+            xlab("") +
+            facet_grid(. ~ attr, scales = "free_y") +
+            theme(axis.text.x = element_blank(),
+                  axis.ticks.x = element_blank())
+        ggplotly(p)
+    }
+})
+
 ```
 
-### Studies by Center
+### Contributions by Study
 
 ```{r}
-p <- csbc_summary_df %>% 
-    group_by(project_ids) %>% 
-    summarize(count = n_distinct(folder)) %>% 
-    ungroup() %>% 
-    ggplot(aes(x = project_ids, y = count)) + 
-    geom_col() +
-    guides(fill = FALSE) + 
-    xlab("") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-ggplotly(p) %>% 
-    layout(showlegend = FALSE,
-           font = list(family = "Roboto, Open Sans, sans-serif"))
+plotly::plotlyOutput("center_study_details")
+output$center_study_details <- plotly::renderPlotly({
+    selected_project <- center_summary_df[[input$center_summary_rows_selected, "projectId"]]
+    center_df <- center_summary_df %>%
+        filter(projectId == selected_project)
+
+    p <- center_df %>%
+        select(projectId) %>%
+        left_join(center_study_summary_df, by = "projectId") %>%
+        select(-one_of(project_vars)) %>%
+        gather(attr, count, -study) %>%
+        ggplot(aes(x = 1, y = count)) +
+        geom_col() +
+        xlab("") +
+        facet_grid(study ~ attr, scales = "free_y") +
+        theme(axis.text.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              strip.background.y = element_blank(),
+              strip.text.y = element_text(angle = 0, hjust = 0))
+    ggplotly(p)
+})
 ```
 
 
-Data
-=====================================
 
-```{r}
-datatable(csbc_summary_df)
-```
+
+
 
