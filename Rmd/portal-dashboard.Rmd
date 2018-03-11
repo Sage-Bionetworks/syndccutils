@@ -157,7 +157,6 @@ projects_w_files <- center_summary_df %>%
   filter(file_count > 0) %>%
   pull(projectId)
 
-
 plot.dat <- filter(csbc_summary_df, projectId %in% projects_w_files)
 plot.dat <- plot.dat[,c('fileId', 'projectId', 'createdOn_file', 'study')]
 plot.dat <- mutate(plot.dat, date = format(as.Date(createdOn_file), "%y-%m"))
@@ -218,10 +217,13 @@ fillRow(
 
 output$center_summary <- DT::renderDT({
     datatable(center_summary_df, 
-              selection = 'single',
+              selection = list(
+                  mode = 'single', selected = c(3)
+              ),
               options = list(
                   scrollX = TRUE
-              )
+              ),
+              rownames = FALSE
     ) %>%
         formatStyle(
             'fileId',
