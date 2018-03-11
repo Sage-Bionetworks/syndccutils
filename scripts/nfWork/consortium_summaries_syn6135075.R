@@ -1,11 +1,11 @@
 source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
+source("R/utils.R")
 ##CTF SITE
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
-
+synLogin()
 
 # Config ------------------------------------------------------------------
 
@@ -14,11 +14,9 @@ consortium_id <- "syn6135075" # Synapse folder associated with consortium
 parent_id <- "syn10901483" # consortium 'Reporting' folder where files should be stored
 master_fileview_id <- "syn11614206" # Synapse fileview associated with consortium data
 
-
 # Collect data ------------------------------------------------------------
 
 fileview_df <- get_table_df(master_fileview_id)
-
 
 # Add Synapse project info --------------------------------------------
 
@@ -38,7 +36,7 @@ nf2_table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndNF2Genotyp
     source_id = consortium_id)
 
 # create and save table - NF1
-group_keys <- c("assay", "nf1Genotype")
+group_keys <- c("assay", "diagnosis")
 count_cols <- c("id", "cellType", "individualID")
 list_cols <- c("Center")
 link_keys <-list(Center="projectId")
@@ -63,7 +61,7 @@ syn_dt_entity <- datafile_counts_dt %>%
 datafile_counts_dt
 
 ###now create and save table for NF2
-group_keys <- c("assay", "nf2Genotype")
+group_keys <- c("assay", "tumorType")
 count_cols <- c("id", "cellType", "individualID")
 
 list_cols <- c("Center")

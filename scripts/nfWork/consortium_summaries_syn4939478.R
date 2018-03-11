@@ -4,7 +4,7 @@ source("R/synapse_helpers.R")
 ##NTAP SITE
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
+synLogin()
 
 
 # Config ------------------------------------------------------------------
@@ -33,8 +33,6 @@ new_fileview_df <- fileview_df %>%
     left_join(synproject_df, by = "projectId") %>%
     left_join(hierarchy_df, by = c("study" = "Study Name")) %>%
     rename(studyId = "Study")
-
-#ok.
 
 #ok. in the code you have `list(projectId="Project")` — the function doesn’t know that “Center” ~ “Project”, you have to give it an actual column name :)
 
@@ -102,8 +100,8 @@ datafile_counts_dt <- datafile_counts %>%
 
 syn_dt_entity <- datatable_to_synapse(datafile_counts_dt,synproject_id, 'Assays By Project')
 #    save_datatable(parent_id, table_filename, .)
-tcolnames<-sapply(syn_dt_entity@schema@columns@content,function(x) x$name)
-wiki_string <- simple_plots_wiki_string(syn_dt_entity@schema@properties$id,tcolnames[1:2],tcolnames[3],title='Assays By Project')
+tcolnames<-names(as.data.frame(syn_dt_entity))
+wiki_string <- simple_plots_wiki_string(syn_dt_entity$tableId,tcolnames[1:2],tcolnames[3],title='Assays By Project')
 # view table
 
 datafile_counts <- new_fileview_df %>%

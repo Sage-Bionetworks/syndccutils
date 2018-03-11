@@ -1,5 +1,5 @@
 library(tidyverse)
-library(synapseClient)
+library(synapser)
 
 #' Collect all rows and columns from a Synapse table and return as values
 #' in a data frame.
@@ -12,7 +12,7 @@ library(synapseClient)
 #' @examples
 get_table_df <- function(table_id) {
     syn_table_data <- synTableQuery(sprintf("select * from %s", table_id))
-    return(syn_table_data@values)
+    return(as.data.frame(syn_table_data)%>%select(-ROW_ID,-ROW_VERSION))
 }
 
 
@@ -46,13 +46,13 @@ save_table <- function(project_id, table_name, table_df) {
         message(sprintf("updating table: %s", table_id))
         # if table exists, get data from Synapse before updating
         syn_table_data <- synTableQuery(sprintf("select * from %s", table_id))
-        syn_table_df <- syn_table_data@values
+        syn_table_df <- as.data.frame(syn_table_data)%>%select(-ROW_ID,-ROW_VERSION)
 
         # check whether table values have changed at all before updating
         if (!all_equal(platform_workflow_df, syn_table_df) == TRUE) {
             # rather than try to conditionally update part of the table,
             # just wipe all rows and add the latest ones
-            synDeleteRows(syn_table_data)
+            synDelete(syn_table_data$asRowSet())
             schema <- synGet(table_id)
             update_table <- Table(schema, platform_workflow_df)
             syn_table <- synStore(update_table)
@@ -68,7 +68,7 @@ save_table <- function(project_id, table_name, table_df) {
         syn_table <- Table(schema, platform_workflow_df)
         syn_table <- synStore(syn_table)
         message(sprintf("table stored as: %s",
-                        properties(syn_table@schema)$id))
+                       syn_table$properties$id))
     }
     return(syn_table)
 }
@@ -116,18 +116,37 @@ save_datatable <- function(parent_id, dt_filename, dt_widget) {
 }
 
 datatable_to_synapse <-function(dt, parent_id, table_name) {
-    colnames(dt)<-sapply(colnames(dt),function(x) gsub(' ','_',x))
-    tcols<-as.tableColumns(dt)$tableColumns
-    tcols[[which(sapply(tcols,function(x) x$name)%in%c('viewFiles','View_Files'))]]$columnType<-'LINK'
-    schema <- synapseClient::TableSchema(name=table_name,
+    col.name<-sapply(colnames(dt),function(x) gsub(' ','_',x))
+    colnames(dt)<-col.name
+    col.type <-sapply(1:ncol(dt),function(x) {
+        switch(class(dt[,x][[1]]),
+            character='STRING',
+            integer='INTEGER',
+            factor='STRING')})
+
+    tcols<-sapply(1:ncol(dt),function(x) {
+        if(col.type[x]=='STRING'){
+            if(col.name[x]%in%c('viewFiles','View_Files'))
+                Column(name=col.name[[x]],columnType='LINK',maximumSize=as.integer(512))
+            else
+                Column(name=col.name[[x]],columnType=col.type[x],maximumSize=as.integer(256))
+        }else
+            Column(name=col.name[[x]],columnType=col.type[x])
+    })
+
+     schema.obj <- Schema(name=table_name,
             columns=tcols,
-            parent=parent_id)
-    syn_id <- synapseClient::synStore(synapseClient::Table(schema,dt))
+            parent=synGet(parent_id))
 
-    #all.rows <-synapseClient::synTableQuery(paste('select * from',syn_id))
+    tab<-synapser::Table(schema.obj,as.data.frame(dt))
 
-    #synapseClient::synDeleteRows(all.rows)
-    syn_id <-synapseClient::synStore(synapseClient::Table(schema,dt))
+    syn_id <- synapser::synStore(tab)
+#this is the jira:  https://sagebionetworks.jira.com/browse/SYNPY-603
+#    all.rows <-synapser::synTableQuery(paste('select * from',syn_id$tableId))
+
+    #synDelete(all.rows$asRowSet())
+
+#    syn_id <-synapser::synStore(synapser::Table(schema,dt))
 
     return(syn_id)
 

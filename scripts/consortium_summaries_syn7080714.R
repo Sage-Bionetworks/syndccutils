@@ -5,7 +5,7 @@ source("R/utils.R")
 
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
+synLogin()
 
 
 # Config ------------------------------------------------------------------

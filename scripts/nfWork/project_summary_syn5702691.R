@@ -4,7 +4,7 @@ source("R/synapse_helpers.R")
 ##NEXUS work
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
+synLogin()
 
 
 # Config ------------------------------------------------------------------
@@ -80,7 +80,7 @@ cell_line_counts <- fileview_df %>%
 syn_id <- datatable_to_synapse( cell_line_counts,synproject_id, "Study Types By Agency")
 
 #provide query string
-wiki_string <- simple_plots_wiki_string(syn_id@schema@properties$id, group_keys,count_cols,title='Study Types')
+wiki_string <- simple_plots_wiki_string(syn_id$tableId, group_keys,count_cols,title='Study Types')
 
 
 ##next plot: analysis and assay types
