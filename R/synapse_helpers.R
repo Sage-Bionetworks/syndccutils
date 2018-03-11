@@ -1,6 +1,8 @@
 library(tidyverse)
 library(synapser)
 
+source("R/utils.R")
+
 #' Collect all rows and columns from a Synapse table and return as values
 #' in a data frame.
 #'
