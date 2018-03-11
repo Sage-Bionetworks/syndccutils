@@ -9,18 +9,19 @@ output:
     runtime: shiny
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE}
 library(flexdashboard)
 library(tidyverse)
 library(plotly)
 library(shiny)
 library(crosstalk)
 library(DT)
+library(synapseClient)
 ```
 
 ```{r, include=FALSE}
-force_reload <- FALSE
-csbc_summary_df <- readr::read_tsv("../data/csbc_summary/2018-03-09_syn11958165.tsv")
+synapseLogin()
+csbc_summary_df <- synTableQuery('select * from syn11958165')@values
 ```
 
 ```{r}
