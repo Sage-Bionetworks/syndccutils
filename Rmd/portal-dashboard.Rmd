@@ -17,6 +17,7 @@ library(shiny)
 library(crosstalk)
 library(DT)
 library(synapseClient)
+library(ggridges)
 ```
 
 ```{r, include=FALSE}
@@ -144,6 +145,30 @@ gauge(files_w_study, min = 0, max = files)
 
 > (out of all files)
 
+
+Row
+-----------------------------------------------------------------------
+
+### Data upload frequency over time
+```{r}
+projects_w_files <- center_summary_df %>%
+  group_by(projectId) %>%
+  summarize(file_count = sum(fileId)) %>%
+  filter(file_count > 0) %>%
+  pull(projectId)
+
+
+plot.dat <- filter(csbc_summary_df, projectId %in% projects_w_files)
+plot.dat <- plot.dat[,c('fileId', 'projectId', 'createdOn_file', 'study')]
+plot.dat <- mutate(plot.dat, date = format(as.Date(createdOn_file), "%y-%m"))
+plot.dat$study[is.na(plot.dat$study)] <- 'Other files'
+
+ggplot(plot.dat, aes(x = date , y = study)) +
+  geom_density_ridges(aes(fill = study), alpha = 0.5, scale = 4,  scale = 3, size = 0.3) +
+  scale_x_discrete(expand = waiver()) + theme(legend.position = "none", axis.text.x = element_text(angle = 55, hjust = 1))
+```
+
+> (All files by study)
 
 Center Summaries
 =====================================
