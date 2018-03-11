@@ -8,20 +8,24 @@ get_function_names <- function(script) {
         purrr::map_chr(1)
 }
 
-check_used_file <- function(function_name, script) {
+check_used_file <- function(function_name, script, list_hits = FALSE) {
     function_name <- stringr::str_c(function_name, "\\(")
     readr::read_lines(script) %>%
         stringr::str_detect(function_name) %>%
         any()
 }
 
-check_used_dir <- function(function_name, dir) {
+check_used_dir <- function(function_name, dir, list_hits = FALSE) {
     dir_scripts <- fs::dir_ls(dir, glob = "*.R", recursive = TRUE)
-    dir_scripts %>%
+    hits <- dir_scripts %>%
         purrr::map_lgl(function(script) {
             check_used_file(function_name, script)
-        }) %>%
-        any()
+        })
+    if (list_hits) {
+        hits[hits]
+    } else {
+        any(hits)
+    }
 }
 
 find_unused_functions <- function(script, target_dir) {
