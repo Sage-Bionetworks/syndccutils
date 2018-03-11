@@ -15,8 +15,15 @@ check_used_file <- function(function_name, script) {
         any()
 }
 
-check_used_dir <- function(function_name, dir, list_hits = FALSE) {
+check_used_dir <- function(function_name, dir, list_hits = FALSE,
+                           exclude_pattern = NULL) {
     dir_scripts <- fs::dir_ls(dir, glob = "*.R", recursive = TRUE)
+    if (!is.null(exclude_pattern)) {
+        dir_scripts <- dir_scripts %>%
+            purrr::keep(function(dir_file) {
+                !stringr::str_detect(dir_file, exclude_pattern)
+            })
+    }
     hits <- dir_scripts %>%
         purrr::map_lgl(function(script) {
             check_used_file(function_name, script)
@@ -28,11 +35,12 @@ check_used_dir <- function(function_name, dir, list_hits = FALSE) {
     }
 }
 
-find_unused_functions <- function(script, target_dir) {
+find_unused_functions <- function(script, target_dir, exclude_pattern = NULL) {
     get_function_names(script) %>%
         set_names(.) %>%
         purrr::map_lgl(function(function_name) {
-            check_used_dir(function_name, target_dir)
+            check_used_dir(function_name, target_dir,
+                           exclude_pattern = exclude_pattern)
         }) %>%
         .[!(.)] %>%
         names()
@@ -45,7 +53,8 @@ source_scripts <- c("R/tables.R", "R/charts.R", "R/synapse_helpers.R") %>%
     set_names(.)
 message("Unused in `scripts/` files:")
 map(source_scripts, function(source_script) {
-    find_unused_functions(source_script, "scripts")
+    find_unused_functions(source_script, "scripts",
+                          exclude_pattern = "study_summaries")
 })
 
 message("Unused in `R/` files:")
