@@ -8,7 +8,7 @@ get_function_names <- function(script) {
         purrr::map_chr(1)
 }
 
-check_used_file <- function(function_name, script, list_hits = FALSE) {
+check_used_file <- function(function_name, script) {
     function_name <- stringr::str_c(function_name, "\\(")
     readr::read_lines(script) %>%
         stringr::str_detect(function_name) %>%
@@ -43,6 +43,12 @@ find_unused_functions <- function(script, target_dir) {
 
 source_scripts <- c("R/tables.R", "R/charts.R", "R/synapse_helpers.R") %>%
     set_names(.)
+message("Unused in `scripts/` files:")
 map(source_scripts, function(source_script) {
     find_unused_functions(source_script, "scripts")
+})
+
+message("Unused in `R/` files:")
+map(source_scripts, function(source_script) {
+    find_unused_functions(source_script, "R")
 })
