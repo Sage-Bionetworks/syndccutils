@@ -16,13 +16,13 @@ library(plotly)
 library(shiny)
 library(crosstalk)
 library(DT)
-library(synapseClient)
 library(ggridges)
+library(synapser)
 ```
 
 ```{r, include=FALSE}
-synapseLogin()
-csbc_summary_df <- synTableQuery('select * from syn11958165')@values
+synLogin()
+csbc_summary_df <- synTableQuery('select * from syn11958165')$asDataFrame()
 ```
 
 ```{r}
