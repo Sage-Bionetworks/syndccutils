@@ -3,6 +3,7 @@ source("R/tables.R")
 source("R/synapse_helpers.R")
 
 # Script/template to create summary tables and charts for a "project"
+update_remote <- TRUE
 
 # Config ------------------------------------------------------------------
 
@@ -41,8 +42,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-# syn_dt_entity <- datafile_counts_dt %>%
-#     save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    # syn_dt_entity <- datafile_counts_dt %>%
+    #     save_datatable(parent_id, table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -60,7 +63,9 @@ chart <- fileview_df %>%
     plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
                                            annotation_keys = plot_keys)
 
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -78,8 +83,10 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
 chart <- fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
 
-# syn_entity <-
-save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    # syn_entity <-
+    save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart

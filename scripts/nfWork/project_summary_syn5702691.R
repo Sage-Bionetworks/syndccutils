@@ -5,6 +5,7 @@ source("R/synapse_helpers.R")
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
+update_remote <- TRUE
 
 
 # Config ------------------------------------------------------------------
@@ -108,8 +109,10 @@ datafile_counts
  #   format_summarytable_columns(c("Center", group_keys)) %>%
 #    as_datatable()
 
-syn_dt_entity <- datafile_counts %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 group_keys <-c("analysisType","fundingAgency")
 count_cols <-c('id')
@@ -135,9 +138,10 @@ datafile_counts
 #   format_summarytable_columns(c("Center", group_keys)) %>%
 #    as_datatable()
 
-syn_dt_entity <- datafile_counts %>%
-    save_datatable(parent_id, table_filename, .)
-
+if (update_remote) {
+    syn_dt_entity <- datafile_counts %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 group_keys <-c("dataType","fundingAgency")
 count_cols <-c('id')
@@ -162,5 +166,7 @@ datafile_counts
 #   format_summarytable_columns(c("Center", group_keys)) %>%
 #    as_datatable()
 
-syn_dt_entity <- datafile_counts %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts %>%
+        save_datatable(parent_id, table_filename, .)
+}

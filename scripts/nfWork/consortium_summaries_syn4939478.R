@@ -5,6 +5,7 @@ source("R/synapse_helpers.R")
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
+update_remote <- TRUE
 
 
 # Config ------------------------------------------------------------------
@@ -68,8 +69,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, nf1_table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, nf1_table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -98,10 +101,12 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(c(group_keys,list_cols)) #%>%
     #as_datatable()
 
-syn_dt_entity <- datatable_to_synapse(datafile_counts_dt,synproject_id, 'Assays By Project')
-#    save_datatable(parent_id, table_filename, .)
-tcolnames<-names(as.data.frame(syn_dt_entity))
-wiki_string <- simple_plots_wiki_string(syn_dt_entity$tableId,tcolnames[1:2],tcolnames[3],title='Assays By Project')
+if (update_remote) {
+    syn_dt_entity <- datatable_to_synapse(datafile_counts_dt,synproject_id, 'Assays By Project')
+    #    save_datatable(parent_id, table_filename, .)
+    tcolnames<-names(as.data.frame(syn_dt_entity))
+    wiki_string <- simple_plots_wiki_string(syn_dt_entity$tableId,tcolnames[1:2],tcolnames[3],title='Assays By Project')
+}
 # view table
 
 datafile_counts <- new_fileview_df %>%
@@ -118,7 +123,9 @@ datafile_counts <- new_fileview_df %>%
 datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(c(group_keys,list_cols)) %>% as_datatable()
 
-syn_dt_entity <-datafile_counts_dt %>% save_datatable(parent_id, table_filename, .) #datatable_to_synapse(datafile_counts_dt,synproject_id, 'Assays By Project')
+if (update_remote) {
+    syn_dt_entity <-datafile_counts_dt %>% save_datatable(parent_id, table_filename, .) #datatable_to_synapse(datafile_counts_dt,synproject_id, 'Assays By Project')
+}
 
 datafile_counts_dt
 
@@ -136,15 +143,18 @@ chart <- new_fileview_df %>%
 
 chart
 
-syn_entity <- save_chart(parent_id, chart_filename, chart)
-
+if (update_remote) {
+    syn_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 
 # create and save chart
 chart <- syn_chart_entity <- new_fileview_df %>%
     plot_assay_counts_by_center()
 
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -153,9 +163,11 @@ chart_filename <- glue::glue("{source_id}_annotationSummary.html",
     source_id = consortium_id)
 
 
-chart <- syn_chart_entity <- new_fileview_df %>%
+chart <- new_fileview_df %>%
     get_annotation_summary()
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -186,6 +198,8 @@ datafile_counts
 #   format_summarytable_columns(c("Center", group_keys)) %>%
 #    as_datatable()
 
-syn_dt_entity <- datafile_counts %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts %>%
+        save_datatable(parent_id, table_filename, .)
+}
 

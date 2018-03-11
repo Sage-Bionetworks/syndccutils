@@ -5,6 +5,7 @@ source("R/synapse_helpers.R")
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
+update_remote <- TRUE
 
 
 # Config ------------------------------------------------------------------
@@ -61,11 +62,14 @@ cell_line_counts <- fileview_df %>%
         queryformat= "raw"
     )
 
-#store table to synapse
-syn_id <- datatable_to_synapse(synproject_id, "Cell Line Counts", cell_line_counts)
+if (update_remote) {
+    #store table to synapse
+    syn_id <- datatable_to_synapse(synproject_id, "Cell Line Counts", cell_line_counts)
 
-#provide query string
-wiki_string <- simple_plots_wiki_string(syn_id@schema@properties$id, group_keys,count_cols,title='Cell Line')
+    #provide query string
+    wiki_string <- simple_plots_wiki_string(syn_id@schema@properties$id, group_keys,count_cols,title='Cell Line')
+}
+
 
 #provide markdown table???
 
