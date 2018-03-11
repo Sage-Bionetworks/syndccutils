@@ -104,7 +104,12 @@ valueBox(samples, icon = "fa-tag")
 ### Publications
 
 ```{r}
-pubs <- sum(center_study_summary_df$publication_count)
+pubs <- csbc_summary_df %>% 
+    group_by(projectId) %>% 
+    summarise(value = unique(publication_count)) %>% 
+    pull(value) %>%
+    sum()
+
 valueBox(pubs, icon = "fa-pencil")
 ```
 
