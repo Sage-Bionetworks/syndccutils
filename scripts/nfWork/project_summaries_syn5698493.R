@@ -4,6 +4,8 @@ source("R/synapse_helpers.R")
 #synodos LGG page
 # Script/template to create summary tables and charts for a "study"
 synLogin()
+update_remote <- TRUE
+
 # Config ------------------------------------------------------------------
 
 synproject_id <- "syn5698493" # Synapse project for project Center
@@ -41,8 +43,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
- syn_dt_entity <- datafile_counts_dt %>%
-     save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -66,8 +70,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -85,8 +91,9 @@ chart <- fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys)
 
 chart
-syn_entity <- save_chart(parent_id, chart_filename, chart)
-
+if (update_remote) {
+    syn_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 ##plot samples by species, data type
 chart_filename <- glue::glue("{source_id}_samplesByDataTypeSpeciesChart.html",
@@ -95,4 +102,6 @@ chart_filename <- glue::glue("{source_id}_samplesByDataTypeSpeciesChart.html",
 chart <- fileview_df%>%plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
     annotation_keys=list(dataType='Data Type',tumorType='Tumor Type'), filter_missing = FALSE)
 chart
-syn_entity <- save_chart(parent_id,chart_filename,chart)
+if (update_remote) {
+    syn_entity <- save_chart(parent_id,chart_filename,chart)
+}

@@ -6,6 +6,7 @@ source("R/utils.R")
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
+update_remote <- TRUE
 
 # Config ------------------------------------------------------------------
 
@@ -54,8 +55,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, nf1_table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, nf1_table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -80,8 +83,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, nf2_table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, nf2_table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -106,9 +111,10 @@ datafile_counts_dt <- datafile_counts %>%
 # view table
 datafile_counts_dt
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
-
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 
 #Now do plots -------------------------------------------
@@ -124,8 +130,9 @@ chart <- fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys)
 
 chart
-syn_entity <- save_chart(parent_id, chart_filename, chart)
-
+if (update_remote) {
+    syn_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 chart_filename <- glue::glue("{source_id}_DataFilesByCenterAndAssay.html",
     source_id = consortium_id)
@@ -135,7 +142,9 @@ chart_filename <- glue::glue("{source_id}_DataFilesByCenterAndAssay.html",
 chart <- syn_chart_entity <- fileview_df %>%
     plot_assay_counts_by_center()
 
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart

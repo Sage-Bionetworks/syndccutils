@@ -3,6 +3,7 @@ source("R/tables.R")
 source("R/synapse_helpers.R")
 
 # Script/template to create summary tables and charts for a "project"
+update_remote <- TRUE
 
 # Config ------------------------------------------------------------------
 
@@ -45,8 +46,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -64,7 +67,9 @@ chart <- data_fileview_df %>%
     plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
                                            annotation_keys = plot_keys)
 
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -82,8 +87,10 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
 chart <- data_fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
 
-# syn_entity <-
-save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    # syn_entity <-
+    save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -108,8 +115,10 @@ toolfile_counts_dt <- toolfile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_id_entity <-toolfile_counts_dt %>%
-    save_datatable(parent_id, input_table_filename, .)
+if (update_remote) {
+    syn_id_entity <-toolfile_counts_dt %>%
+        save_datatable(parent_id, input_table_filename, .)
+}
 
 # view table
 toolfile_counts_dt
@@ -135,8 +144,10 @@ toolfile_counts_dt <- toolfile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_id_entity <-toolfile_counts_dt %>%
-    save_datatable(parent_id, output_table_filename, .)
+if (update_remote) {
+    syn_id_entity <-toolfile_counts_dt %>%
+        save_datatable(parent_id, output_table_filename, .)
+}
 
 # view table
 toolfile_counts_dt
@@ -157,7 +168,9 @@ output_chart_filename <- glue::glue("{source_id}_ToolFilesByOutput.html",
 chart1 <- tool_fileview_df %>%
     plot_tool_inputs()
 
-syn_chart1_entity <- save_chart(parent_id, input_chart_filename, chart1)
+if (update_remote) {
+    syn_chart1_entity <- save_chart(parent_id, input_chart_filename, chart1)
+}
 
 # view chart
 chart1
@@ -166,7 +179,9 @@ chart1
 chart2 <- tool_fileview_df %>%
     plot_tool_outputs()
 
-syn_chart2_entity <- save_chart(parent_id, output_chart_filename, chart2)
+if (update_remote) {
+    syn_chart2_entity <- save_chart(parent_id, output_chart_filename, chart2)
+}
 
 # view chart
 chart2

@@ -6,6 +6,8 @@ source("R/utils.R")
 
 # Script/template to create summary tables and charts for a "study"
 synLogin()
+update_remote <- TRUE
+
 # Config ------------------------------------------------------------------
 
 synproject_id <- "syn7315805" # Synapse project for project Center
@@ -64,15 +66,16 @@ datafile_counts_by_assay_and_diagnosis_dt <- datafile_counts_by_assay_and_diagno
 ##syn_dt_entity <- datafile_counts_by_assay_dt %>%
 ##    save_datatable(parent_id, table_filename, .)
 
-syn_file_by_assay_and_diagnosis_dt_entity <- datafile_counts_by_assay_and_diagnosis_dt %>%
-    save_datatable(parent_id, files_by_assay_and_diagnosis_table_filename, .)
-
-
+if (update_remote) {
+    syn_file_by_assay_and_diagnosis_dt_entity <- datafile_counts_by_assay_and_diagnosis_dt %>%
+        save_datatable(parent_id, files_by_assay_and_diagnosis_table_filename, .)
+}
 
 chart<-plot_sample_counts_by_annotationkey_2d(fileview_df,sample_key='individualID',annotation_keys=c(tumorType='Tumor Type',egfrStatus='EGFR Status'))
 
-syn_entity <- save_chart(parent_id, patient_by_diagnosis_chart_filename, chart)
-
+if (update_remote) {
+    syn_entity <- save_chart(parent_id, patient_by_diagnosis_chart_filename, chart)
+}
 
 # Files by category -------------------------------------------------------
 
@@ -107,8 +110,9 @@ chart <- categories %>%
     layout(showlegend = FALSE,
            font = list(family = "Roboto, Open Sans, sans-serif"))
 # chart
-syn_entity <- save_chart(parent_id, chart_filename, chart)
-
+if (update_remote) {
+    syn_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 
 
