@@ -1,7 +1,6 @@
 source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
-source("R/utils.R")
 
 # Script/template to create summary tables and charts for a "project"
 
