@@ -23,6 +23,11 @@ library(ggridges)
 ```{r, include=FALSE}
 synLogin()
 csbc_summary_df <- synTableQuery('select * from syn11958165')$asDataFrame()
+
+csbc_summary_df$createdOn_file <- lubridate::as_datetime(floor(csbc_summary_df$createdOn_file/1000))
+csbc_summary_df$modifiedOn_file <- lubridate::as_datetime(floor(csbc_summary_df$modifiedOn_file/1000))
+csbc_summary_df$createdOn_project <- lubridate::as_datetime(floor(csbc_summary_df$createdOn_project/1000))
+csbc_summary_df$modifiedOn_project <- lubridate::as_datetime(floor(csbc_summary_df$modifiedOn_project/1000))
 ```
 
 ```{r}
