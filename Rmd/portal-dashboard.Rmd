@@ -11,14 +11,18 @@ output:
 
 ```{r setup, include=TRUE}
 library(flexdashboard)
+library(lubridate)
 library(tidyverse)
 library(plotly)
 library(shiny)
 library(crosstalk)
 library(DT)
 library(synapser)
+library(streamgraph)
+library(dplyr)
 library(ggridges)
 library(ggthemes)
+library(kableExtra)
 
 source("../R/synapse_helpers.R")
 source("../R/tables.R")
@@ -201,10 +205,10 @@ ggplotly(p, tooltip = "text") %>%
 ```
 
 
-Row
+Row {.tabset}
 -----------------------------------------------------------------------
 
-### Data upload frequency over time
+### Data upload frequency over time (`ggridges`)
 
 ```{r}
 projects_w_files <- center_summary_df %>%
@@ -224,6 +228,42 @@ ggplot(plot.dat, aes(x = date , y = study)) +
 ```
 
 > (All files by study)
+
+### Data upload over time (`streamgraph`)
+
+```{r}
+selectInput("sg_facet", label = "Group files by:",
+            choices = c("projectId", "assay"), selected = "projectId")
+```
+
+```{r}
+fillRow(
+    streamgraphOutput("files_per_month")    
+)
+output$files_per_month <- renderStreamgraph({
+    sg_facet_chr <- input$sg_facet
+    sg_facet <- as.name(input$sg_facet)
+    
+    plot_df <- csbc_summary_df %>% 
+        select(createdOn_file, rlang::UQ(sg_facet)) %>% 
+        mutate(month = as.Date(cut(createdOn_file, breaks = "month"))) %>% 
+        filter(!is.na(month)) %>% 
+        group_by(month, rlang::UQ(sg_facet)) %>% 
+        tally() %>% 
+        ungroup() %>%
+        complete(month, rlang::UQ(sg_facet)) %>% 
+        replace_na(list(n = 0L)) %>% 
+        group_by(rlang::UQ(sg_facet)) %>%
+        mutate(n = cumsum(n),
+               n = log10(n + 1)) %>% 
+        rename(sg_facet = rlang::UQ(sg_facet))
+    
+    streamgraph(as.list(plot_df), sg_facet, "n", "month", offset = "zero", 
+                    interpolate = "linear") %>%
+        sg_axis_x(1, "month", "%m-%Y") %>%
+        sg_fill_brewer("PuOr")
+})
+```
 
 Center Summaries
 =====================================
@@ -259,6 +299,46 @@ observeEvent(input$center_summary_rows_selected, {
         UpdateInputs(data, session)
     }
 })
+```
+
+---
+
+```{r}
+tableOutput("center_metadata")
+output$center_metadata <- function() {
+    selected_project <- center_summary_df[[input$center_summary_rows_selected, "projectId"]]
+    center_data_df <- center_summary_df %>%
+        filter(projectId == selected_project) %>%
+        select(project_vars) %>%
+        select(-dplyr::matches("(On_project)")) %>%
+        mutate(`Synapse Project` = projectId,
+               `Synapse Team` = glue::glue("{team_id} ({team_size} members)",
+                                           team_id = teamProfileId,
+                                           team_size = str_split(
+                                               teamMembersProfileId,
+                                               ", ", simplify = TRUE
+                                           ) %>%
+                                               length())) %>%
+        create_synapse_links(list(`Synapse Project` = "projectId",
+                                  `Synapse Team` = "teamProfileId")) %>%
+        mutate(`Synapse Team` = str_replace(`Synapse Team`,
+                                            "#!Synapse", "#!Team")) %>%
+        select(-projectId, -name_project,
+               -teamProfileId, -teamMembersProfileId) %>%
+        gather(field, val) %>%
+        mutate(field = str_to_title(field),
+               field = case_when(
+                   field == "Grantnumber" ~ "Grant Number",
+                   field == "Granttype" ~ "Grant Type",
+                   field == "Publication_count" ~ "Publications",
+                   field == "Publication_geodata_produced" ~ "GEO Datasets",
+                   TRUE ~ field
+               )
+        ) 
+    # selected_project
+    knitr::kable(center_data_df, "html", escape = FALSE)
+}
+
 ```
 
 Row
@@ -304,8 +384,7 @@ output$center_details <- plotly::renderPlotly({
         selected_project <- center_summary_df[[input$center_summary_rows_selected, "projectId"]]
         center_df <- center_summary_df %>% 
             filter(projectId == selected_project)
-        print(center_df)
-        
+
         p <- center_df %>% 
             select(-one_of(project_vars)) %>% 
             gather(attr, count) %>% 
