@@ -6,7 +6,7 @@ source("R/synapse_helpers.R")
 
 synLogin()
 cache_data <- TRUE
-update_remote <- FALSE
+update_remote <- TRUE
 
 # Config ------------------------------------------------------------------
 
@@ -139,7 +139,7 @@ synproject_key <- "Center Name"
 count_cols <- c("id", "tumorType", "diagnosis")
 
 datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey_new(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         table_id = master_fileview_id,
         synproject_key = synproject_key,
@@ -221,7 +221,7 @@ list_cols <- "study"
 link_keys <- list(study = "Study")
 
 toolfile_counts <- tool_fileview_df %>%
-    summarize_files_by_annotationkey_new(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         table_id = master_tool_fileview_id,
         synproject_key = synproject_key,
@@ -254,7 +254,7 @@ group_keys <- "inputDataType"
 count_cols <- "id"
 
 toolfile_counts <- tool_fileview_df %>%
-    summarize_files_by_annotationkey(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         table_id = master_tool_fileview_id,
         count_cols = count_cols
@@ -283,7 +283,7 @@ group_keys <- "outputDataType"
 count_cols <- "id"
 
 toolfile_counts <- tool_fileview_df %>%
-    summarize_files_by_annotationkey(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         table_id = master_tool_fileview_id,
         count_cols = count_cols
