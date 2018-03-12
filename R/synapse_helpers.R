@@ -1,7 +1,9 @@
 library(tidyverse)
 library(synapser)
+library(feather)
 
 source("R/utils.R")
+
 
 #' Collect all rows and columns from a Synapse table and return as values
 #' in a data frame.
@@ -12,9 +14,27 @@ source("R/utils.R")
 #' @export
 #'
 #' @examples
-get_table_df <- function(table_id) {
-    syn_table_data <- synTableQuery(sprintf("select * from %s", table_id))
-    return(as.data.frame(syn_table_data)%>%select(-ROW_ID,-ROW_VERSION))
+get_table_df <- function(table_id, cache = FALSE) {
+    if (cache) {
+        viewcache_dir <- "data/viewcache"
+        if (!fs::dir_exists(viewcache_dir)) {
+            fs::dir_create(viewcache_dir, recursive = TRUE)
+        }
+        view_file <- fs::path(viewcache_dir,
+                              stringr::str_c(table_id, ".feather"))
+        if (!fs::file_exists(view_file)) {
+            syn_table_data <- synTableQuery(sprintf("select * from %s", table_id),
+                                            includeRowIdAndRowVersion = FALSE)
+            feather::write_feather(syn_table_data$asDataFrame(), view_file)
+            return(syn_table_data$asDataFrame())
+        } else {
+            return(feather::read_feather(view_file))
+        }
+    } else {
+        syn_table_data <- synTableQuery(sprintf("select * from %s", table_id),
+                                        includeRowIdAndRowVersion = FALSE)
+        syn_table_data$asDataFrame()
+    }
 }
 
 
