@@ -114,8 +114,9 @@ save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
 
     chart_widget <- plotly::as_widget(plot_object)
     htmlwidgets::saveWidget(chart_widget, chart_filename,
-                            selfcontained = FALSE)
-    fixed_chart_filename <- fix_js_assets(chart_filename)
+                            selfcontained = TRUE)
+    # fixed_chart_filename <- fix_js_assets(chart_filename)
+    fixed_chart_filename <- chart_filename
 
     syn_entity <- synStore(File(path = fixed_chart_filename,
                                 parentId = parent_id))
@@ -128,8 +129,9 @@ save_datatable <- function(parent_id, dt_filename, dt_widget) {
         dir.create("html")
     }
     htmlwidgets::saveWidget(dt_widget, dt_filename,
-                            selfcontained = FALSE)
-    fixed_dt_filename <- fix_js_assets(dt_filename)
+                            selfcontained = TRUE)
+    # fixed_dt_filename <- fix_js_assets(dt_filename)
+    fixed_dt_filename <- dt_filename
 
     syn_entity <- synStore(File(path = fixed_dt_filename,
                                 parentId = parent_id))
