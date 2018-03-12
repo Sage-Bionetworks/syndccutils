@@ -18,8 +18,11 @@ library(crosstalk)
 library(DT)
 library(synapser)
 library(ggridges)
+library(ggthemes)
 
 source("../R/synapse_helpers.R")
+source("../R/tables.R")
+source("../R/charts.R")
 ```
 
 ```{r, include=FALSE}
@@ -151,6 +154,52 @@ gauge(files_w_study, min = 0, max = files)
 
 > (out of all files)
 
+Row {data-height=650}
+-----------------------------------------------------------------------
+
+### Center activity
+
+```{r}
+plot_df <- center_study_summary_df %>% 
+    mutate(sample = individualID + specimenID + cellLine) %>% 
+    group_by(name_project, consortium, grantType) %>% 
+    summarise(avg_files = mean(fileId),
+           study = n_distinct(study, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    arrange(study) %>% 
+    mutate(name_project = fct_inorder(name_project),
+           label = glue::glue(
+               "<b>{value}:</b>\n{count} studies\n{avg} files per study",
+               value = name_project,
+               count = study,
+               avg = avg_files
+           )
+    )
+
+p <- plot_df %>% 
+    ggplot(aes(x = name_project, y = study, text = label)) +
+    geom_col(aes(fill = avg_files)) +
+    geom_point(aes(colour = grantType), y = 0.1) +
+    coord_flip() +
+    scale_colour_colorblind() +
+    guides(alpha = FALSE, fill = FALSE, colour = guide_legend(title = NULL)) +
+    xlab("") +
+    ylab("Studies in Synapse") +
+    scale_y_continuous(expand = c(0, 0)) +
+    facet_grid(consortium ~ ., 
+               scales = "free_y", space = "free_y", drop = TRUE) +
+    theme_bw() +
+    theme(strip.text.x = element_text(face = "bold"),
+          strip.text.y = element_text(face = "bold"),
+          strip.background.y = element_blank(),
+          legend.title = element_blank())
+# p
+ggplotly(p, tooltip = "text") %>%
+    layout(legend = list(orientation = 'h',
+                         y = 1, x = 0, yanchor = "bottom")) %>% 
+    plotly::config(displayModeBar = F)
+```
+
 
 Row
 -----------------------------------------------------------------------
@@ -221,17 +270,19 @@ Row
 fillRow(
     DT::dataTableOutput("center_summary", width = "100%")
 )
-
+display_vars <- names(center_summary_df) %>% 
+    setdiff(setdiff(project_vars, c("projectId", "name_project")))
 output$center_summary <- DT::renderDT({
-    datatable(center_summary_df, 
-              selection = list(
-                  mode = 'single', selected = c(3)
-              ),
-              options = list(
-                  scrollX = TRUE
-              ),
-              rownames = FALSE
-    ) %>%
+    center_summary_df %>% 
+        select(one_of(display_vars)) %>% 
+        datatable(selection = list(
+            mode = 'single', selected = c(3)
+        ),
+        options = list(
+            scrollX = TRUE
+        ),
+        rownames = FALSE
+        ) %>%
         formatStyle(
             'fileId',
             backgroundColor = styleEqual(0.0, 'lightpink')
