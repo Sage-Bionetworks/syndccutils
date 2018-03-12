@@ -18,16 +18,17 @@ library(crosstalk)
 library(DT)
 library(synapser)
 library(ggridges)
+
+source("../R/synapse_helpers.R")
 ```
 
 ```{r, include=FALSE}
 synLogin()
-csbc_summary_df <- synTableQuery('select * from syn11958165')$asDataFrame()
+csbc_summary_df <- get_table_df("syn11958165", cache = TRUE)
 
-csbc_summary_df$createdOn_file <- lubridate::as_datetime(floor(csbc_summary_df$createdOn_file/1000))
-csbc_summary_df$modifiedOn_file <- lubridate::as_datetime(floor(csbc_summary_df$modifiedOn_file/1000))
-csbc_summary_df$createdOn_project <- lubridate::as_datetime(floor(csbc_summary_df$createdOn_project/1000))
-csbc_summary_df$modifiedOn_project <- lubridate::as_datetime(floor(csbc_summary_df$modifiedOn_project/1000))
+csbc_summary_df <- csbc_summary_df %>% 
+    mutate_at(.vars = vars(dplyr::matches("(createdOn|modifiedOn)")),
+              .funs = funs(lubridate::as_datetime(floor(. / 1000))))
 ```
 
 ```{r}
@@ -155,12 +156,13 @@ Row
 -----------------------------------------------------------------------
 
 ### Data upload frequency over time
+
 ```{r}
 projects_w_files <- center_summary_df %>%
-  group_by(projectId) %>%
-  summarize(file_count = sum(fileId)) %>%
-  filter(file_count > 0) %>%
-  pull(projectId)
+    group_by(projectId) %>%
+    summarize(file_count = sum(fileId)) %>%
+    filter(file_count > 0) %>%
+    pull(projectId)
 
 plot.dat <- filter(csbc_summary_df, projectId %in% projects_w_files)
 plot.dat <- plot.dat[,c('fileId', 'projectId', 'createdOn_file', 'study')]
@@ -168,8 +170,8 @@ plot.dat <- mutate(plot.dat, date = format(as.Date(createdOn_file), "%y-%m"))
 plot.dat$study[is.na(plot.dat$study)] <- 'Other files'
 
 ggplot(plot.dat, aes(x = date , y = study)) +
-  geom_density_ridges(aes(fill = study), alpha = 0.5, scale = 4,  scale = 3, size = 0.3) +
-  scale_x_discrete(expand = waiver()) + theme(legend.position = "none", axis.text.x = element_text(angle = 55, hjust = 1))
+    geom_density_ridges(aes(fill = study), alpha = 0.5, scale = 4,  scale = 3, size = 0.3) +
+    scale_x_discrete(expand = waiver()) + theme(legend.position = "none", axis.text.x = element_text(angle = 55, hjust = 1))
 ```
 
 > (All files by study)
