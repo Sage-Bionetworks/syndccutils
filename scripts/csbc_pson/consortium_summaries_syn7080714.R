@@ -5,7 +5,8 @@ source("R/synapse_helpers.R")
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
-update_remote <- TRUE
+cache_data <- TRUE
+update_remote <- FALSE
 
 # Config ------------------------------------------------------------------
 
@@ -18,13 +19,13 @@ master_tool_fileview_id <- "syn9898965" # Synapse fileview associated with conso
 
 # Collect data ------------------------------------------------------------
 
-fileview_df <- get_table_df(master_fileview_id)
-tool_fileview_df <- get_table_df(master_tool_fileview_id)
+fileview_df <- get_table_df(master_fileview_id, cache = cache_data)
+tool_fileview_df <- get_table_df(master_tool_fileview_id, cache = cache_data)
 
 # Collect consortium hierarchy info ---------------------------------------
 
 hierarchy_id <- "syn10915872"
-hierarchy_df <- get_table_df(hierarchy_id)
+hierarchy_df <- get_table_df(hierarchy_id, cache = cache_data)
 
 
 # Collect Synapse project info --------------------------------------------
