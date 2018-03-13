@@ -1009,29 +1009,44 @@ def meltinfo(args, syn):
 
 def setPermissionForAll(args, syn):
     """
-    only an admin can execute this
+    only an admin can execute this command. given team(s) and possibly a list sponsors profile ids along with
+    a desired permission: view/read, download, or edit; it sets the requested permission on all specified teams
+    for the specified entity.
 
-    permissions: view/read, download, edit
-    CSBC Education and Outreach 3346987
-    PSON Education and Outreach 3346986
-    CSBC PSON Resource and Data Sharing 3346396
-
+    :param args:
     :param syn:
-    :param entity:
     :return:
     """
     entity = args.entity
     permission = args.permission
+    sponsors = None
 
-    teams = [3346396, 3346986, 3346987]
-    if permission in ['read', 'Read', 'READ', 'view', 'View', 'VIEW']:
-        accessType = ['READ']
-    if permission in ['download', 'Download', 'DOWNLOAD']:
-        accessType = ['READ', 'DOWNLOAD']
-    if permission in ['edit', 'Edit', 'EDIT']:
-        accessType = ['READ', 'DOWNLOAD', 'CREATE', 'DELETE', 'UPDATE']
+    if args.csbcteam:
+        # CSBC Education and Outreach 3346987
+        # PSON Education and Outreach 3346986
+        # CSBC PSON Resource and Data Sharing 3346396
+        sponsors = [3346396, 3346986, 3346987]
 
-    [syn.setPermissions(entity=entity, principalId=pid, accessType=accessType) for pid in teams]
+    if args.sponsors:
+        sponsors = args.sponsors
+
+    if args.teams:
+        if sponsors:
+            teams = args.teams
+            teams.extend(sponsors)
+        else:
+            teams = args.teams
+
+        if permission in ['read', 'Read', 'READ', 'view', 'View', 'VIEW']:
+            accessType = ['READ']
+        if permission in ['download', 'Download', 'DOWNLOAD']:
+            accessType = ['READ', 'DOWNLOAD']
+        if permission in ['edit', 'Edit', 'EDIT']:
+            accessType = ['READ', 'DOWNLOAD', 'CREATE', 'DELETE', 'UPDATE']
+
+        [syn.setPermissions(entity=entity, principalId=pid, accessType=accessType) for pid in teams]
+    else:
+        print('Please provide team(s) or sponsor teams profileId ')
 
 
 def buildParser():
@@ -1096,6 +1111,13 @@ def buildParser():
     parser_permit.add_argument('--entity', help='Synapse entity to set sponsors (local) permission on', required=True,
                                type=str)
     parser_permit.add_argument('--permission', help='read/view, download, edit', type=str, required=True)
+
+    parser_permit.add_argument('--csbcteam', action='store_true',
+                                      help='If sponsor team members of CSBC consortium should have the same permission '
+                                           'on the entity')
+
+    parser_permit.add_argument('--teams', nargs='+', help='team profileIds to set the entity permissions on',
+                               required=True)
 
     parser_permit.set_defaults(func=setPermissionForAll)
 
