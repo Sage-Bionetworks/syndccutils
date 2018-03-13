@@ -991,9 +991,20 @@ def meltinfo(args, syn):
             'teamProfileId']
     [changeFloatToInt(final_df, col) for col in cols]
 
-    # save then upload csv to table - for now
-    # asRowSet() of this table may also be used for Ipython jupyter
-    final_df.to_csv('final_df.csv', index=False)
+    if args.tableId:
+        tableId = args.tableId
+        infoTable = syn.tableQuery("SELECT * FROM {id}".format(id=tableId))
+
+        # If current table has rows, delete all the rows
+        if infoTable.asRowSet().rows:
+            deletedRows = syn.delete(infoTable.asRowSet())
+
+        # Update table
+        schema = syn.get(tableId)
+        table = syn.store(synapseclient.Table(schema, final_df))
+    else:
+        # save then: upload csv to table / debug / other
+        final_df.to_csv('final_df.csv', index=False)
 
 
 def setPermissionForAll(args, syn):
@@ -1074,6 +1085,10 @@ def buildParser():
 
     parser_meltinfo = subparsers.add_parser('meltinfo', help='Create melted table on csbc projects and files with '
                                                              'publication counts information')
+
+    parser_meltinfo.add_argument('--tableId', help='Synapse table id that stores consortium projects and files '
+                                                        'information - possibly created on a previous run of this command')
+
     parser_meltinfo.set_defaults(func=meltinfo)
 
     parser_permit = subparsers.add_parser('permit', help='Set sponsors (local) permission on an entity')
