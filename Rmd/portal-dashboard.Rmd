@@ -31,7 +31,7 @@ source("../R/charts.R")
 
 ```{r, include=FALSE}
 synLogin()
-csbc_summary_df <- get_table_df("syn11958165", cache = TRUE)
+csbc_summary_df <- get_table_df("syn11968325", cache = TRUE)
 
 csbc_summary_df <- csbc_summary_df %>% 
     mutate_at(.vars = vars(dplyr::matches("(createdOn|modifiedOn)")),
