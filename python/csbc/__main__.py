@@ -1087,7 +1087,7 @@ def buildParser():
                                                              'publication counts information')
 
     parser_meltinfo.add_argument('--tableId', help='Synapse table id that stores consortium projects and files '
-                                                        'information - possibly created on a previous run of this command')
+                                                   'information - possibly created on a previous run of this command')
 
     parser_meltinfo.set_defaults(func=meltinfo)
 
@@ -1099,26 +1099,12 @@ def buildParser():
 
     parser_permit.set_defaults(func=setPermissionForAll)
 
-
     return parser
-
-
-def _csbc_error_msg(ex):
-    """
-    Format a human readable error message
-
-    :param ex:
-    :return:
-    """
-    if isinstance(ex, six.string_types):
-        return ex
-
-    return '\n' + ex.__class__.__name__ + ': ' + str(ex) + '\n\n'
 
 
 def performMain(args, syn):
     """
-    Format a human readable error message
+    performs main and raises error message if any
 
     :param args:
     :param syn:
@@ -1131,7 +1117,7 @@ def performMain(args, syn):
             if args.debug:
                 raise
             else:
-                sys.stderr.write(_csbc_error_msg(ex))
+                sys.stderr.write(ex)
 
 
 def main():
