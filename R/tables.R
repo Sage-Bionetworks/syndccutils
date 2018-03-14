@@ -1,6 +1,6 @@
 library(tidyverse)
 library(stringr)
-library(synapseClient)
+library(synapser)
 library(DT)
 
 # Table utility functions -------------------------------------------------
@@ -69,14 +69,16 @@ augment_values <- function(
             target_col <- as.name(target_key)
             meta_col <- as.name(meta_key)
             df <<- df %>%
-                mutate(rlang::UQ(target_col) :=
-                           ifelse(!is.na(rlang::UQ(target_col)),
-                                  str_c(
-                                      rlang::UQ(meta_col),
-                                      rlang::UQ(target_col),
-                                      sep = " — "
-                                  ),
-                                  rlang::UQ(target_col)))
+                mutate(
+                    lang::UQ(target_col) :=
+                        ifelse(!is.na(rlang::UQ(target_col)),
+                               str_c(
+                                   rlang::UQ(meta_col),
+                                   rlang::UQ(target_col),
+                                   sep = " — "
+                               ),
+                               rlang::UQ(target_col))
+                )
         })
     df
 }
@@ -95,21 +97,26 @@ augment_values <- function(
 create_synapse_links <- function(
     df, link_keys
 ) {
-
-    link_template <- "<a href='https://www.synapse.org/#!Synapse:{id}' target='_blank'>{target}</a>"
+    base_url <- "https://www.synapse.org/#!Synapse:"
+    link_template <- glue::glue(
+        "<a href='{base}{{id}}' target='_blank'>{{target}}</a>",
+        base = base_url
+    )
     link_keys %>%
         walk2(names(.), function(id_key, target_key) {
             target_col <- as.name(target_key)
             id_col <- as.name(id_key)
             df <<- df %>%
-                mutate(rlang::UQ(target_col) :=
-                           ifelse(!is.na(rlang::UQ(target_col)),
-                                  glue::glue(
-                                      link_template,
-                                      id = rlang::UQ(id_col),
-                                      target = rlang::UQ(target_col)
-                                  ),
-                                  rlang::UQ(target_col)))
+                mutate(
+                    rlang::UQ(target_col) :=
+                        ifelse(!is.na(rlang::UQ(target_col)),
+                               glue::glue(
+                                   link_template,
+                                   id = rlang::UQ(id_col),
+                                   target = rlang::UQ(target_col)
+                               ),
+                               rlang::UQ(target_col))
+                )
         })
     df
 }
@@ -276,28 +283,28 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 #'
 #' @examples
 as_datatable <- function(df, cols_as_code = c()) {
-
+    js_formatting <- JS(
+        "function(settings, json) {
+            $(this.api().table().body()).css({
+                'font-family': 'Roboto, Open Sans, sans-serif',
+                'font-size': '13px'
+            });
+            $(this.api().table().header()).css({
+                'font-family': 'Roboto, Open Sans, sans-serif',
+                'font-size': '14px'
+            });
+            $(this.api().table().container()).css({
+                'font-family': 'Roboto, Open Sans, sans-serif',
+                'font-size': '14px'
+            });
+        }"
+    )
     df %>%
         datatable(escape = FALSE, rownames = FALSE,
                   options=list(
                       pageLength = min(nrow(df), 10),
                       dom = 'tp',
-                      initComplete = JS("
-                                    function(settings, json) {
-                                    $(this.api().table().body()).css({
-                                    'font-family': 'Roboto, Open Sans, sans-serif',
-                                    'font-size': '13px'
-                                    });
-                                    $(this.api().table().header()).css({
-                                    'font-family': 'Roboto, Open Sans, sans-serif',
-                                    'font-size': '14px'
-                                    });
-                                    $(this.api().table().container()).css({
-                                    'font-family': 'Roboto, Open Sans, sans-serif',
-                                    'font-size': '14px'
-                                    });
-                                    }
-                                    ")
+                      initComplete = js_formatting
                   )
         )
 }
@@ -533,12 +540,13 @@ summarize_project_info <- function(view_df) {
         sapply(unique(c(view_df$projectId)),
                function(x) {
                    res = synGet(x)
+                   annotations = synGetAnnotations(x)
                    c(
                        projectId = x,
-                       projectName = ifelse(is.null(res@properties$name),"",res@properties$name),
-                       Center = ifelse(is.null(res@properties$name),"",res@properties$name),
-                       Program = ifelse(is.null(res@annotations$consortium),"",res@annotations$consortium),
-                       Institution = ifelse(is.null(res@annotations$institution),"",res@annotations$institution)
+                       projectName = ifelse(is.null(res$properties$name),"",res$properties$name),
+                       Center = ifelse(is.null(res$properties$name),"",res$properties$name),
+                       Program = ifelse(is.null(annotations$consortium[[1]]),"",annotations$consortium[[1]]),
+                       Institution = ifelse(is.null(annotations$institution[[1]]),"",annotations$institution[[1]])
                    )
                })
 

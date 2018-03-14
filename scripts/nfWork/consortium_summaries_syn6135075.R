@@ -1,11 +1,12 @@
 source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
+source("R/utils.R")
 ##CTF SITE
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
-
+synLogin()
+update_remote <- TRUE
 
 # Config ------------------------------------------------------------------
 
@@ -14,11 +15,9 @@ consortium_id <- "syn6135075" # Synapse folder associated with consortium
 parent_id <- "syn10901483" # consortium 'Reporting' folder where files should be stored
 master_fileview_id <- "syn11614206" # Synapse fileview associated with consortium data
 
-
 # Collect data ------------------------------------------------------------
 
 fileview_df <- get_table_df(master_fileview_id)
-
 
 # Add Synapse project info --------------------------------------------
 
@@ -38,7 +37,7 @@ nf2_table_filename <- glue::glue("{source_id}_DataFileCountsByAssayAndNF2Genotyp
     source_id = consortium_id)
 
 # create and save table - NF1
-group_keys <- c("assay", "nf1Genotype")
+group_keys <- c("assay", "diagnosis")
 count_cols <- c("id", "cellType", "individualID")
 list_cols <- c("Center")
 link_keys <-list(Center="projectId")
@@ -56,14 +55,16 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, nf1_table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, nf1_table_filename, .)
+}
 
 # view table
 datafile_counts_dt
 
 ###now create and save table for NF2
-group_keys <- c("assay", "nf2Genotype")
+group_keys <- c("assay", "tumorType")
 count_cols <- c("id", "cellType", "individualID")
 
 list_cols <- c("Center")
@@ -82,8 +83,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, nf2_table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, nf2_table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -108,9 +111,10 @@ datafile_counts_dt <- datafile_counts %>%
 # view table
 datafile_counts_dt
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
-
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 
 #Now do plots -------------------------------------------
@@ -126,8 +130,9 @@ chart <- fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys)
 
 chart
-syn_entity <- save_chart(parent_id, chart_filename, chart)
-
+if (update_remote) {
+    syn_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 chart_filename <- glue::glue("{source_id}_DataFilesByCenterAndAssay.html",
     source_id = consortium_id)
@@ -137,7 +142,9 @@ chart_filename <- glue::glue("{source_id}_DataFilesByCenterAndAssay.html",
 chart <- syn_chart_entity <- fileview_df %>%
     plot_assay_counts_by_center()
 
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart

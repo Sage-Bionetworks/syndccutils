@@ -5,7 +5,12 @@ source("R/synapse_helpers.R")
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
+<<<<<<< HEAD:scripts/consortium_summaries_syn7080714.R
 
+=======
+cache_data <- TRUE
+update_remote <- FALSE
+>>>>>>> 1a61767741a282f2c54614ae2cffaa811b776a24:scripts/csbc_pson/consortium_summaries_syn7080714.R
 
 # Config ------------------------------------------------------------------
 
@@ -18,13 +23,13 @@ master_tool_fileview_id <- "syn9898965" # Synapse fileview associated with conso
 
 # Collect data ------------------------------------------------------------
 
-fileview_df <- get_table_df(master_fileview_id)
-tool_fileview_df <- get_table_df(master_tool_fileview_id)
+fileview_df <- get_table_df(master_fileview_id, cache = cache_data)
+tool_fileview_df <- get_table_df(master_tool_fileview_id, cache = cache_data)
 
 # Collect consortium hierarchy info ---------------------------------------
 
 hierarchy_id <- "syn10915872"
-hierarchy_df <- get_table_df(hierarchy_id)
+hierarchy_df <- get_table_df(hierarchy_id, cache = cache_data)
 
 
 # Collect Synapse project info --------------------------------------------
@@ -47,6 +52,14 @@ tool_fileview_df <- tool_fileview_df %>%
     left_join(tool_synproject_df, by = c("Center" = "projectId")) %>%
     rename(`Center Name` = `Center.y`)
 
+
+# Clean up factors --------------------------------------------------------
+
+fileview_df <- fileview_df %>%
+    mutate_if(is.factor, as.character)
+
+tool_fileview_df <- tool_fileview_df %>%
+    mutate_if(is.factor, as.character)
 
 # Data files by assay and tumor type --------------------------------------
 
@@ -73,8 +86,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -90,7 +105,9 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 chart <- fileview_df %>%
     plot_sample_counts_by_annotationkey_2d(sample_key = "individualID",
                                            annotation_keys = plot_keys)
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -106,9 +123,11 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 
 chart <- fileview_df %>%
     plot_sample_counts_by_annotationkey_2d(sample_key = "cellLine",
-                                           annotation_keys = plot_keys)
-
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+                                           annotation_keys = plot_keys,
+                                           filter_missing = TRUE)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -136,8 +155,10 @@ datafile_counts_dt <- datafile_counts %>%
     format_summarytable_columns(c("Center", group_keys)) %>%
     as_datatable()
 
-syn_dt_entity <- datafile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts_dt %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 # view table
 datafile_counts_dt
@@ -156,11 +177,13 @@ chart <- fileview_df %>%
     plot_file_counts_by_annotationkey_2d(
         annotation_keys = plot_keys,
         synproject_key = "Center Name",
-        filter_missing = TRUE,
+        filter_missing = FALSE,
         log_counts = TRUE
     )
 
-syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_chart_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -181,7 +204,9 @@ plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
 chart <- fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
 
-syn_entity <- save_chart(parent_id, chart_filename, chart)
+if (update_remote) {
+    syn_entity <- save_chart(parent_id, chart_filename, chart)
+}
 
 # view chart
 chart
@@ -214,8 +239,10 @@ toolfile_counts_dt <- toolfile_counts %>%
     format_summarytable_columns(c("Center", group_keys)) %>%
     as_datatable()
 
-syn_dt_entity <- toolfile_counts_dt %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- toolfile_counts_dt %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 # view table
 toolfile_counts_dt
@@ -241,8 +268,10 @@ toolfile_counts_dt <- toolfile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_id_entity <-toolfile_counts_dt %>%
-    save_datatable(parent_id, input_table_filename, .)
+if (update_remote) {
+    syn_id_entity <-toolfile_counts_dt %>%
+        save_datatable(parent_id, input_table_filename, .)
+}
 
 # view table
 toolfile_counts_dt
@@ -268,8 +297,10 @@ toolfile_counts_dt <- toolfile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-syn_id_entity <-toolfile_counts_dt %>%
-    save_datatable(parent_id, output_table_filename, .)
+if (update_remote) {
+    syn_id_entity <-toolfile_counts_dt %>%
+        save_datatable(parent_id, output_table_filename, .)
+}
 
 # view table
 toolfile_counts_dt
@@ -289,7 +320,9 @@ output_chart_filename <- glue::glue("{source_id}_ToolFilesByOutput.html",
 chart1 <- tool_fileview_df %>%
     plot_tool_inputs()
 
-# syn_chart1_entity <- save_chart(parent_id, input_chart_filename, chart1)
+if (update_remote) {
+    # syn_chart1_entity <- save_chart(parent_id, input_chart_filename, chart1)
+}
 
 # view chart
 chart1
@@ -298,7 +331,9 @@ chart1
 chart2 <- tool_fileview_df %>%
     plot_tool_outputs()
 
-# syn_chart2_entity <- save_chart(parent_id, output_chart_filename, chart2)
+if (update_remote) {
+    # syn_chart2_entity <- save_chart(parent_id, output_chart_filename, chart2)
+}
 
 # view chart
 chart2

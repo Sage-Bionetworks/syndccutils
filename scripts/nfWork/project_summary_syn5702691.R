@@ -4,7 +4,8 @@ source("R/synapse_helpers.R")
 ##NEXUS work
 # Script/template to create summary tables and charts for a "project"
 
-synapseLogin()
+synLogin()
+update_remote <- TRUE
 
 
 # Config ------------------------------------------------------------------
@@ -80,7 +81,7 @@ cell_line_counts <- fileview_df %>%
 syn_id <- datatable_to_synapse( cell_line_counts,synproject_id, "Study Types By Agency")
 
 #provide query string
-wiki_string <- simple_plots_wiki_string(syn_id@schema@properties$id, group_keys,count_cols,title='Study Types')
+wiki_string <- simple_plots_wiki_string(syn_id$tableId, group_keys,count_cols,title='Study Types')
 
 
 ##next plot: analysis and assay types
@@ -108,8 +109,10 @@ datafile_counts
  #   format_summarytable_columns(c("Center", group_keys)) %>%
 #    as_datatable()
 
-syn_dt_entity <- datafile_counts %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 group_keys <-c("analysisType","fundingAgency")
 count_cols <-c('id')
@@ -135,9 +138,10 @@ datafile_counts
 #   format_summarytable_columns(c("Center", group_keys)) %>%
 #    as_datatable()
 
-syn_dt_entity <- datafile_counts %>%
-    save_datatable(parent_id, table_filename, .)
-
+if (update_remote) {
+    syn_dt_entity <- datafile_counts %>%
+        save_datatable(parent_id, table_filename, .)
+}
 
 group_keys <-c("dataType","fundingAgency")
 count_cols <-c('id')
@@ -162,5 +166,7 @@ datafile_counts
 #   format_summarytable_columns(c("Center", group_keys)) %>%
 #    as_datatable()
 
-syn_dt_entity <- datafile_counts %>%
-    save_datatable(parent_id, table_filename, .)
+if (update_remote) {
+    syn_dt_entity <- datafile_counts %>%
+        save_datatable(parent_id, table_filename, .)
+}
