@@ -5,8 +5,12 @@ source("R/synapse_helpers.R")
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
+<<<<<<< HEAD:scripts/consortium_summaries_syn7080714.R
+
+=======
 cache_data <- TRUE
 update_remote <- FALSE
+>>>>>>> 1a61767741a282f2c54614ae2cffaa811b776a24:scripts/csbc_pson/consortium_summaries_syn7080714.R
 
 # Config ------------------------------------------------------------------
 
