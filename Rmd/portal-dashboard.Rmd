@@ -11,6 +11,7 @@ output:
 
 ```{r setup, include=TRUE}
 library(flexdashboard)
+
 library(lubridate)
 library(tidyverse)
 library(plotly)
@@ -18,6 +19,7 @@ library(shiny)
 library(crosstalk)
 library(DT)
 library(synapser)
+
 library(streamgraph)
 library(dplyr)
 library(ggridges)
@@ -31,7 +33,7 @@ source("../R/charts.R")
 
 ```{r, include=FALSE}
 synLogin()
-csbc_summary_df <- get_table_df("syn11958165", cache = TRUE)
+csbc_summary_df <- get_table_df("syn11968325", cache = TRUE)
 
 csbc_summary_df <- csbc_summary_df %>% 
     mutate_at(.vars = vars(dplyr::matches("(createdOn|modifiedOn)")),
@@ -209,11 +211,11 @@ ggplotly(p, tooltip = "text") %>%
 KP Over Time
 =====================================
 
-
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
 ---
+
 
 **Options**
 
@@ -399,6 +401,7 @@ Row {.tabset}
 
 ```{r}
 plotly::plotlyOutput("center_details")
+
 observeEvent(input$center_summary_rows_selected, {
 output$center_details <- plotly::renderPlotly({
     if (length(input$center_summary_rows_selected)) {
@@ -461,28 +464,29 @@ output$center_details <- plotly::renderPlotly({
 ### Contributions by Study
 
 ```{r}
-# plotly::plotlyOutput("center_study_details")
-# output$center_study_details <- plotly::renderPlotly({
-#     center_row <- input$center_summary_rows_selected
-#     selected_center <- center_summary_df[[center_row, "projectId"]]
-#     center_df <- center_summary_df %>% 
-#         filter(projectId == selected_center)
-# 
-#     p <- center_df %>%
-#         select(projectId) %>%
-#         left_join(center_study_summary_df, by = "projectId") %>%
-#         select(-one_of(project_vars)) %>%
-#         gather(attr, count, -study) %>%
-#         ggplot(aes(x = 1, y = count)) +
-#         geom_col() +
-#         xlab("") +
-#         facet_grid(study ~ attr, scales = "free_y") +
-#         theme(axis.text.x = element_blank(),
-#               axis.ticks.x = element_blank(),
-#               strip.background.y = element_blank(),
-#               strip.text.y = element_text(angle = 0, hjust = 0))
-#     ggplotly(p)
-# })
+plotly::plotlyOutput("center_study_details")
+output$center_study_details <- plotly::renderPlotly({
+
+    center_row <- input$center_summary_rows_selected
+    selected_center <- center_summary_df[[center_row, "projectId"]]
+    center_df <- center_summary_df %>% 
+        filter(projectId == selected_center)
+
+    p <- center_df %>%
+        select(projectId) %>%
+        left_join(center_study_summary_df, by = "projectId") %>%
+        select(-one_of(project_vars)) %>%
+        gather(attr, count, -study) %>%
+        ggplot(aes(x = 1, y = count)) +
+        geom_col() +
+        xlab("") +
+        facet_grid(study ~ attr, scales = "free_y") +
+        theme(axis.text.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              strip.background.y = element_blank(),
+              strip.text.y = element_text(angle = 0, hjust = 0))
+    ggplotly(p)
+})
 ```
 
 
