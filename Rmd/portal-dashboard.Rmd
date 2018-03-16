@@ -18,17 +18,18 @@ usePackage <- function(p)
 }
 usePackage('flexdashboard')
 usePackage('lubridate')
-usePackage('tidyverse')
 usePackage('plotly')
-usePackage('crosstalk')
-usePackage('DT')
 usePackage('synapser')
-usePackage('streamgraph')
 usePackage('dplyr')
 usePackage('ggridges')
 usePackage('ggthemes')
 usePackage('kableExtra')
-
+# github packages  
+# install.packages("devtools")
+# devtools::install_github("hadley/tidyverse")
+# devtools::install_github("tidyverse/ggplot2")
+# devtools::install_github('rstudio/DT')
+# devtools::install_github("hrbrmstr/streamgraph")
 
 library(flexdashboard)
 
@@ -36,7 +37,6 @@ library(lubridate)
 library(tidyverse)
 library(plotly)
 library(shiny)
-library(crosstalk)
 library(DT)
 library(synapser)
 
