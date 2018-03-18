@@ -4,6 +4,8 @@ library(plotly)
 library(DT)
 library(kableExtra)
 library(streamgraph)
+library(ggthemes)
+library(rlang)
 library(synapser)
 
 source("../R/synapse_helpers.R")
@@ -129,7 +131,8 @@ shinyServer(function(input, output) {
             plotly::config(displayModeBar = F)  
     })
     
-    output$files_per_month <- streamgraph::renderStreamgraph({
+    # output$files_per_month <- streamgraph::renderStreamgraph({
+    output$files_per_month <- plotly::renderPlotly({
         sg_facet_chr <- input$sg_facet
         sg_facet <- as.name(input$sg_facet)
         
@@ -140,7 +143,8 @@ shinyServer(function(input, output) {
             group_by(month, rlang::UQ(sg_facet)) %>% 
             tally() %>% 
             ungroup() %>%
-            complete(month, rlang::UQ(sg_facet)) %>% 
+            complete(month = seq.Date(min(month), max(month), by="month"), 
+                     rlang::UQ(sg_facet)) %>% 
             replace_na(list(n = 0L)) 
         
         if (input$sg_cumulative) {
@@ -150,13 +154,34 @@ shinyServer(function(input, output) {
                 ungroup()
         } 
         plot_df <- plot_df %>% 
-            mutate(n = log10(n + 1)) %>% 
+            mutate(
+                label = glue::glue(
+                    "<b>{value}:</b>\n{month}: {count} files uploaded",
+                    value = rlang::UQ(sg_facet),
+                    month = month,
+                    count = n),
+                n = log10(n + 1)
+            ) %>% 
             rename(sg_facet = rlang::UQ(sg_facet))
         
-        streamgraph(as.list(plot_df), sg_facet, "n", "month", offset = "zero", 
-                    interpolate = "step") %>%
-            sg_axis_x(1, "month", "%m-%Y") %>%
-            sg_fill_brewer("PuOr")
+        p <- plot_df %>% 
+            ggplot(aes(x = month, y = n, text = label)) + 
+            geom_col(aes(fill = sg_facet)) + 
+            scale_fill_brewer(palette = "PuOr") + 
+            theme_bw() + 
+            xlab(" ") +
+            scale_x_date(date_breaks = "1 month", date_labels = "%m-%Y") + 
+            ylab("log10(Files)") +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+        
+        ggplotly(p, tooltip = "text") %>%
+            layout(showlegend = FALSE) %>% 
+            plotly::config(displayModeBar = F)
+        
+        # streamgraph(as.list(plot_df), sg_facet, "n", "month", offset = "zero", 
+        #             interpolate = "step") %>%
+        #     sg_axis_x(1, "month", "%m-%Y") %>%
+        #     sg_fill_brewer("PuOr")
     })
 
     output$center_summary <- DT::renderDT({
