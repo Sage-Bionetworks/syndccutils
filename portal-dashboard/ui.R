@@ -56,7 +56,7 @@ dashboardPage(
                         box(
                             title = "Files Added", width = 9, height = 500,
                             status = "warning",
-                            streamgraph::streamgraphOutput("files_per_month")
+                            plotly::plotlyOutput("files_per_month")
                             
                         )
                     )
