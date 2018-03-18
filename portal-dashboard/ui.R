@@ -6,15 +6,17 @@ library(streamgraph)
 
 dashboardPage(
     dashboardHeader(
-        title = "CSBC/PS-ON Knowledge Portal"
+        title = "CSBC/PS-ON Knowledge Portal",
+        titleWidth = 350
     ),
     dashboardSidebar(
         sidebarMenu(
             menuItem("Portal at a Glance", tabName = "kp_overview", 
                      icon = icon("dashboard")),
-            menuItem("KP Over Time", icon = icon("th"), tabName = "kp_trends"),
-            menuItem("Center Summaries", icon = icon("th"), 
-                     tabName = "center_summaries")
+            menuItem("KP Over Time", tabName = "kp_trends",
+                     icon = icon("line-chart")),
+            menuItem("Center Summaries", tabName = "center_summaries",
+                     icon = icon("list"))
         )
     ),
     dashboardBody(
@@ -28,28 +30,33 @@ dashboardPage(
                     ),
                     fluidRow(
                         box(
-                            title = "Center Activity", width = 12,
-                            solidHeader = TRUE, status = "primary",
-                            plotly::plotlyOutput("kp_activity")
+                            title = "Center Activity", width = 12, height = 675,
+                            solidHeader = FALSE, status = "warning",
+                            plotly::plotlyOutput("kp_activity", 
+                                                 height = "600px")
                         )
                     )
             ),
             tabItem(tabName = "kp_trends",
                     fluidRow(
                         box(
-                            width = 3,
+                            width = 3, status = "primary",
                             selectInput("sg_facet", label = "Group files by:",
                                         choices = c("projectId", "assay"), 
                                         selected = "projectId"),
-                            radioButtons("sg_cumulative", label = "Aggregation:",
-                                         choiceNames = c("Month-by-month", "Cumulative"),
+                            radioButtons("sg_cumulative", 
+                                         label = "Aggregation:",
+                                         choiceNames = c(
+                                             "Month-by-month", 
+                                             "Cumulative"
+                                         ),
                                          choiceValues = c(FALSE, TRUE),
                                          selected = TRUE)
                         ),
                         box(
-                            title = "Files Added", width = 9,
-                            streamgraph::streamgraphOutput("files_per_month", 
-                                                           height = "100%")
+                            title = "Files Added", width = 9, height = 500,
+                            status = "warning",
+                            streamgraph::streamgraphOutput("files_per_month")
                             
                         )
                     )
@@ -57,22 +64,24 @@ dashboardPage(
             tabItem(tabName = "center_summaries",
                     fluidRow(
                         box(
-                            title = "Table", width = 12,
-                            solidHeader = TRUE, status = "primary",
-                            DT::dataTableOutput("center_summary", 
-                                                width = "100%")
+                            title = "Center Snapshot", width = 12,
+                            status = "primary",
+                            div(style = 'overflow-x: scroll', 
+                                DT::dataTableOutput('center_summary')
+                            )
                         )
                     ),
                     fluidRow(
                         box(
-                            title = "Center Details", width = 4,
-                            solidHeader = TRUE, status = "info",
-                            h4(textOutput("center_name")),
+                            title = "Center Details", width = 4, height = 500,
+                            solidHeader = FALSE, status = "info",
+                            textOutput("center_name_msg"),
+                            h4(strong(textOutput("center_name"))),
                             tableOutput("center_metadata")
                         ),
                         box(
-                            title = "Center Data", width = 8,
-                            solidHeader = TRUE, status = "info",
+                            title = "Center Data", width = 8, height = 500,
+                            solidHeader = FALSE, status = "warning",
                             plotly::plotlyOutput("center_details")
                         )
                     )

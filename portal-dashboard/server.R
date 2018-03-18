@@ -4,12 +4,14 @@ library(plotly)
 library(DT)
 library(kableExtra)
 library(streamgraph)
+library(synapser)
 
 source("../R/synapse_helpers.R")
 source("../R/tables.R")
 source("../R/charts.R")
 
-csbc_summary_df <- feather::read_feather("test_fileview.feather")
+synLogin()
+csbc_summary_df <- get_table_df("syn11968325", cache = TRUE)
 csbc_summary_df <- csbc_summary_df %>% 
     mutate_at(.vars = vars(dplyr::matches("(createdOn|modifiedOn)")),
               .funs = funs(lubridate::as_datetime(floor(. / 1000))))
@@ -82,16 +84,16 @@ shinyServer(function(input, output) {
     output$centersBox <- renderInfoBox({
         centers <- n_distinct(center_study_summary_df$projectId)
         infoBox(
-            "Centers", centers, icon = icon("list"),
-            color = "purple"
+            "Centers", centers, icon = icon("university"),
+            color = "light-blue", fill = TRUE
         )
     })
     
     output$filesBox <- renderInfoBox({
         files <- sum(center_study_summary_df$fileId)
         infoBox(
-            "Files", files, icon = icon("list"),
-            color = "purple"
+            "Files", files, icon = icon("file"),
+            color = "light-blue", fill = TRUE
         )
     })
     
@@ -102,8 +104,8 @@ shinyServer(function(input, output) {
             sum(center_study_summary_df$specimenID)
         )
         infoBox(
-            "Samples", samples, icon = icon("list"),
-            color = "purple"
+            "Samples", samples, icon = icon("tag"),
+            color = "light-blue", fill = TRUE
         )
     })
     
@@ -114,8 +116,8 @@ shinyServer(function(input, output) {
             pull(value) %>%
             sum()
         infoBox(
-            "Pulications", pubs, icon = icon("list"),
-            color = "purple"
+            "Publications", pubs, icon = icon("pencil"),
+            color = "light-blue", fill = TRUE
         )
     })
     
@@ -123,7 +125,7 @@ shinyServer(function(input, output) {
         ggplotly(p, tooltip = "text") %>%
             layout(legend = list(orientation = 'h',
                                  y = 1, x = 0, yanchor = "bottom"),
-                   margin = list(b = 55)) %>% 
+                   margin = list(l = 500, b = 55)) %>% 
             plotly::config(displayModeBar = F)  
     })
     
@@ -169,13 +171,16 @@ shinyServer(function(input, output) {
                 `Cell Lines` = cellLine,
                 Tools = tool
             ) %>% 
-            datatable(selection = list(
-                mode = 'single'
-            ),
-            options = list(
-                scrollX = TRUE
-            ),
-            rownames = FALSE
+            datatable(
+                selection = list(
+                    mode = 'single'
+                ),
+                options = list(
+                    scrollX = TRUE,
+                    autoWidth = F,
+                    dom = "tip"
+                ),
+                rownames = FALSE
             ) %>%
             formatStyle(
                 'Files',
@@ -183,7 +188,7 @@ shinyServer(function(input, output) {
             )
     }, server = FALSE
     )
-    
+
     observeEvent(input$center_summary_rows_selected, {
         output$center_name <- renderText({
             center_row <- input$center_summary_rows_selected
@@ -206,6 +211,7 @@ shinyServer(function(input, output) {
                                                        teamMembersProfileId,
                                                        ", ", simplify = TRUE
                                                    ) %>%
+                                                       na.omit() %>% 
                                                        length())) %>%
                 create_synapse_links(list(`Synapse Project` = "projectId",
                                           `Synapse Team` = "teamProfileId")) %>%
@@ -227,7 +233,7 @@ shinyServer(function(input, output) {
             
             knitr::kable(center_data_df, "html", escape = FALSE, col.names = NULL,
                          align = c('r', 'l')) %>% 
-                kable_styling("striped", full_width = F)
+                kable_styling("striped", full_width = T)
         }
     })
     
