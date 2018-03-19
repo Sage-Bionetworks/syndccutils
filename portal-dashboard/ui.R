@@ -42,7 +42,10 @@ dashboardPage(
                         box(
                             width = 3, status = "primary",
                             selectInput("sg_facet", label = "Group files by:",
-                                        choices = c("projectId", "assay"), 
+                                        choices = c(
+                                            Center = "name_project", 
+                                            Assay = "assay"
+                                        ), 
                                         selected = "projectId"),
                             radioButtons("sg_cumulative", 
                                          label = "Aggregation:",
