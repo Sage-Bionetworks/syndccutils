@@ -8,3 +8,15 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat
+Imports:
+    dplyr,
+    stringr,
+    tibble,
+    readr,
+    purrr,
+    fs,
+    rvest,
+    httr,
+    xml2
+    
+    
