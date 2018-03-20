@@ -7,61 +7,62 @@ library(httr)
 
 # get script lines
 get_script_lines <- function(html_path) {
-    read_html(html_path) %>%
-        html_node("head") %>%
-        html_children() %>%
-        keep(function(x) {
-            html_name(x) %>%
-                has_element("script")
+    xml2::read_html(html_path) %>%
+        rvest::html_node("head") %>%
+        rvest::html_children() %>%
+        purrr::keep(function(x) {
+            rvest::html_name(x) %>%
+                purrr::has_element("script")
         }) %>%
-        map_df(function(x) {
+        purrr::map_df(function(x) {
             list(
                 as.character(x),
-                html_attr(x, "src")
+                rvest::html_attr(x, "src")
             ) %>%
-                flatten() %>%
-                set_names(c("target", "target_attr"))
+                purrr::flatten() %>%
+                purrr::set_names(c("target", "target_attr"))
         })
 }
 
 get_link_lines <- function(html_path) {
-    read_html(html_path) %>%
-        html_node("head") %>%
-        html_children() %>%
-        keep(function(x) {
-            html_name(x) %>%
-                has_element("link")
+    xml2::read_html(html_path) %>%
+        rvest::html_node("head") %>%
+        rvest::html_children() %>%
+        purrr::keep(function(x) {
+            rvest::html_name(x) %>%
+                purrr::has_element("link")
         }) %>%
-        map_df(function(x) {
+        purrr::map_df(function(x) {
             list(
                 as.character(x),
-                html_attr(x, "href")
+                rvest::html_attr(x, "href")
             ) %>%
-                flatten() %>%
-                set_names(c("target", "target_attr"))
+                purrr::flatten() %>%
+                purrr::set_names(c("target", "target_attr"))
         })
 }
 
 # script info parsing functions
 is_js_lib <- function(x) {
-    str_detect(x, "^([a-z]+\\-)+([0-9]\\.)+")
+    stringr::str_detect(x, "^([a-z]+\\-)+([0-9]\\.)+")
 }
 
 is_js_file <- function(x) {
-    str_detect(x, "\\.js$")
+    stringr::str_detect(x, "\\.js$")
 }
 
 parse_js_src <- function(src) {
     list(
         target_lib = src %>%
-            str_split("/") %>%
-            map_chr(function(x) keep(x, is_js_lib)),
+            stringr::str_split("/") %>%
+            purrr::map_chr(function(x) purrr::keep(x, is_js_lib)),
         target_file = src %>%
-            str_split("/") %>%
-            map_chr(function(x) keep(x, is_js_file))
+            stringr::str_split("/") %>%
+            purrr::map_chr(function(x) purrr::keep(x, is_js_file))
     ) %>%
-        as_tibble() %>%
-        mutate(target_version = str_extract(target_lib, "([0-9]+\\.*)+$"))
+        tibble::as_tibble() %>%
+        dplyr::mutate(target_version = stringr::str_extract(target_lib,
+                                                            "([0-9]+\\.*)+$"))
 }
 
 # cdn lookup function
@@ -71,15 +72,17 @@ cdn_search <- function(js_file, js_version) {
         name = js_file
     )
     results <- httr::GET(query) %>%
-        content("text") %>%
+        httr::content("text") %>%
         jsonlite::fromJSON() %>%
         .$results
     if (length(results)) {
         results %>%
-            filter(version == js_version) %>%
-            as_tibble()
+            dplyr::filter(version == js_version) %>%
+            tibble::as_tibble()
     } else {
-        tibble(name = character(), latest = character(), version = character())
+        tibble::tibble(name = character(),
+                       latest = character(),
+                       version = character())
     }
 }
 # example code for CDN lookup ---------------------------------------------
@@ -103,8 +106,8 @@ path_replace_gh <- function(path,
         repo = repo,
         folder = folder
     )
-    path_root <- str_c(str_split(path, "/")[[1]][1], "/")
-    path_folder <- str_replace(path, path_root, "")
+    path_root <- stringr::str_c(stringr::str_split(path, "/")[[1]][1], "/")
+    path_folder <- stringr::str_replace(path, path_root, "")
     file.path(gh_base, path_folder)
 }
 
@@ -120,8 +123,8 @@ path_replace_cdn <- function(path,
         "bootstrap-3.3.5/css/bootstrap.min.css" = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
     )
 
-    path_root <- str_c(str_split(path, "/")[[1]][1], "/")
-    path_folder <- str_replace(path, path_root, "")
+    path_root <- stringr::str_c(stringr::str_split(path, "/")[[1]][1], "/")
+    path_folder <- stringr::str_replace(path, path_root, "")
 
     if (path_folder %in% names(public_assets)) {
         return(public_assets[[path_folder]])
@@ -134,16 +137,16 @@ path_replace_cdn <- function(path,
 # replace paths for a set of HTML lines
 update_html_lines <- function(html_lines, target_lines) {
     update_target_lines <- target_lines %>%
-        rowwise() %>%
-        mutate(replacement_attr = path_replace_cdn(target_attr),
-               updated_html = walk2(
-                   target_attr, replacement_attr, function(x, y) {
-                       html_lines <<- str_replace(html_lines, x, y)
-                   }
-               )
+        dplyr::rowwise() %>%
+        dplyr::mutate(replacement_attr = path_replace_cdn(target_attr),
+                      updated_html = purrr::walk2(
+                          target_attr, replacement_attr, function(x, y) {
+                              html_lines <<- stringr::str_replace(html_lines, x, y)
+                          }
+                      )
         ) %>%
-        ungroup() %>%
-        select(-updated_html)
+        dplyr::ungroup() %>%
+        dplyr::select(-updated_html)
     html_lines
 }
 
@@ -153,12 +156,12 @@ fix_js_assets <- function(html_path, rename_file = FALSE) {
     if (rename_file) {
         fixed_html_path <- file.path(
             dirname(html_path),
-            str_c("fixed_", basename(html_path))
+            stringr::str_c("fixed_", basename(html_path))
         )
     } else {
         fixed_html_path <- html_path
     }
-    html_lines <- read_lines(html_path)
+    html_lines <- readr::read_lines(html_path)
     script_lines <- get_script_lines(html_path)
     link_lines <- get_link_lines(html_path)
 
