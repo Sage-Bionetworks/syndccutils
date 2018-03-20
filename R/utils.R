@@ -1,8 +1,3 @@
-library(tidyverse)
-library(rvest)
-library(httr)
-
-
 # functions ---------------------------------------------------------------
 
 # get script lines
