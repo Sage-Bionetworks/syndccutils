@@ -2,7 +2,7 @@ library(tidyverse)
 library(synapser)
 library(feather)
 
-source("R/utils.R")
+source("../R/utils.R")
 
 
 #' Collect all rows and columns from a Synapse table and return as values

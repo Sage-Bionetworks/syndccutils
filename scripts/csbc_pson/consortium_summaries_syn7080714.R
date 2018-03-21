@@ -5,8 +5,10 @@ source("R/synapse_helpers.R")
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
+
 cache_data <- TRUE
 update_remote <- TRUE
+
 
 # Config ------------------------------------------------------------------
 
