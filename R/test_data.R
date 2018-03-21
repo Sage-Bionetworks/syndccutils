@@ -29,7 +29,8 @@ saveWidget(mock_chart, mock_chart_filename,
            selfcontained = FALSE)
 file.rename(mock_chart_filename,
             file.path("tests/testthat/testdata", mock_chart_filename))
-dir_delete("mock_chart_files/")
+file.rename("mock_chart_files/",
+            file.path("tests/testthat/testdata", "mock_chart_files/"))
 
 # create and save mock table
 group_keys <- c("data_annotation", "status_annotation")
@@ -53,6 +54,7 @@ saveWidget(mock_datafile_counts_dt, mock_datatable_filename,
            selfcontained = FALSE)
 file.rename(mock_datatable_filename,
             file.path("tests/testthat/testdata", mock_datatable_filename))
-dir_delete("mock_datatable_files/")
+file.rename("mock_datatable_files/",
+            file.path("tests/testthat/testdata", "mock_datatable_files/"))
 
 

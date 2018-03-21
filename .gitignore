@@ -36,6 +36,7 @@ vignettes/*.pdf
 # Local copies of HTML files or other data used for testing
 *html
 data
+mock_*
 
 # Other local stuff
 examples
