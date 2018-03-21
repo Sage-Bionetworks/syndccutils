@@ -74,7 +74,8 @@ test_that("fix_js_assets replaces all script/link lines and writes new HTML file
         dirname(mock_chart_filename),
         str_c("fixed_", basename(mock_chart_filename))
     )
-    test_result <- fix_js_assets(mock_chart_filename)
+    test_result <- fix_js_assets(mock_chart_filename,
+                                 rename_file = TRUE)
     expect_equal(test_result, expected_result)
 })
 
