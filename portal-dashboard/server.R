@@ -1,9 +1,10 @@
 library(tidyverse)
 library(feather)
+library(lubridate)
 library(plotly)
 library(DT)
 library(kableExtra)
-library(streamgraph)
+# library(streamgraph)
 library(ggthemes)
 library(rlang)
 library(synapser)
@@ -14,6 +15,7 @@ source("../R/charts.R")
 
 synLogin()
 csbc_summary_df <- get_table_df("syn11968325", cache = TRUE)
+
 csbc_summary_df <- csbc_summary_df %>% 
     mutate_at(.vars = vars(dplyr::matches("(createdOn|modifiedOn)")),
               .funs = funs(lubridate::as_datetime(floor(. / 1000))))
@@ -64,9 +66,11 @@ plot_df <- center_study_summary_df %>%
     )
 
 p <- plot_df %>% 
-    ggplot(aes(x = name_project, y = study, text = label)) +
-    geom_col(aes(fill = avg_files)) +
-    geom_point(aes(colour = grantType), y = 0.1) +
+    ggplot(aes(x = name_project, y = study)) +
+    geom_col(aes(fill = avg_files, text = label), 
+             colour = "slategray", size = 0.3, alpha = 1) +
+    geom_point(y = 0.2, colour = "white", size = 2) +
+    geom_point(aes(colour = grantType), y = 0.2, size = 1.5) +
     coord_flip() +
     scale_colour_colorblind() +
     guides(alpha = FALSE, fill = FALSE, colour = guide_legend(title = NULL)) +
@@ -76,9 +80,7 @@ p <- plot_df %>%
     facet_grid(consortium ~ ., 
                scales = "free_y", space = "free_y", drop = TRUE) +
     theme_bw() +
-    theme(strip.text.x = element_text(face = "bold"),
-          strip.text.y = element_text(face = "bold"),
-          strip.background.y = element_blank(),
+    theme(strip.text.y = element_text(face = "bold"),
           legend.title = element_blank())
 
 shinyServer(function(input, output) {
@@ -145,7 +147,8 @@ shinyServer(function(input, output) {
             ungroup() %>%
             complete(month = seq.Date(min(month), max(month), by="month"), 
                      rlang::UQ(sg_facet)) %>% 
-            replace_na(list(n = 0L)) 
+            replace_na(list(0L, "Not Annotated") %>% 
+                           set_names(c("n", sg_facet_chr))) 
         
         if (input$sg_cumulative) {
             plot_df <- plot_df %>% 
@@ -155,10 +158,15 @@ shinyServer(function(input, output) {
         } 
         plot_df <- plot_df %>% 
             mutate(
+                month_pretty = str_c(
+                    lubridate::month(month, label = TRUE),
+                    lubridate::year(month),
+                    sep = ". "
+                ),
                 label = glue::glue(
                     "<b>{value}:</b>\n{month}: {count} files uploaded",
                     value = rlang::UQ(sg_facet),
-                    month = month,
+                    month = month_pretty,
                     count = n),
                 n = log10(n + 1)
             ) %>% 
@@ -166,11 +174,14 @@ shinyServer(function(input, output) {
         
         p <- plot_df %>% 
             ggplot(aes(x = month, y = n, text = label)) + 
-            geom_col(aes(fill = sg_facet)) + 
-            scale_fill_brewer(palette = "PuOr") + 
+            geom_col(aes(fill = sg_facet), 
+                     colour = "slategray", size = 0.3, alpha = 1) + 
+            # scale_fill_brewer(palette = "PuOr") + 
+            scale_fill_viridis_d() +
             theme_bw() + 
             xlab(" ") +
             scale_x_date(date_breaks = "1 month", date_labels = "%m-%Y") + 
+            scale_y_continuous(expand = c(0, 0)) +
             ylab("log10(Files)") +
             theme(axis.text.x = element_text(angle = 45, hjust = 1))
         
@@ -303,13 +314,15 @@ shinyServer(function(input, output) {
                     ) %>%
                     ggplot(aes(x = 1, y = n, text = label)) +
                     geom_col(aes(fill = val), 
-                             position = position_stack(reverse = FALSE)) +
+                             position = position_stack(reverse = FALSE),
+                             colour = "slategray", size = 0.3, alpha = 1) +
                     guides(fill = FALSE) +
                     scale_fill_viridis_d() +
                     scale_y_continuous(expand = c(0, 0)) +
                     xlab("") +
                     ylab("Fraction") +
                     facet_grid(. ~ attr, scales = "free_y") +
+                    theme_bw() +
                     theme(axis.text.x = element_blank(),
                           axis.ticks.x = element_blank()) %>%
                     I
