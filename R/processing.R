@@ -1,6 +1,6 @@
+## Functions for munging, modifying, and summarizing Synapse annotation data in
+## data frames
 
-
-# Table utility functions -------------------------------------------------
 
 #' Fill in missing values with default or specified string.
 #'
@@ -42,8 +42,10 @@ filter_by_key <- function(
 ) {
 
     df %>%
-        filter_at(vars(one_of(filter_keys)),
-                  all_vars(!is.na(.) & !(. %in% bad_values)))
+        dplyr::filter_at(
+            dplyr::vars(dplyr::one_of(filter_keys)),
+            dplyr::all_vars(!is.na(.) & !(. %in% bad_values))
+        )
 }
 
 
@@ -62,14 +64,14 @@ augment_values <- function(
 ) {
 
     augment_keys %>%
-        walk2(names(.), function(meta_key, target_key) {
+        purrr::walk2(names(.), function(meta_key, target_key) {
             target_col <- as.name(target_key)
             meta_col <- as.name(meta_key)
             df <<- df %>%
-                mutate(
-                    lang::UQ(target_col) :=
+                dplyr::mutate(
+                    rlang::UQ(target_col) :=
                         ifelse(!is.na(rlang::UQ(target_col)),
-                               str_c(
+                               stringr::str_c(
                                    rlang::UQ(meta_col),
                                    rlang::UQ(target_col),
                                    sep = " — "
@@ -100,11 +102,11 @@ create_synapse_links <- function(
         base = base_url
     )
     link_keys %>%
-        walk2(names(.), function(id_key, target_key) {
+        purrr::walk2(names(.), function(id_key, target_key) {
             target_col <- as.name(target_key)
             id_col <- as.name(id_key)
             df <<- df %>%
-                mutate(
+                dplyr::mutate(
                     rlang::UQ(target_col) :=
                         ifelse(!is.na(rlang::UQ(target_col)),
                                glue::glue(
@@ -170,9 +172,11 @@ list_values <- function(
         dplyr::group_by(rlang::UQS(group_cols)) %>%
         dplyr::summarise_at(list_keys, merge_strings) %>%
         dplyr::ungroup() %>%
-        dplyr::mutate_at(.vars = list_keys,
-                         funs(str_c(start_opts[[list_format]], .,
-                                    end_opts[[list_format]], sep = "")))
+        dplyr::mutate_at(
+            .vars = list_keys,
+            dplyr::funs(str_c(start_opts[[list_format]], .,
+                              end_opts[[list_format]], sep = ""))
+        )
 }
 
 
@@ -194,13 +198,13 @@ build_tablequery <- function(table_id, ...) {
     dots <- substitute(list(...))[-1]
     list_names <- sapply(dots, deparse)
     list(...) %>%
-        set_names(list_names) %>%
-        map2(names(.), function(value, key) {
+        purrr::set_names(list_names) %>%
+        purrr::map2(names(.), function(value, key) {
             filter_string <- glue::glue("( {key} = '{value}' )",
                                         key = key, value = value)
             filter_string
         }) %>%
-        flatten_chr() %>%
+        purrr::flatten_chr() %>%
         stringr::str_c(collapse = " AND ") %>%
         glue::glue(query_template, id = table_id, filters = .)
 }
@@ -245,8 +249,8 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
     )
     link_template <- link_templates[[format]]
     df %>%
-        mutate(viewFiles = get_tablequery_url(sourceFileview, query),
-               viewFiles = glue::glue(link_template, url = viewFiles))
+        dplyr::mutate(viewFiles = get_tablequery_url(sourceFileview, query),
+                      viewFiles = glue::glue(link_template, url = viewFiles))
 }
 
 
@@ -260,9 +264,9 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
 #'
 #' @examples
 format_summarytable_columns <- function(df, facet_cols = c()) {
-
-    name_map <- tibble(name = names(df)) %>%
-        mutate(formatted_name = case_when(
+    # TODO: remove plyr dependency...
+    name_map <- tibble::tibble(name = names(df)) %>%
+        dplyr::mutate(formatted_name = case_when(
             name == "id" ~ "Files",
             name == "assay" & (name %in% facet_cols) ~ "Assay",
             name == "assay" & !(name %in% facet_cols) ~ "Assays",
@@ -289,6 +293,6 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
             TRUE ~ name
         )) %>%
         split(.$name) %>%
-        map("formatted_name")
+        purrr::map("formatted_name")
     plyr::rename(df, name_map)
 }

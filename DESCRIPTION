@@ -20,4 +20,7 @@ Imports:
     xml2,
     knitr,
     htmlwidgets,
-    DT
+    DT,
+    rlang,
+    glue,
+    plyr
