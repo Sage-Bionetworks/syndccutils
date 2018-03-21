@@ -1,9 +1,6 @@
-library(tidyverse)
-library(stringr)
-library(synapser)
-library(DT)
+## Functions for building and formatting summary tables (data frames, markdown,
+## or HTML datatables) based on Synapse annotation data
 
-source("R/processing.R")
 
 #' Format data frame as markdown table
 #'
@@ -35,7 +32,7 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 #'
 #' @examples
 as_datatable <- function(df, cols_as_code = c()) {
-    js_formatting <- JS(
+    js_formatting <- htmlwidgets::JS(
         "function(settings, json) {
             $(this.api().table().body()).css({
                 'font-family': 'Roboto, Open Sans, sans-serif',
@@ -52,12 +49,12 @@ as_datatable <- function(df, cols_as_code = c()) {
         }"
     )
     df %>%
-        datatable(escape = FALSE, rownames = FALSE,
-                  options=list(
-                      pageLength = min(nrow(df), 10),
-                      dom = 'tp',
-                      initComplete = js_formatting
-                  )
+        DT::datatable(escape = FALSE, rownames = FALSE,
+                      options=list(
+                          pageLength = min(nrow(df), 10),
+                          dom = 'tp',
+                          initComplete = js_formatting
+                      )
         )
 }
 
@@ -88,7 +85,7 @@ as_datatable <- function(df, cols_as_code = c()) {
 #' augment_keys <- list(study = "Center Name")
 #' link_keys <- list(study = "Study")
 #' fileview_df %>%
-#'    summarize_by_annotationkey_new(
+#'    summarize_by_annotationkey(
 #'        annotation_keys = group_keys,
 #'        table_id = master_fileview_id,
 #'        count_cols = count_cols,

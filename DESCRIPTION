@@ -17,6 +17,7 @@ Imports:
     fs,
     rvest,
     httr,
-    xml2
-    
-    
+    xml2,
+    knitr,
+    htmlwidgets,
+    DT
