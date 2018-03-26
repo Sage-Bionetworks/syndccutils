@@ -89,6 +89,7 @@ def updateProjectViewScope(syn, consortium_viewId, projectId):
 
 def buildProject(syn, projectName, teamId, adminId, templateId, projectView):
     """
+    Copies a synapse project template and adds it to the csbc consortium project view
 
     :param syn:
     :param projectName:
@@ -110,7 +111,9 @@ def buildProject(syn, projectName, teamId, adminId, templateId, projectView):
 
 def template(args, syn):
     """
-
+    Given a grant id ex. U54, a Project title/name for that site (string), and a synapse team profile Id for that site project
+    it copies a template sckeleton for that project, adds the team to the synapse project and then adds the project to
+    the consortium project view.
 
     :param args:
     :param syn:
@@ -159,7 +162,7 @@ def csbcGrantList(syn, tableSynId):
 
 def getGrantQuery(csbc):
     """
-    constructs a string of grant numbers separated by the logic OR to query pubmed.
+    Constructs a string of grant numbers separated by the logic OR to query pubmed.
 
     :param csbc:
     :return:
