@@ -836,6 +836,7 @@ def changeFloatToInt(final_df, col):
 
 def meltinfo(args, syn):
     """
+    Create a master matrix/table for consortium metrics. 
 
     :param args:
     :param syn:
