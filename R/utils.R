@@ -106,6 +106,23 @@ path_replace_gh <- function(path,
     file.path(gh_base, path_folder)
 }
 
+sanitize_versions <- function(path) {
+    safe_versions <- list(
+        "htmlwidgets" = "htmlwidgets-0.9",
+        "datatables-binding" = "datatables-binding-0.2",
+        "datatables-css" = "datatables-css-0.0.0",
+        "dt-core" = "dt-core-1.10.12"
+    )
+    walk2(safe_versions, names(safe_versions), function(lib_version, lib) {
+        path <<- str_replace(
+            path,
+            stringr::str_c(lib, ".*/"),
+            stringr::str_c(lib_version, "/")
+        )
+    })
+    path
+}
+
 # CDN path replacement
 path_replace_cdn <- function(path,
                              repo = "https://cdn-www.synapse.org",
@@ -115,7 +132,8 @@ path_replace_cdn <- function(path,
         "plotlyjs-1.29.2/plotly-latest.min.js" = "https://cdn.plot.ly/plotly-1.29.2.min.js",
         "jquery-1.11.3/jquery.min.js" = "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js",
         "font-awesome-4.5.0/css/font-awesome.min.css" = "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css",
-        "bootstrap-3.3.5/css/bootstrap.min.css" = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+        "bootstrap-3.3.5/css/bootstrap.min.css" = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css",
+        "https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"
     )
 
     path_root <- stringr::str_c(stringr::str_split(path, "/")[[1]][1], "/")
