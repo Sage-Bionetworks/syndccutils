@@ -1,5 +1,6 @@
 ## Helper functions for getting data into and out of Synapse
 
+source("R/utils.R")
 library(synapser)
 
 
