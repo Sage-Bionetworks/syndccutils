@@ -4,6 +4,9 @@ library(fs)
 mock_fileview_df <- tibble(
     id = str_c("syn", c(1:10)),
     projectId = str_c("syn", floor(seq(1, 3.5, length.out = 10)), "00"),
+    center = str_c("Center ", floor(seq(1, 3.5, length.out = 10))),
+    study = str_c("Study ", floor(seq(1, 3.5, length.out = 10)),
+                  ".", rep(1:2, 5)),
     name = str_c("file", c(1:10), ".dat"),
     id_annotation = str_c("sample_", floor(seq(1, 5.5, length.out = 10))),
     status_annotation = str_c("disease_", floor(seq(1, 3.5, length.out = 10))),
@@ -24,9 +27,11 @@ mock_chart <- mock_fileview_df %>%
 
 saveWidget(mock_chart, mock_chart_filename,
            selfcontained = FALSE)
-file.rename(mock_chart_filename,
-            file.path("tests/testthat/testdata", mock_chart_filename))
-dir_delete("mock_chart_files/")
+mock_chart_filename <- file.path("tests/testthat/testdata", mock_chart_filename)
+file.rename(basename(mock_chart_filename), mock_chart_filename)
+file.rename("mock_chart_files/",
+            file.path("tests/testthat/testdata", "mock_chart_files/"))
+mock_chart_filename <- str_extract(mock_chart_filename, "testdata.*")
 
 # create and save mock table
 group_keys <- c("data_annotation", "status_annotation")
@@ -48,8 +53,11 @@ mock_datafile_counts_dt <- mock_datafile_counts %>%
 
 saveWidget(mock_datafile_counts_dt, mock_datatable_filename,
            selfcontained = FALSE)
-file.rename(mock_datatable_filename,
-            file.path("tests/testthat/testdata", mock_datatable_filename))
-dir_delete("mock_datatable_files/")
+mock_datatable_filename <- file.path("tests/testthat/testdata",
+                                     mock_datatable_filename)
+file.rename(basename(mock_datatable_filename), mock_datatable_filename)
+file.rename("mock_datatable_files/",
+            file.path("tests/testthat/testdata", "mock_datatable_files/"))
+mock_datatable_filename <- str_extract(mock_datatable_filename, "testdata.*")
 
 
