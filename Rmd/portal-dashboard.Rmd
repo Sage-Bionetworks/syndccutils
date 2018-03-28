@@ -10,13 +10,33 @@ output:
 ---
 
 ```{r setup, include=TRUE}
+usePackage <- function(p)
+{
+  if (!is.element(p, installed.packages()[,1]))
+    install.packages(p, repos = "http://cran.us.r-project.org", dep = TRUE)
+  require(p, character.only = TRUE)
+}
+usePackage('flexdashboard')
+usePackage('lubridate')
+usePackage('plotly')
+usePackage('synapser')
+usePackage('dplyr')
+usePackage('ggridges')
+usePackage('ggthemes')
+usePackage('kableExtra')
+# github packages  
+# install.packages("devtools")
+# devtools::install_github("hadley/tidyverse")
+# devtools::install_github("tidyverse/ggplot2")
+# devtools::install_github('rstudio/DT')
+# devtools::install_github("hrbrmstr/streamgraph")
+
 library(flexdashboard)
 
 library(lubridate)
 library(tidyverse)
 library(plotly)
 library(shiny)
-library(crosstalk)
 library(DT)
 library(synapser)
 
