@@ -8,7 +8,7 @@ tool_table <- merge(tool_table,center_info,by="center",all.x = TRUE)
 tool_table$softwareType[is.na(tool_table$softwareType)] <-"other"
 tool_table[is.na(tool_table)] <- "N/A"
 
-abstracts_list <- fromJSON(file="csbc_tools.json") 
+abstracts_list <- fromJSON(file="tools.json") 
 
 # create lists and search list with methodIDs
 input_list <- unique(tool_table$inputDataType)
