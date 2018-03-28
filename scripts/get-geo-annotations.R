@@ -3,14 +3,15 @@
 usePackage <- function(p) 
 {
   if (!is.element(p, installed.packages()[,1]))
-    install.packages(p, dep = TRUE)
+    install.packages(p, repos = "http://cran.us.r-project.org", dep = TRUE)
   require(p, character.only = TRUE)
 }
+usePackage("pacman")
 
-suppressPackageStartupMessages(usePackage("GEOquery"))
-suppressPackageStartupMessages(usePackage("SRAdb"))
-suppressPackageStartupMessages(usePackage("plyr"))
-suppressPackageStartupMessages(usePackage("optparse"))
+suppressPackageStartupMessages(p_load("GEOquery"))
+suppressPackageStartupMessages(p_load("SRAdb"))
+suppressPackageStartupMessages(p_load("plyr"))
+suppressPackageStartupMessages(p_load("optparse"))
 
 option_list <- list(
                     make_option(c("--gse"), action="store",
