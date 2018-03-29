@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from future.utils import iteritems
 from itertools import chain
-import csbc
+import syndcc
 import os
 import re
 import sys
