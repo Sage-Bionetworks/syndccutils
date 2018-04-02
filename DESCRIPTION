@@ -14,7 +14,7 @@ Imports:
     feather,
     forcats,
     fs,
-    ggplot2,
+    ggplot2 (>= 2.2.1.9000),
     glue,
     htmlwidgets,
     httr,
