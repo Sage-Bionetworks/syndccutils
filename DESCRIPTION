@@ -26,10 +26,14 @@ Imports:
     rlang,
     rvest,
     stringr,
+    synapser,
     tibble,
     viridisLite,
     xml2
-Suggests: testthat 
+Suggests:
+    testthat
+Additional_repositories:
+    https://sage-bionetworks.github.io/ran
 Remotes:
     tidyverse/ggplot2
 Encoding: UTF-8
