@@ -61,7 +61,7 @@ plot_file_counts_by_annotationkey <- function(
                                axis.ticks.x = element_blank()) +
                 ggplot2::guides(fill = FALSE)
 
-            ggplotly(p, tooltip = "text",
+            plotly::ggplotly(p, tooltip = "text",
                      width = 100 * length(annotation_keys) + 50,
                      height = chart_height)
         }) %>%
@@ -312,7 +312,7 @@ get_annotation_summary <-function(merged_df){
         xlab("") +
         ylab("")
 
-    ggplotly(p, height = 500) %>%
+    plotly::ggplotly(p, height = 500) %>%
         layout(margin = list(l = 350, r = 100, b = 55))
 }
 
@@ -327,7 +327,7 @@ plot_assay_counts_by_center <- function(merged_df) {
         xlab("") +
         ylab("")
 
-    ggplotly(p, height = 500) %>%
+    plotly::ggplotly(p, height = 500) %>%
         layout(margin = list(l = 150, r = 100, b = 55)) %>%
         plotly::config(displayModeBar = F)
 }
@@ -342,7 +342,7 @@ plot_tool_inputs <- function(merged_df){
         xlab("") +
         ylab("")
 
-    ggplotly(p,height=300) %>%
+    plotly::ggplotly(p,height=300) %>%
         layout(margin=list(l = 150, r=100, b=55)) %>%
         plotly::config(displayModeBar = F)
 
@@ -358,7 +358,7 @@ plot_tool_outputs <- function(merged_df){
         xlab("") +
         ylab("")
 
-    ggplotly(p,height=300) %>%
+    plotly::ggplotly(p,height=300) %>%
         layout(margin=list(l = 150, r=100, b=55)) %>%
         plotly::config(displayModeBar = F)
 
