@@ -1,10 +1,30 @@
-Package: CSBCPSONPortal
+Package: syndccutils
 Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("James", "Eddy", email = "james.eddy@sagebionetworks.org", role = c("aut", "cre")),
+    person("Sage Bionetworks", role = c("cph"))
+    )
 Description: What the package does (one paragraph).
 Depends: R (>= 3.4.1)
-License: What license is it under?
+License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat
+Imports:
+    dplyr,
+    stringr,
+    tibble,
+    readr,
+    purrr,
+    fs,
+    rvest,
+    httr,
+    xml2,
+    knitr,
+    htmlwidgets,
+    DT,
+    rlang,
+    glue,
+    plyr,
+    feather

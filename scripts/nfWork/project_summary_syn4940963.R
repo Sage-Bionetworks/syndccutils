@@ -1,6 +1,7 @@
 source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
+source('R/utils.R')
 ##NTAP pNF cell culture
 # Script/template to create summary tables and charts for a "project"
 
@@ -19,10 +20,10 @@ master_fileview_id <- "syn11270144" # Synapse fileview associated with consortiu
 # Collect data ------------------------------------------------------------
 
 fileview_df <- get_table_df(master_fileview_id)
+#cell_lines <-unique(fileview_df$specimenID)
+cell_lines <- synTableQuery('SELECT distinct `Sample Name` FROM syn8397154')$asDataFrame()
 
-cell_lines <- synTableQuery('SELECT distinct Sample FROM syn8496249')@values
-
-fileview_df<-subset(fileview_df,specimenID%in%cell_lines$Sample)
+fileview_df<-subset(fileview_df,specimenID%in%cell_lines$`Sample Name`)
 
 # Add Synapse project info --------------------------------------------
 
@@ -59,15 +60,15 @@ cell_line_counts <- fileview_df %>%
         annotation_keys = group_keys,
         table_id = master_fileview_id,
         count_cols = count_cols,
-        queryformat= "raw"
+        queryformat= "raw",filter_missing=TRUE
     )
 
 if (update_remote) {
     #store table to synapse
-    syn_id <- datatable_to_synapse(synproject_id, "Cell Line Counts", cell_line_counts)
+    syn_id <- datatable_to_synapse(cell_line_counts,synproject_id, "Cell Line Counts")
 
     #provide query string
-    wiki_string <- simple_plots_wiki_string(syn_id@schema@properties$id, group_keys,count_cols,title='Cell Line')
+    wiki_string <- simple_plots_wiki_string(syn_id$schema$properties$id, group_keys,count_cols,title='Cell Line')
 }
 
 
