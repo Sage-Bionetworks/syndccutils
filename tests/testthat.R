@@ -1,4 +1,4 @@
 library(testthat)
-library(CSBCPSONPortal)
+library(syndccutils)
 
-test_check("CSBCPSONPortal")
+test_check("syndccutils")
