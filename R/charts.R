@@ -1,10 +1,3 @@
-library(tidyverse)
-library(ggplot2)
-library(viridis)
-library(plotly)
-library(forcats)
-
-
 custom_theme_bw <- function() {
     theme_bw() +
         theme(axis.title = element_text(face = "bold"),

@@ -15,11 +15,14 @@ Imports:
     dplyr,
     DT,
     feather,
+    forcats,
     fs,
+    ggplot2,
     glue,
     htmlwidgets,
     httr,
     knitr,
+    plotly,
     plyr,
     purrr,
     readr,
@@ -27,4 +30,7 @@ Imports:
     rvest,
     stringr,
     tibble,
+    viridisLite,
     xml2
+Remotes:
+    tidyverse/ggplot2
