@@ -8,9 +8,6 @@ Authors@R: c(
 Description: What the package does (one paragraph).
 Depends: R (>= 3.4.1)
 License: Apache License (>= 2.0)
-Encoding: UTF-8
-LazyData: true
-Suggests: testthat
 Imports:
     dplyr,
     DT,
@@ -32,5 +29,8 @@ Imports:
     tibble,
     viridisLite,
     xml2
+Suggests: testthat 
 Remotes:
     tidyverse/ggplot2
+Encoding: UTF-8
+LazyData: true
