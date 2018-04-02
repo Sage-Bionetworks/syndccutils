@@ -376,7 +376,7 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
             gseIds = ''
 
         rowDf = pandas.DataFrame(
-            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, 'No', '']],
+            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, '', '']],
             columns=columns)
         rows.append(rowDf)
 
@@ -454,7 +454,7 @@ def pubmed(args, syn):
                 Column(name='Authors', columnType='STRING', maximumSize=990),
                 Column(name='Grant', columnType='STRING', maximumSize=50),
                 Column(name='Data Location', columnType='LINK', maximumSize=1000),
-                Column(name='Synapse Location', columnType='STRING', maximumSize=10),
+                Column(name='Synapse Location', columnType='ENTITYID', maximumSize=10),
                 Column(name='Keywords', columnType='STRING', maximumSize=250)]
 
         schema = synapseclient.Schema(name=args.tableName, columns=cols, parent=project)
