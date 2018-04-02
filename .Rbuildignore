@@ -1,2 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^Rmd$
+^config$
+^portal-dashboard$
+^python$
+^scripts$
+^codecheck\.R$
+^data_manifest\.py$
