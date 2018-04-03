@@ -8,8 +8,6 @@
 #' @param cols_as_code
 #'
 #' @export
-#'
-#' @examples
 as_wiki_markdown <- function(df, cols_as_code = c()) {
 
     if (length(cols_as_code)) {
@@ -27,8 +25,6 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 #' @param cols_as_code
 #'
 #' @export
-#'
-#' @examples
 as_datatable <- function(df, cols_as_code = c()) {
     js_formatting <- htmlwidgets::JS(
         "function(settings, json) {

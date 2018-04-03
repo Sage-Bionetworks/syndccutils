@@ -11,8 +11,6 @@ library(synapser)
 #'
 #' @return data frame with table values
 #' @export
-#'
-#' @examples
 get_table_df <- function(table_id, cache = FALSE) {
     if (cache) {
         viewcache_dir <- "data/viewcache"
@@ -54,8 +52,6 @@ get_table_df <- function(table_id, cache = FALSE) {
 #'
 #' @return Synapse `Table` object for stored table data
 #' @export
-#'
-#' @examples
 save_table <- function(project_id, table_name, table_df) {
     # check whether table exists for project
     project_query <- sprintf("select * from Entity where parentId == '%s'",
@@ -113,8 +109,6 @@ save_table <- function(project_id, table_name, table_df) {
 #' @param static
 #'
 #' @export
-#'
-#' @examples
 save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
     if (!dir.exists("html")) {
         dir.create("html")
