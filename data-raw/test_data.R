@@ -1,5 +1,6 @@
 library(tidyverse)
 library(fs)
+library(htmlwidgets)
 
 mock_fileview_df <- tibble(
     id = str_c("syn", c(1:10)),
