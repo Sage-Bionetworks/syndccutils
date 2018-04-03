@@ -15,7 +15,6 @@ custom_theme_bw <- function() {
 #' @param replace_missing String to use for missing annotation values (defaults to "Not Annotated").
 #' @param chart_height Height of the chart in pixels (optional, defaults to automatic sizing).
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -81,7 +80,6 @@ plot_file_counts_by_annotationkey <- function(
 #' @param annotation_keys
 #' @param filter_missing remove records with missing annotation values
 #'
-#' @return
 #' @export
 #'
 #' @examples

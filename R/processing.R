@@ -8,7 +8,6 @@
 #' @param placeholder
 #' @param replace_keys
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -33,7 +32,6 @@ add_missing_placeholder <- function(
 #' @param filter_keys character vector of keys for which to check values
 #' @param bad_values character vector specifying bad values to exclude
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -55,7 +53,6 @@ filter_by_key <- function(
 #' @param augment_keys list mapping target columns (list names) for which to
 #'   prepend values of corresponding meta columns (list values)
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -89,7 +86,6 @@ augment_values <- function(
 #' @param link_keys list mapping target columns (list names) for which to
 #'   construct links from Synapse IDs in corresponding ID columns (list values)
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -127,7 +123,6 @@ create_synapse_links <- function(
 #' @param group_keys character vector of keys by which to group
 #' @param count_keys character vector of keys for which to count files
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -150,7 +145,6 @@ count_values <- function(
 #' @param group_keys character vector of keys by which to group
 #' @param list_keys character vector of keys for which to list values
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -186,7 +180,6 @@ list_values <- function(
 #' @param table_id
 #' @param ...
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -215,7 +208,6 @@ build_tablequery <- function(table_id, ...) {
 #' @param table_id
 #' @param query_string
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -236,7 +228,6 @@ get_tablequery_url <- function(table_id, query_string) {
 #'
 #' @param df
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -259,7 +250,6 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
 #' @param df
 #' @param facet_cols
 #'
-#' @return
 #' @export
 #'
 #' @examples

@@ -7,7 +7,6 @@
 #' @param df
 #' @param cols_as_code
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -27,7 +26,6 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 #' @param df
 #' @param cols_as_code
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -76,7 +74,6 @@ as_datatable <- function(df, cols_as_code = c()) {
 #'   construct links from Synapse IDs in corresponding ID columns (list values)
 #' @param filter_missing remove records with missing annotation values
 #'
-#' @return
 #' @export
 #'
 #' @examples

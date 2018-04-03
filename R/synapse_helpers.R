@@ -112,7 +112,6 @@ save_table <- function(project_id, table_name, table_df) {
 #' @param plot_object
 #' @param static
 #'
-#' @return
 #' @export
 #'
 #' @examples
