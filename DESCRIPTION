@@ -1,27 +1,40 @@
-Package: CSBCPSONPortal
+Package: syndccutils
 Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("James", "Eddy", email = "james.eddy@sagebionetworks.org", role = c("aut", "cre")),
+    person("Sage Bionetworks", role = c("cph"))
+    )
 Description: What the package does (one paragraph).
 Depends: R (>= 3.4.1)
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
-Suggests: testthat
+License: Apache License (>= 2.0)
 Imports:
     dplyr,
-    stringr,
-    tibble,
-    readr,
-    purrr,
-    fs,
-    rvest,
-    httr,
-    xml2,
-    knitr,
-    htmlwidgets,
     DT,
-    rlang,
+    feather,
+    forcats,
+    fs,
+    ggplot2 (>= 2.2.1.9000),
     glue,
+    htmlwidgets,
+    httr,
+    knitr,
+    plotly,
     plyr,
-    feather
+    purrr,
+    readr,
+    rlang,
+    rvest,
+    stringr,
+    synapser,
+    tibble,
+    viridisLite,
+    xml2
+Suggests:
+    testthat
+Additional_repositories:
+    https://sage-bionetworks.github.io/ran
+Remotes:
+    tidyverse/ggplot2
+Encoding: UTF-8
+LazyData: true
