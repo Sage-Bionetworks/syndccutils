@@ -9,7 +9,7 @@ setup(
         'pandas',
         'synapseclient'],
     entry_points={
-        'console_scripts': ['syndcc = syndcc.__main__:main']
+        'console_scripts': ['syndccutils = syndccutils.__main__:main']
     },
     author="Nasim Sanati",
     author_email="nasim.sanati@sagebionetworks.org",
