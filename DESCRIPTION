@@ -8,23 +8,33 @@ Authors@R: c(
 Description: What the package does (one paragraph).
 Depends: R (>= 3.4.1)
 License: Apache License (>= 2.0)
-Encoding: UTF-8
-LazyData: true
-Suggests: testthat
 Imports:
     dplyr,
-    stringr,
-    tibble,
-    readr,
-    purrr,
-    fs,
-    rvest,
-    httr,
-    xml2,
-    knitr,
-    htmlwidgets,
     DT,
-    rlang,
+    feather,
+    forcats,
+    fs,
+    ggplot2 (>= 2.2.1.9000),
     glue,
+    htmlwidgets,
+    httr,
+    knitr,
+    plotly,
     plyr,
-    feather
+    purrr,
+    readr,
+    rlang,
+    rvest,
+    stringr,
+    synapser,
+    tibble,
+    viridisLite,
+    xml2
+Suggests:
+    testthat
+Additional_repositories:
+    https://sage-bionetworks.github.io/ran
+Remotes:
+    tidyverse/ggplot2
+Encoding: UTF-8
+LazyData: true

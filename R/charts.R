@@ -1,15 +1,8 @@
-library(tidyverse)
-library(ggplot2)
-library(viridis)
-library(plotly)
-library(forcats)
-
-
 custom_theme_bw <- function() {
-    theme_bw() +
-        theme(axis.title = element_text(face = "bold"),
-              legend.title = element_text(face = "bold"),
-              plot.title = element_text(face = "bold"))
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.title = element_text(face = "bold"),
+                   legend.title = element_text(face = "bold"),
+                   plot.title = element_text(face = "bold"))
 }
 
 # Core summary charts (data files) ----------------------------------------
@@ -37,7 +30,7 @@ plot_file_counts_by_annotationkey <- function(
 ) {
 
     chart <- annotation_keys %>%
-        map2(.y = names(.), function(annotation_prettykey, annotation_key) {
+        purrr::map2(.y = names(.), function(annotation_prettykey, annotation_key) {
             key_col <- as.name(annotation_key)
             plot_df <- view_df %>%
                 dplyr::group_by(.dots = annotation_key) %>%
@@ -68,7 +61,7 @@ plot_file_counts_by_annotationkey <- function(
                                axis.ticks.x = element_blank()) +
                 ggplot2::guides(fill = FALSE)
 
-            ggplotly(p, tooltip = "text",
+            plotly::ggplotly(p, tooltip = "text",
                      width = 100 * length(annotation_keys) + 50,
                      height = chart_height)
         }) %>%
@@ -101,8 +94,8 @@ plot_sample_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            filter_at(vars(one_of(c(names(annotation_keys), sample_key))),
-                      all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
+            dplyr::filter_at(vars(one_of(c(names(annotation_keys), sample_key))),
+                             all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
     fill_vals <- unique(view_df[[names(annotation_keys)[1]]])
@@ -121,7 +114,7 @@ plot_sample_counts_by_annotationkey_2d <- function(
     plot_df <- view_df %>%
         dplyr::group_by(.dots = names(annotation_keys)) %>%
         dplyr::summarize(n = n_distinct(rlang::UQ(as.name(sample_key)))) %>%
-        ungroup() %>%
+        dplyr::ungroup() %>%
         dplyr::mutate_at(.vars = names(annotation_keys),
                          funs(replace(., is.na(.), replace_missing))) %>%
         dplyr::mutate_at(.vars = names(annotation_keys),
@@ -168,8 +161,8 @@ plot_file_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
-                      all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
+            dplyr::filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
+                             all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
     if ("projectId" %in% names(annotation_keys) & !is.null(synproject_key)) {
@@ -190,7 +183,7 @@ plot_file_counts_by_annotationkey_2d <- function(
     plot_df <- view_df %>%
         dplyr::group_by(rlang::UQS(group_cols)) %>%
         dplyr::summarize(n = n_distinct(id)) %>%
-        ungroup() %>%
+        dplyr::ungroup() %>%
         dplyr::mutate_at(.vars = names(annotation_keys),
                          funs(replace(., is.na(.), replace_missing))) %>%
         dplyr::mutate_at(.vars = names(annotation_keys),
@@ -245,7 +238,7 @@ plot_study_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
+            dplyr::filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
                 all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
@@ -267,7 +260,7 @@ plot_study_counts_by_annotationkey_2d <- function(
     plot_df <- view_df %>%
         dplyr::group_by(rlang::UQS(group_cols)) %>%
         dplyr::summarize(n = n_distinct(study)) %>%
-        ungroup() %>%
+        dplyr::ungroup() %>%
         dplyr::mutate_at(.vars = names(annotation_keys),
             funs(replace(., is.na(.), replace_missing))) %>%
         dplyr::mutate(label = glue::glue(
@@ -280,7 +273,7 @@ plot_study_counts_by_annotationkey_2d <- function(
     scale_note <- ""
     if (log_counts) {
         plot_df <- plot_df %>%
-            mutate(n = ifelse(n > 0, log10(n), n))
+            dplyr::mutate(n = ifelse(n > 0, log10(n), n))
         scale_note <- " (log10)"
     }
 
@@ -310,62 +303,62 @@ get_annotation_summary <-function(merged_df){
     p <- merged_df %>%
         dplyr::mutate_at(.vars = c('assay'),
             funs(replace(., is.na(.), replace_missing))) %>%
-        group_by(assay,Center) %>%
-        tally() %>%
-        ggplot(aes(x = Center, y = n)) +
-        geom_col(aes(fill = assay)) + coord_flip() +
-        scale_fill_viridis_d() +
+        dplyr::group_by(assay,Center) %>%
+        dplyr::tally() %>%
+        ggplot2::ggplot(aes(x = Center, y = n)) +
+        ggplot2::geom_col(aes(fill = assay)) + coord_flip() +
+        ggplot2::scale_fill_viridis_d() +
         #   scale_y_log10() +
-        xlab("") +
-        ylab("")
+        ggplot2::xlab("") +
+        ggplot2::ylab("")
 
-    ggplotly(p, height = 500) %>%
-        layout(margin = list(l = 350, r = 100, b = 55))
+    plotly::ggplotly(p, height = 500) %>%
+        plotly::layout(margin = list(l = 350, r = 100, b = 55))
 }
 
 plot_assay_counts_by_center <- function(merged_df) {
     p <- merged_df %>%
-        group_by(Center,assay) %>%
-        tally() %>%
-        ggplot(aes(x = assay, y = n)) +
-        geom_col(aes(fill = Center)) + coord_flip() +
-        scale_fill_viridis_d() +
+        dplyr::group_by(Center,assay) %>%
+        dplyr::tally() %>%
+        ggplot2::ggplot(aes(x = assay, y = n)) +
+        ggplot2::geom_col(aes(fill = Center)) + coord_flip() +
+        ggplot2::scale_fill_viridis_d() +
      #   scale_y_log10() +
-        xlab("") +
-        ylab("")
+        ggplot2::xlab("") +
+        ggplot2::ylab("")
 
-    ggplotly(p, height = 500) %>%
-        layout(margin = list(l = 150, r = 100, b = 55)) %>%
+    plotly::ggplotly(p, height = 500) %>%
+        plotly::layout(margin = list(l = 150, r = 100, b = 55)) %>%
         plotly::config(displayModeBar = F)
 }
 
 plot_tool_inputs <- function(merged_df){
     p<- merged_df %>%
-        group_by(Center,inputDataType) %>%
-        tally () %>%
-        ggplot(aes(x=inputDataType,y=n)) +
-        geom_col(aes(fill=Center)) + coord_flip() +
-        scale_fill_viridis_d() +
-        xlab("") +
-        ylab("")
+        dplyr::group_by(Center,inputDataType) %>%
+        dplyr::tally() %>%
+        ggplot2::ggplot(aes(x=inputDataType,y=n)) +
+        ggplot2::geom_col(aes(fill=Center)) + coord_flip() +
+        ggplot2::scale_fill_viridis_d() +
+        ggplot2::xlab("") +
+        ggplot2::ylab("")
 
-    ggplotly(p,height=300) %>%
-        layout(margin=list(l = 150, r=100, b=55)) %>%
+    plotly::ggplotly(p,height=300) %>%
+        plotly::layout(margin=list(l = 150, r=100, b=55)) %>%
         plotly::config(displayModeBar = F)
 
 }
 
 plot_tool_outputs <- function(merged_df){
     p<- merged_df %>%
-        group_by(Center,outputDataType) %>%
-        tally () %>%
-        ggplot(aes(x=outputDataType,y=n)) +
-        geom_col(aes(fill=Center)) + coord_flip() +
-        scale_fill_viridis_d() +
-        xlab("") +
-        ylab("")
+        dplyr::group_by(Center,outputDataType) %>%
+        dplyr::tally() %>%
+        ggplot2::ggplot(aes(x=outputDataType,y=n)) +
+        ggplot2::geom_col(aes(fill=Center)) + coord_flip() +
+        ggplot2::scale_fill_viridis_d() +
+        ggplot2::xlab("") +
+        ggplot2::ylab("")
 
-    ggplotly(p,height=300) %>%
+    plotly::ggplotly(p,height=300) %>%
         layout(margin=list(l = 150, r=100, b=55)) %>%
         plotly::config(displayModeBar = F)
 
