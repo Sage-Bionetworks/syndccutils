@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from future.utils import iteritems
 from itertools import chain
-import csbc
+import syndccutils
 import os
 import re
 import sys
@@ -397,7 +397,7 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
             gseIds = ''
 
         rowDf = pandas.DataFrame(
-            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, 'No', '']],
+            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, '', '']],
             columns=columns)
         rows.append(rowDf)
 
@@ -445,21 +445,8 @@ def pubmed(args, syn):
         new_pubmed_ids = list(set(pubmedIds) - set([i.split("=")[1] for i in list(currentTable.PubMed)]))
         finalTable = getPMIDDF(new_pubmed_ids, csbcGrants, csbcView)
 
-        if not currentTable.empty:
-            # extract new rows in final table to append to synapse table
-            finalTable = pandas.merge(finalTable, currentTable, on=["PubMed"], how='outer', indicator=True).query(
-                '_merge == "left_only"')
-
-            if finalTable.empty:
-                print("nothing to update")
-            else:
-                # append new rows
-                table = synapseclient.Table(schema, finalTable.values.tolist())
-                table = syn.store(table)
-        else:
-            # add new rows
-            table = synapseclient.Table(schema, finalTable.values.tolist())
-            table = syn.store(table)
+        table = synapseclient.Table(schema, finalTable.values.tolist())
+        table = syn.store(table)
 
     else:
         # create a new schema
@@ -475,7 +462,7 @@ def pubmed(args, syn):
                 Column(name='Authors', columnType='STRING', maximumSize=990),
                 Column(name='Grant', columnType='STRING', maximumSize=50),
                 Column(name='Data Location', columnType='LINK', maximumSize=1000),
-                Column(name='Synapse Location', columnType='STRING', maximumSize=10),
+                Column(name='Synapse Location', columnType='ENTITYID', maximumSize=50),
                 Column(name='Keywords', columnType='STRING', maximumSize=250)]
 
         schema = synapseclient.Schema(name=args.tableName, columns=cols, parent=project)
