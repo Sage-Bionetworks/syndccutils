@@ -1,6 +1,6 @@
 custom_theme_bw <- function() {
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.title = element_text(face = "bold"),
+    theme_bw() +
+    theme(axis.title = element_text(face = "bold"),
                    legend.title = element_text(face = "bold"),
                    plot.title = element_text(face = "bold"))
 }
@@ -46,19 +46,19 @@ plot_file_counts_by_annotationkey <- function(
                 ))
 
             p <- plot_df %>%
-                ggplot2::ggplot(aes(x = 1, y = n, text = label)) +
-                ggplot2::geom_col(aes_(fill = as.name(annotation_key)),
+                ggplot(aes(x = 1, y = n, text = label)) +
+                geom_col(aes_(fill = as.name(annotation_key)),
                                   position = position_stack(reverse = FALSE),
                                   colour = "white", size = 0.2) +
-                ggplot2::scale_fill_viridis_d() +
-                ggplot2::xlab(annotation_prettykey) +
-                ggplot2::ylab("Number of Files") +
-                ggplot2::scale_x_continuous(expand = c(0, 0)) +
-                ggplot2::scale_y_continuous(expand = c(0, 0)) +
+                scale_fill_viridis_d() +
+                xlab(annotation_prettykey) +
+                ylab("Number of Files") +
+                scale_x_continuous(expand = c(0, 0)) +
+                scale_y_continuous(expand = c(0, 0)) +
                 custom_theme_bw() +
-                ggplot2::theme(axis.text.x = element_blank(),
+                theme(axis.text.x = element_blank(),
                                axis.ticks.x = element_blank()) +
-                ggplot2::guides(fill = FALSE)
+                guides(fill = FALSE)
 
             plotly::ggplotly(p, tooltip = "text",
                      width = 100 * length(annotation_keys) + 50,
@@ -129,16 +129,16 @@ plot_sample_counts_by_annotationkey_2d <- function(
         )
 
     p <- plot_df %>%
-        ggplot2::ggplot(aes_string(x = names(annotation_keys)[2], y = "n",
+        ggplot(aes_string(x = names(annotation_keys)[2], y = "n",
                                    text = "label")) +
-        ggplot2::geom_col(aes_string(fill = names(annotation_keys[1])),
+        geom_col(aes_string(fill = names(annotation_keys[1])),
                           colour = "white", size = 0.2) +
-        ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
-        ggplot2::xlab("") +
-        ggplot2::ylab(glue::glue("Number of {label}",
+        scale_fill_viridis_d(annotation_keys[[1]]) +
+        xlab("") +
+        ylab(glue::glue("Number of {label}",
                                  label = sample_labels[[sample_key]])) +
-        ggplot2::scale_y_continuous(expand = c(0, 0)) +
-        ggplot2::coord_flip() +
+        scale_y_continuous(expand = c(0, 0)) +
+        coord_flip() +
         custom_theme_bw()
 
     plotly::ggplotly(p, tooltip = 'text', height = num_bars * 40 + 155) %>%
@@ -204,16 +204,16 @@ plot_file_counts_by_annotationkey_2d <- function(
     }
 
     p <- plot_df %>%
-        ggplot2::ggplot(aes_(x = group_cols[[2]], y = as.name("n"),
+        ggplot(aes_(x = group_cols[[2]], y = as.name("n"),
                                    text = as.name("label"))) +
-        ggplot2::geom_col(aes_(fill = group_cols[[1]]),
+        geom_col(aes_(fill = group_cols[[1]]),
                           colour = "white", size = 0.2) +
-        ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
-        ggplot2::guides(fill = guide_legend(reverse = T)) +
-        ggplot2::xlab("") +
-        ggplot2::ylab(glue::glue("Number of Files{scale}", scale = scale_note)) +
-        ggplot2::scale_y_continuous(expand = c(0, 0)) +
-        ggplot2::coord_flip() +
+        scale_fill_viridis_d(annotation_keys[[1]]) +
+        guides(fill = guide_legend(reverse = T)) +
+        xlab("") +
+        ylab(glue::glue("Number of Files{scale}", scale = scale_note)) +
+        scale_y_continuous(expand = c(0, 0)) +
+        coord_flip() +
         custom_theme_bw()
 
     plotly::ggplotly(p, tooltip = 'text', height = num_bars * 40 + 155) %>%
@@ -276,15 +276,15 @@ plot_study_counts_by_annotationkey_2d <- function(
     }
 
     p <- plot_df %>%
-        ggplot2::ggplot(aes_(x = rlang::UQ(group_cols[[2]]), y = as.name("n"),
+        ggplot(aes_(x = rlang::UQ(group_cols[[2]]), y = as.name("n"),
             text = as.name("label"))) +
-        ggplot2::geom_col(aes_(fill = rlang::UQ(group_cols[[1]])),
+        geom_col(aes_(fill = rlang::UQ(group_cols[[1]])),
             colour = "white", size = 0.2) +
-        ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
-        ggplot2::xlab("") +
-        ggplot2::ylab(glue::glue("Number of Studies{scale}", scale = scale_note)) +
-        ggplot2::scale_y_continuous(expand = c(0, 0)) +
-        ggplot2::coord_flip() +
+        scale_fill_viridis_d(annotation_keys[[1]]) +
+        xlab("") +
+        ylab(glue::glue("Number of Studies{scale}", scale = scale_note)) +
+        scale_y_continuous(expand = c(0, 0)) +
+        coord_flip() +
         custom_theme_bw()
 
     plotly::ggplotly(p, tooltip = 'text', height = num_bars * 50 + 155) %>%
@@ -303,12 +303,12 @@ get_annotation_summary <-function(merged_df){
             funs(replace(., is.na(.), replace_missing))) %>%
         dplyr::group_by(assay,Center) %>%
         dplyr::tally() %>%
-        ggplot2::ggplot(aes(x = Center, y = n)) +
-        ggplot2::geom_col(aes(fill = assay)) + coord_flip() +
-        ggplot2::scale_fill_viridis_d() +
+        ggplot(aes(x = Center, y = n)) +
+        geom_col(aes(fill = assay)) + coord_flip() +
+        scale_fill_viridis_d() +
         #   scale_y_log10() +
-        ggplot2::xlab("") +
-        ggplot2::ylab("")
+        xlab("") +
+        ylab("")
 
     plotly::ggplotly(p, height = 500) %>%
         plotly::layout(margin = list(l = 350, r = 100, b = 55))
@@ -318,12 +318,12 @@ plot_assay_counts_by_center <- function(merged_df) {
     p <- merged_df %>%
         dplyr::group_by(Center,assay) %>%
         dplyr::tally() %>%
-        ggplot2::ggplot(aes(x = assay, y = n)) +
-        ggplot2::geom_col(aes(fill = Center)) + coord_flip() +
-        ggplot2::scale_fill_viridis_d() +
+        ggplot(aes(x = assay, y = n)) +
+        geom_col(aes(fill = Center)) + coord_flip() +
+        scale_fill_viridis_d() +
      #   scale_y_log10() +
-        ggplot2::xlab("") +
-        ggplot2::ylab("")
+        xlab("") +
+        ylab("")
 
     plotly::ggplotly(p, height = 500) %>%
         plotly::layout(margin = list(l = 150, r = 100, b = 55)) %>%
@@ -334,11 +334,11 @@ plot_tool_inputs <- function(merged_df){
     p<- merged_df %>%
         dplyr::group_by(Center,inputDataType) %>%
         dplyr::tally() %>%
-        ggplot2::ggplot(aes(x=inputDataType,y=n)) +
-        ggplot2::geom_col(aes(fill=Center)) + coord_flip() +
-        ggplot2::scale_fill_viridis_d() +
-        ggplot2::xlab("") +
-        ggplot2::ylab("")
+        ggplot(aes(x=inputDataType,y=n)) +
+        geom_col(aes(fill=Center)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("")
 
     plotly::ggplotly(p,height=300) %>%
         plotly::layout(margin=list(l = 150, r=100, b=55)) %>%
@@ -350,11 +350,11 @@ plot_tool_outputs <- function(merged_df){
     p<- merged_df %>%
         dplyr::group_by(Center,outputDataType) %>%
         dplyr::tally() %>%
-        ggplot2::ggplot(aes(x=outputDataType,y=n)) +
-        ggplot2::geom_col(aes(fill=Center)) + coord_flip() +
-        ggplot2::scale_fill_viridis_d() +
-        ggplot2::xlab("") +
-        ggplot2::ylab("")
+        ggplot(aes(x=outputDataType,y=n)) +
+        geom_col(aes(fill=Center)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("")
 
     plotly::ggplotly(p,height=300) %>%
         layout(margin=list(l = 150, r=100, b=55)) %>%
