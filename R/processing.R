@@ -8,10 +8,7 @@
 #' @param placeholder
 #' @param replace_keys
 #'
-#' @return
 #' @export
-#'
-#' @examples
 add_missing_placeholder <- function(
     df, placeholder = "Not Annotated", replace_keys = NULL
 ) {
@@ -33,10 +30,7 @@ add_missing_placeholder <- function(
 #' @param filter_keys character vector of keys for which to check values
 #' @param bad_values character vector specifying bad values to exclude
 #'
-#' @return
 #' @export
-#'
-#' @examples
 filter_by_key <- function(
     df, filter_keys, bad_values = c("null", "Not Applicable")
 ) {
@@ -55,10 +49,7 @@ filter_by_key <- function(
 #' @param augment_keys list mapping target columns (list names) for which to
 #'   prepend values of corresponding meta columns (list values)
 #'
-#' @return
 #' @export
-#'
-#' @examples
 augment_values <- function(
     df, augment_keys
 ) {
@@ -89,10 +80,7 @@ augment_values <- function(
 #' @param link_keys list mapping target columns (list names) for which to
 #'   construct links from Synapse IDs in corresponding ID columns (list values)
 #'
-#' @return
 #' @export
-#'
-#' @examples
 create_synapse_links <- function(
     df, link_keys
 ) {
@@ -127,10 +115,7 @@ create_synapse_links <- function(
 #' @param group_keys character vector of keys by which to group
 #' @param count_keys character vector of keys for which to count files
 #'
-#' @return
 #' @export
-#'
-#' @examples
 count_values <- function(
     df, group_keys, count_keys
 ) {
@@ -150,10 +135,7 @@ count_values <- function(
 #' @param group_keys character vector of keys by which to group
 #' @param list_keys character vector of keys for which to list values
 #'
-#' @return
 #' @export
-#'
-#' @examples
 list_values <- function(
     df, group_keys, list_keys, list_format = c("html", "csv")
 ) {
@@ -186,7 +168,6 @@ list_values <- function(
 #' @param table_id
 #' @param ...
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -215,10 +196,7 @@ build_tablequery <- function(table_id, ...) {
 #' @param table_id
 #' @param query_string
 #'
-#' @return
 #' @export
-#'
-#' @examples
 get_tablequery_url <- function(table_id, query_string) {
     query <- list(limit = 25,
                   sql = query_string,
@@ -236,10 +214,7 @@ get_tablequery_url <- function(table_id, query_string) {
 #'
 #' @param df
 #'
-#' @return
 #' @export
-#'
-#' @examples
 add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
     format <- match.arg(format)
     link_templates <- list(
@@ -259,10 +234,7 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
 #' @param df
 #' @param facet_cols
 #'
-#' @return
 #' @export
-#'
-#' @examples
 format_summarytable_columns <- function(df, facet_cols = c()) {
     # TODO: remove plyr dependency...
     name_map <- tibble::tibble(name = names(df)) %>%
