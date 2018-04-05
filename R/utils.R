@@ -56,7 +56,7 @@ parse_js_src <- function(src) {
             purrr::map_chr(function(x) purrr::keep(x, is_js_file))
     ) %>%
         tibble::as_tibble() %>%
-        dplyr::mutate(target_version = stringr::str_extract(target_lib,
+        mutate(target_version = stringr::str_extract(target_lib,
                                                             "([0-9]+\\.*)+$"))
 }
 
@@ -72,7 +72,7 @@ cdn_search <- function(js_file, js_version) {
         .$results
     if (length(results)) {
         results %>%
-            dplyr::filter(version == js_version) %>%
+            filter(version == js_version) %>%
             tibble::as_tibble()
     } else {
         tibble::tibble(name = character(),
@@ -150,16 +150,16 @@ path_replace_cdn <- function(path,
 # replace paths for a set of HTML lines
 update_html_lines <- function(html_lines, target_lines) {
     update_target_lines <- target_lines %>%
-        dplyr::rowwise() %>%
-        dplyr::mutate(replacement_attr = path_replace_cdn(target_attr),
+        rowwise() %>%
+        mutate(replacement_attr = path_replace_cdn(target_attr),
                       updated_html = purrr::walk2(
                           target_attr, replacement_attr, function(x, y) {
                               html_lines <<- stringr::str_replace(html_lines, x, y)
                           }
                       )
         ) %>%
-        dplyr::ungroup() %>%
-        dplyr::select(-updated_html)
+        ungroup() %>%
+        select(-updated_html)
     html_lines
 }
 

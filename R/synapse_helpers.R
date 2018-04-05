@@ -58,7 +58,7 @@ save_table <- function(project_id, table_name, table_df) {
                              project_id)
     table_id <- synapser::synQuery(project_query) %>%
         # make sure that matched entities are tables
-        dplyr::filter(
+        filter(
             stringr::str_detect(Entity.concreteType, "TableEntity"),
             # then check whether any tables match the target name
             stringr::str_detect(Entity.name, table_name)) %>%

@@ -32,14 +32,14 @@ plot_file_counts_by_annotationkey <- function(
         purrr::map2(.y = names(.), function(annotation_prettykey, annotation_key) {
             key_col <- as.name(annotation_key)
             plot_df <- view_df %>%
-                dplyr::group_by(.dots = annotation_key) %>%
-                dplyr::tally() %>%
-                dplyr::mutate_at(.vars = annotation_key,
+                group_by(.dots = annotation_key) %>%
+                tally() %>%
+                mutate_at(.vars = annotation_key,
                                  funs(replace(., is.na(.), replace_missing))) %>%
-                dplyr::mutate(UQ(key_col) := fct_relevel(
+                mutate(UQ(key_col) := fct_relevel(
                     UQ(key_col), replace_missing, after = 0L
                 )) %>%
-                dplyr::mutate(label = glue::glue(
+                mutate(label = glue::glue(
                     "<b>{value}:</b>\n{count} files",
                     value = rlang::UQ(key_col),
                     count = n
@@ -92,7 +92,7 @@ plot_sample_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            dplyr::filter_at(vars(one_of(c(names(annotation_keys), sample_key))),
+            filter_at(vars(one_of(c(names(annotation_keys), sample_key))),
                              all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
@@ -110,18 +110,18 @@ plot_sample_counts_by_annotationkey_2d <- function(
 
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
-        dplyr::group_by(.dots = names(annotation_keys)) %>%
-        dplyr::summarize(n = n_distinct(rlang::UQ(as.name(sample_key)))) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        group_by(.dots = names(annotation_keys)) %>%
+        summarize(n = n_distinct(rlang::UQ(as.name(sample_key)))) %>%
+        ungroup() %>%
+        mutate_at(.vars = names(annotation_keys),
                          funs(replace(., is.na(.), replace_missing))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                          funs(forcats::fct_infreq(.))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                          funs(forcats::fct_rev(.))) %>%
-        # dplyr::mutate_at(.vars = names(annotation_keys),
+        # mutate_at(.vars = names(annotation_keys),
         #                  funs(forcats::fct_relevel(., "Not Annotated"))) %>%
-        dplyr::mutate(label = glue::glue(
+        mutate(label = glue::glue(
             "<b>{assay}:</b>\n{count} {samples}",
             assay = rlang::UQ(as.name(names(annotation_keys)[1])),
             count = n,
@@ -159,7 +159,7 @@ plot_file_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            dplyr::filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
+            filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
                              all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
@@ -179,18 +179,18 @@ plot_file_counts_by_annotationkey_2d <- function(
 
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
-        dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarize(n = n_distinct(id)) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        group_by(rlang::UQS(group_cols)) %>%
+        summarize(n = n_distinct(id)) %>%
+        ungroup() %>%
+        mutate_at(.vars = names(annotation_keys),
                          funs(replace(., is.na(.), replace_missing))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                            funs(forcats::fct_infreq(.))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                          funs(forcats::fct_rev(.))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                          funs(forcats::fct_relevel(., "Not Annotated"))) %>%
-        dplyr::mutate(label = glue::glue(
+        mutate(label = glue::glue(
             "<b>{fill_val}:</b>\n{count} files",
             fill_val = rlang::UQ(as.name(names(annotation_keys)[1])),
             count = n)
@@ -236,7 +236,7 @@ plot_study_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            dplyr::filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
+            filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
                 all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
@@ -256,12 +256,12 @@ plot_study_counts_by_annotationkey_2d <- function(
 
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
-        dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarize(n = n_distinct(study)) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        group_by(rlang::UQS(group_cols)) %>%
+        summarize(n = n_distinct(study)) %>%
+        ungroup() %>%
+        mutate_at(.vars = names(annotation_keys),
             funs(replace(., is.na(.), replace_missing))) %>%
-        dplyr::mutate(label = glue::glue(
+        mutate(label = glue::glue(
             "<b>{assay}:</b>\n{count} studies",
             assay = rlang::UQ(as.name(names(annotation_keys)[1])),
             count = n)
@@ -271,7 +271,7 @@ plot_study_counts_by_annotationkey_2d <- function(
     scale_note <- ""
     if (log_counts) {
         plot_df <- plot_df %>%
-            dplyr::mutate(n = ifelse(n > 0, log10(n), n))
+            mutate(n = ifelse(n > 0, log10(n), n))
         scale_note <- " (log10)"
     }
 
@@ -299,10 +299,10 @@ get_annotation_summary <-function(merged_df){
     replace_missing <- "Not Annotated"
 
     p <- merged_df %>%
-        dplyr::mutate_at(.vars = c('assay'),
+        mutate_at(.vars = c('assay'),
             funs(replace(., is.na(.), replace_missing))) %>%
-        dplyr::group_by(assay,Center) %>%
-        dplyr::tally() %>%
+        group_by(assay,Center) %>%
+        tally() %>%
         ggplot(aes(x = Center, y = n)) +
         geom_col(aes(fill = assay)) + coord_flip() +
         scale_fill_viridis_d() +
@@ -316,8 +316,8 @@ get_annotation_summary <-function(merged_df){
 
 plot_assay_counts_by_center <- function(merged_df) {
     p <- merged_df %>%
-        dplyr::group_by(Center,assay) %>%
-        dplyr::tally() %>%
+        group_by(Center,assay) %>%
+        tally() %>%
         ggplot(aes(x = assay, y = n)) +
         geom_col(aes(fill = Center)) + coord_flip() +
         scale_fill_viridis_d() +
@@ -332,8 +332,8 @@ plot_assay_counts_by_center <- function(merged_df) {
 
 plot_tool_inputs <- function(merged_df){
     p<- merged_df %>%
-        dplyr::group_by(Center,inputDataType) %>%
-        dplyr::tally() %>%
+        group_by(Center,inputDataType) %>%
+        tally() %>%
         ggplot(aes(x=inputDataType,y=n)) +
         geom_col(aes(fill=Center)) + coord_flip() +
         scale_fill_viridis_d() +
@@ -348,8 +348,8 @@ plot_tool_inputs <- function(merged_df){
 
 plot_tool_outputs <- function(merged_df){
     p<- merged_df %>%
-        dplyr::group_by(Center,outputDataType) %>%
-        dplyr::tally() %>%
+        group_by(Center,outputDataType) %>%
+        tally() %>%
         ggplot(aes(x=outputDataType,y=n)) +
         geom_col(aes(fill=Center)) + coord_flip() +
         scale_fill_viridis_d() +

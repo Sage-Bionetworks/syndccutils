@@ -15,11 +15,11 @@ add_missing_placeholder <- function(
 
     if (!is.null(replace_keys)) {
         df %>%
-            dplyr::mutate_at(.vars = replace_keys,
+            mutate_at(.vars = replace_keys,
                              funs(replace(., is.na(.), placeholder)))
     } else {
         df %>%
-            dplyr::mutate_all(funs(replace(., is.na(.), placeholder)))
+            mutate_all(funs(replace(., is.na(.), placeholder)))
     }
 }
 
@@ -36,9 +36,9 @@ filter_by_key <- function(
 ) {
 
     df %>%
-        dplyr::filter_at(
-            dplyr::vars(dplyr::one_of(filter_keys)),
-            dplyr::all_vars(!is.na(.) & !(. %in% bad_values))
+        filter_at(
+            vars(one_of(filter_keys)),
+            all_vars(!is.na(.) & !(. %in% bad_values))
         )
 }
 
@@ -59,7 +59,7 @@ augment_values <- function(
             target_col <- as.name(target_key)
             meta_col <- as.name(meta_key)
             df <<- df %>%
-                dplyr::mutate(
+                mutate(
                     rlang::UQ(target_col) :=
                         ifelse(!is.na(rlang::UQ(target_col)),
                                stringr::str_c(
@@ -94,7 +94,7 @@ create_synapse_links <- function(
             target_col <- as.name(target_key)
             id_col <- as.name(id_key)
             df <<- df %>%
-                dplyr::mutate(
+                mutate(
                     rlang::UQ(target_col) :=
                         ifelse(!is.na(rlang::UQ(target_col)),
                                glue::glue(
@@ -123,9 +123,9 @@ count_values <- function(
     group_cols <- sapply(group_keys, as.name)
 
     df %>%
-        dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarise_at(count_keys, n_distinct) %>%
-        dplyr::ungroup()
+        group_by(rlang::UQS(group_cols)) %>%
+        summarise_at(count_keys, n_distinct) %>%
+        ungroup()
 }
 
 
@@ -151,12 +151,12 @@ list_values <- function(
     }
 
     df %>%
-        dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarise_at(list_keys, merge_strings) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate_at(
+        group_by(rlang::UQS(group_cols)) %>%
+        summarise_at(list_keys, merge_strings) %>%
+        ungroup() %>%
+        mutate_at(
             .vars = list_keys,
-            dplyr::funs(str_c(start_opts[[list_format]], .,
+            funs(str_c(start_opts[[list_format]], .,
                               end_opts[[list_format]], sep = ""))
         )
 }
@@ -224,7 +224,7 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
     )
     link_template <- link_templates[[format]]
     df %>%
-        dplyr::mutate(viewFiles = get_tablequery_url(sourceFileview, query),
+        mutate(viewFiles = get_tablequery_url(sourceFileview, query),
                       viewFiles = glue::glue(link_template, url = viewFiles))
 }
 
@@ -238,7 +238,7 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
 format_summarytable_columns <- function(df, facet_cols = c()) {
     # TODO: remove plyr dependency...
     name_map <- tibble::tibble(name = names(df)) %>%
-        dplyr::mutate(formatted_name = case_when(
+        mutate(formatted_name = case_when(
             name == "id" ~ "Files",
             name == "assay" & (name %in% facet_cols) ~ "Assay",
             name == "assay" & !(name %in% facet_cols) ~ "Assays",
