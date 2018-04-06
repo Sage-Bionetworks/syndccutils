@@ -29,7 +29,7 @@ plot_file_counts_by_annotationkey <- function(
 ) {
 
     chart <- annotation_keys %>%
-        purrr::map2(.y = names(.), function(annotation_prettykey, annotation_key) {
+        map2(.y = names(.), function(annotation_prettykey, annotation_key) {
             key_col <- as.name(annotation_key)
             plot_df <- view_df %>%
                 group_by(.dots = annotation_key) %>%
@@ -100,8 +100,8 @@ plot_sample_counts_by_annotationkey_2d <- function(
     bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
     num_bars <- length(bar_vals)
 
-    fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
-    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length))
+    fill_margin <- max(map_int(fill_vals, stringr::str_length))
+    bar_margin <- max(map_int(bar_vals, stringr::str_length))
 
     sample_labels <- list(individualID = "Individuals",
                           specimenID = "Specimens",
@@ -172,8 +172,8 @@ plot_file_counts_by_annotationkey_2d <- function(
     bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
     num_bars <- length(bar_vals)
 
-    fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
-    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length), na.rm = TRUE)
+    fill_margin <- max(map_int(fill_vals, stringr::str_length))
+    bar_margin <- max(map_int(bar_vals, stringr::str_length), na.rm = TRUE)
 
     group_cols <- sapply(names(annotation_keys), as.name)
 
@@ -249,8 +249,8 @@ plot_study_counts_by_annotationkey_2d <- function(
     bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
     num_bars <- length(bar_vals)
 
-    fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
-    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length))
+    fill_margin <- max(map_int(fill_vals, stringr::str_length))
+    bar_margin <- max(map_int(bar_vals, stringr::str_length))
 
     group_cols <- sapply(names(annotation_keys), as.name)
 

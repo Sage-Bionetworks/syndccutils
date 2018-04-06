@@ -55,7 +55,7 @@ augment_values <- function(
 ) {
 
     augment_keys %>%
-        purrr::walk2(names(.), function(meta_key, target_key) {
+        walk2(names(.), function(meta_key, target_key) {
             target_col <- as.name(target_key)
             meta_col <- as.name(meta_key)
             df <<- df %>%
@@ -90,7 +90,7 @@ create_synapse_links <- function(
         base = base_url
     )
     link_keys %>%
-        purrr::walk2(names(.), function(id_key, target_key) {
+        walk2(names(.), function(id_key, target_key) {
             target_col <- as.name(target_key)
             id_col <- as.name(id_key)
             df <<- df %>%
@@ -179,13 +179,13 @@ build_tablequery <- function(table_id, ...) {
     dots <- substitute(list(...))[-1]
     list_names <- sapply(dots, deparse)
     list(...) %>%
-        purrr::set_names(list_names) %>%
-        purrr::map2(names(.), function(value, key) {
+        set_names(list_names) %>%
+        map2(names(.), function(value, key) {
             filter_string <- glue::glue("( {key} = '{value}' )",
                                         key = key, value = value)
             filter_string
         }) %>%
-        purrr::flatten_chr() %>%
+        flatten_chr() %>%
         stringr::str_c(collapse = " AND ") %>%
         glue::glue(query_template, id = table_id, filters = .)
 }
@@ -265,6 +265,6 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
             TRUE ~ name
         )) %>%
         split(.$name) %>%
-        purrr::map("formatted_name")
+        map("formatted_name")
     plyr::rename(df, name_map)
 }

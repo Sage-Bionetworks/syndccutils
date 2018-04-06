@@ -5,17 +5,17 @@ get_script_lines <- function(html_path) {
     xml2::read_html(html_path) %>%
         rvest::html_node("head") %>%
         rvest::html_children() %>%
-        purrr::keep(function(x) {
+        keep(function(x) {
             rvest::html_name(x) %>%
-                purrr::has_element("script")
+                has_element("script")
         }) %>%
-        purrr::map_df(function(x) {
+        map_df(function(x) {
             list(
                 as.character(x),
                 rvest::html_attr(x, "src")
             ) %>%
-                purrr::flatten() %>%
-                purrr::set_names(c("target", "target_attr"))
+                flatten() %>%
+                set_names(c("target", "target_attr"))
         })
 }
 
@@ -23,17 +23,17 @@ get_link_lines <- function(html_path) {
     xml2::read_html(html_path) %>%
         rvest::html_node("head") %>%
         rvest::html_children() %>%
-        purrr::keep(function(x) {
+        keep(function(x) {
             rvest::html_name(x) %>%
-                purrr::has_element("link")
+                has_element("link")
         }) %>%
-        purrr::map_df(function(x) {
+        map_df(function(x) {
             list(
                 as.character(x),
                 rvest::html_attr(x, "href")
             ) %>%
-                purrr::flatten() %>%
-                purrr::set_names(c("target", "target_attr"))
+                flatten() %>%
+                set_names(c("target", "target_attr"))
         })
 }
 
@@ -50,10 +50,10 @@ parse_js_src <- function(src) {
     list(
         target_lib = src %>%
             stringr::str_split("/") %>%
-            purrr::map_chr(function(x) purrr::keep(x, is_js_lib)),
+            map_chr(function(x) keep(x, is_js_lib)),
         target_file = src %>%
             stringr::str_split("/") %>%
-            purrr::map_chr(function(x) purrr::keep(x, is_js_file))
+            map_chr(function(x) keep(x, is_js_file))
     ) %>%
         tibble::as_tibble() %>%
         mutate(target_version = stringr::str_extract(target_lib,
@@ -152,7 +152,7 @@ update_html_lines <- function(html_lines, target_lines) {
     update_target_lines <- target_lines %>%
         rowwise() %>%
         mutate(replacement_attr = path_replace_cdn(target_attr),
-                      updated_html = purrr::walk2(
+                      updated_html = walk2(
                           target_attr, replacement_attr, function(x, y) {
                               html_lines <<- stringr::str_replace(html_lines, x, y)
                           }
