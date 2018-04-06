@@ -182,6 +182,6 @@ fix_js_assets <- function(html_path, rename_file = FALSE) {
         update_html_lines(script_lines) %>%
         update_html_lines(link_lines)
 
-    write_lines(html_lines, fixed_html_path)
+    readr::write_lines(html_lines, fixed_html_path)
     fixed_html_path
 }
