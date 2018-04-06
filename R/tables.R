@@ -136,7 +136,7 @@ summarize_by_annotationkey <- function(
         rowwise() %>%
         mutate(sourceFileview = table_id,
                       query = build_tablequery(sourceFileview,
-                                               rlang::UQS(query_cols))) %>%
+                                               UQS(query_cols))) %>%
         add_queryview_column(format = queryformat) %>%
         select(-query, -sourceFileview) %>%
         ungroup()
@@ -156,8 +156,8 @@ summarize_project_info <- function(view_df) {
     proj_info <-
         sapply(unique(c(view_df$projectId)),
                function(x) {
-                   res = synGet(x)
-                   annotations = synGetAnnotations(x)
+                   res = synapser::synGet(x)
+                   annotations = synapser::synGetAnnotations(x)
                    c(
                        projectId = x,
                        projectName = ifelse(is.null(res$properties$name),"",res$properties$name),

@@ -114,7 +114,7 @@ sanitize_versions <- function(path) {
         "dt-core" = "dt-core-1.10.12"
     )
     walk2(safe_versions, names(safe_versions), function(lib_version, lib) {
-        path <<- str_replace(
+        path <<- stringr::str_replace(
             path,
             stringr::str_c(lib, ".*/"),
             stringr::str_c(lib_version, "/")

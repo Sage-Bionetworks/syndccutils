@@ -60,14 +60,14 @@ augment_values <- function(
             meta_col <- as.name(meta_key)
             df <<- df %>%
                 mutate(
-                    rlang::UQ(target_col) :=
-                        ifelse(!is.na(rlang::UQ(target_col)),
+                    UQ(target_col) :=
+                        ifelse(!is.na(UQ(target_col)),
                                stringr::str_c(
-                                   rlang::UQ(meta_col),
-                                   rlang::UQ(target_col),
+                                   UQ(meta_col),
+                                   UQ(target_col),
                                    sep = " — "
                                ),
-                               rlang::UQ(target_col))
+                               UQ(target_col))
                 )
         })
     df
@@ -95,14 +95,14 @@ create_synapse_links <- function(
             id_col <- as.name(id_key)
             df <<- df %>%
                 mutate(
-                    rlang::UQ(target_col) :=
-                        ifelse(!is.na(rlang::UQ(target_col)),
+                    UQ(target_col) :=
+                        ifelse(!is.na(UQ(target_col)),
                                glue::glue(
                                    link_template,
-                                   id = rlang::UQ(id_col),
-                                   target = rlang::UQ(target_col)
+                                   id = UQ(id_col),
+                                   target = UQ(target_col)
                                ),
-                               rlang::UQ(target_col))
+                               UQ(target_col))
                 )
         })
     df
@@ -123,7 +123,7 @@ count_values <- function(
     group_cols <- sapply(group_keys, as.name)
 
     df %>%
-        group_by(rlang::UQS(group_cols)) %>%
+        group_by(UQS(group_cols)) %>%
         summarise_at(count_keys, n_distinct) %>%
         ungroup()
 }
@@ -151,13 +151,13 @@ list_values <- function(
     }
 
     df %>%
-        group_by(rlang::UQS(group_cols)) %>%
+        group_by(UQS(group_cols)) %>%
         summarise_at(list_keys, merge_strings) %>%
         ungroup() %>%
         mutate_at(
             .vars = list_keys,
-            funs(str_c(start_opts[[list_format]], .,
-                              end_opts[[list_format]], sep = ""))
+            funs(stringr::str_c(start_opts[[list_format]], .,
+                                end_opts[[list_format]], sep = ""))
         )
 }
 

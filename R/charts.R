@@ -36,12 +36,12 @@ plot_file_counts_by_annotationkey <- function(
                 tally() %>%
                 mutate_at(.vars = annotation_key,
                                  funs(replace(., is.na(.), replace_missing))) %>%
-                mutate(UQ(key_col) := fct_relevel(
+                mutate(UQ(key_col) := forcats::fct_relevel(
                     UQ(key_col), replace_missing, after = 0L
                 )) %>%
                 mutate(label = glue::glue(
                     "<b>{value}:</b>\n{count} files",
-                    value = rlang::UQ(key_col),
+                    value = UQ(key_col),
                     count = n
                 ))
 
@@ -111,7 +111,7 @@ plot_sample_counts_by_annotationkey_2d <- function(
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
         group_by(.dots = names(annotation_keys)) %>%
-        summarize(n = n_distinct(rlang::UQ(as.name(sample_key)))) %>%
+        summarize(n = n_distinct(UQ(as.name(sample_key)))) %>%
         ungroup() %>%
         mutate_at(.vars = names(annotation_keys),
                          funs(replace(., is.na(.), replace_missing))) %>%
@@ -123,7 +123,7 @@ plot_sample_counts_by_annotationkey_2d <- function(
         #                  funs(forcats::fct_relevel(., "Not Annotated"))) %>%
         mutate(label = glue::glue(
             "<b>{assay}:</b>\n{count} {samples}",
-            assay = rlang::UQ(as.name(names(annotation_keys)[1])),
+            assay = UQ(as.name(names(annotation_keys)[1])),
             count = n,
             samples = stringr::str_to_lower(sample_labels[[sample_key]]))
         )
@@ -179,7 +179,7 @@ plot_file_counts_by_annotationkey_2d <- function(
 
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
-        group_by(rlang::UQS(group_cols)) %>%
+        group_by(UQS(group_cols)) %>%
         summarize(n = n_distinct(id)) %>%
         ungroup() %>%
         mutate_at(.vars = names(annotation_keys),
@@ -192,7 +192,7 @@ plot_file_counts_by_annotationkey_2d <- function(
                          funs(forcats::fct_relevel(., "Not Annotated"))) %>%
         mutate(label = glue::glue(
             "<b>{fill_val}:</b>\n{count} files",
-            fill_val = rlang::UQ(as.name(names(annotation_keys)[1])),
+            fill_val = UQ(as.name(names(annotation_keys)[1])),
             count = n)
         )
 
@@ -256,14 +256,14 @@ plot_study_counts_by_annotationkey_2d <- function(
 
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
-        group_by(rlang::UQS(group_cols)) %>%
+        group_by(UQS(group_cols)) %>%
         summarize(n = n_distinct(study)) %>%
         ungroup() %>%
         mutate_at(.vars = names(annotation_keys),
             funs(replace(., is.na(.), replace_missing))) %>%
         mutate(label = glue::glue(
             "<b>{assay}:</b>\n{count} studies",
-            assay = rlang::UQ(as.name(names(annotation_keys)[1])),
+            assay = UQ(as.name(names(annotation_keys)[1])),
             count = n)
         ) %>%
         I
@@ -276,9 +276,9 @@ plot_study_counts_by_annotationkey_2d <- function(
     }
 
     p <- plot_df %>%
-        ggplot(aes_(x = rlang::UQ(group_cols[[2]]), y = as.name("n"),
+        ggplot(aes_(x = UQ(group_cols[[2]]), y = as.name("n"),
             text = as.name("label"))) +
-        geom_col(aes_(fill = rlang::UQ(group_cols[[1]])),
+        geom_col(aes_(fill = UQ(group_cols[[1]])),
             colour = "white", size = 0.2) +
         scale_fill_viridis_d(annotation_keys[[1]]) +
         xlab("") +
@@ -357,7 +357,7 @@ plot_tool_outputs <- function(merged_df){
         ylab("")
 
     plotly::ggplotly(p,height=300) %>%
-        layout(margin=list(l = 150, r=100, b=55)) %>%
+        plotly::layout(margin=list(l = 150, r=100, b=55)) %>%
         plotly::config(displayModeBar = F)
 
 }
