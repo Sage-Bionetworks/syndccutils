@@ -5,3 +5,7 @@
 #'   flatten flatten_chr set_names walk2
 #' @importFrom rlang UQ UQS :=
 NULL
+
+## quiets concerns of R CMD check re: the .'s that appear in pipelines, thanks
+## Jenny Bryan
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
