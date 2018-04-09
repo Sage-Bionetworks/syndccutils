@@ -72,7 +72,7 @@ test_that("update_html_lines replaces path for all link lines", {
 test_that("fix_js_assets replaces all script/link lines and writes new HTML file", {
     expected_result <- file.path(
         dirname(mock_chart_filename),
-        str_c("fixed_", basename(mock_chart_filename))
+        stringr::str_c("fixed_", basename(mock_chart_filename))
     )
     test_result <- fix_js_assets(mock_chart_filename,
                                  rename_file = TRUE)

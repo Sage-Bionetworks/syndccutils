@@ -1,6 +1,6 @@
 custom_theme_bw <- function() {
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.title = element_text(face = "bold"),
+    theme_bw() +
+    theme(axis.title = element_text(face = "bold"),
                    legend.title = element_text(face = "bold"),
                    plot.title = element_text(face = "bold"))
 }
@@ -29,36 +29,36 @@ plot_file_counts_by_annotationkey <- function(
 ) {
 
     chart <- annotation_keys %>%
-        purrr::map2(.y = names(.), function(annotation_prettykey, annotation_key) {
+        map2(.y = names(.), function(annotation_prettykey, annotation_key) {
             key_col <- as.name(annotation_key)
             plot_df <- view_df %>%
-                dplyr::group_by(.dots = annotation_key) %>%
-                dplyr::tally() %>%
-                dplyr::mutate_at(.vars = annotation_key,
+                group_by(.dots = annotation_key) %>%
+                tally() %>%
+                mutate_at(.vars = annotation_key,
                                  funs(replace(., is.na(.), replace_missing))) %>%
-                dplyr::mutate(UQ(key_col) := fct_relevel(
+                mutate(UQ(key_col) := forcats::fct_relevel(
                     UQ(key_col), replace_missing, after = 0L
                 )) %>%
-                dplyr::mutate(label = glue::glue(
+                mutate(label = glue::glue(
                     "<b>{value}:</b>\n{count} files",
-                    value = rlang::UQ(key_col),
+                    value = UQ(key_col),
                     count = n
                 ))
 
             p <- plot_df %>%
-                ggplot2::ggplot(aes(x = 1, y = n, text = label)) +
-                ggplot2::geom_col(aes_(fill = as.name(annotation_key)),
+                ggplot(aes(x = 1, y = n, text = label)) +
+                geom_col(aes_(fill = as.name(annotation_key)),
                                   position = position_stack(reverse = FALSE),
                                   colour = "white", size = 0.2) +
-                ggplot2::scale_fill_viridis_d() +
-                ggplot2::xlab(annotation_prettykey) +
-                ggplot2::ylab("Number of Files") +
-                ggplot2::scale_x_continuous(expand = c(0, 0)) +
-                ggplot2::scale_y_continuous(expand = c(0, 0)) +
+                scale_fill_viridis_d() +
+                xlab(annotation_prettykey) +
+                ylab("Number of Files") +
+                scale_x_continuous(expand = c(0, 0)) +
+                scale_y_continuous(expand = c(0, 0)) +
                 custom_theme_bw() +
-                ggplot2::theme(axis.text.x = element_blank(),
+                theme(axis.text.x = element_blank(),
                                axis.ticks.x = element_blank()) +
-                ggplot2::guides(fill = FALSE)
+                guides(fill = FALSE)
 
             plotly::ggplotly(p, tooltip = "text",
                      width = 100 * length(annotation_keys) + 50,
@@ -92,7 +92,7 @@ plot_sample_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            dplyr::filter_at(vars(one_of(c(names(annotation_keys), sample_key))),
+            filter_at(vars(one_of(c(names(annotation_keys), sample_key))),
                              all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
@@ -100,8 +100,8 @@ plot_sample_counts_by_annotationkey_2d <- function(
     bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
     num_bars <- length(bar_vals)
 
-    fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
-    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length))
+    fill_margin <- max(map_int(fill_vals, stringr::str_length))
+    bar_margin <- max(map_int(bar_vals, stringr::str_length))
 
     sample_labels <- list(individualID = "Individuals",
                           specimenID = "Specimens",
@@ -110,35 +110,35 @@ plot_sample_counts_by_annotationkey_2d <- function(
 
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
-        dplyr::group_by(.dots = names(annotation_keys)) %>%
-        dplyr::summarize(n = n_distinct(rlang::UQ(as.name(sample_key)))) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        group_by(.dots = names(annotation_keys)) %>%
+        summarize(n = n_distinct(UQ(as.name(sample_key)))) %>%
+        ungroup() %>%
+        mutate_at(.vars = names(annotation_keys),
                          funs(replace(., is.na(.), replace_missing))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                          funs(forcats::fct_infreq(.))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                          funs(forcats::fct_rev(.))) %>%
-        # dplyr::mutate_at(.vars = names(annotation_keys),
+        # mutate_at(.vars = names(annotation_keys),
         #                  funs(forcats::fct_relevel(., "Not Annotated"))) %>%
-        dplyr::mutate(label = glue::glue(
+        mutate(label = glue::glue(
             "<b>{assay}:</b>\n{count} {samples}",
-            assay = rlang::UQ(as.name(names(annotation_keys)[1])),
+            assay = UQ(as.name(names(annotation_keys)[1])),
             count = n,
             samples = stringr::str_to_lower(sample_labels[[sample_key]]))
         )
 
     p <- plot_df %>%
-        ggplot2::ggplot(aes_string(x = names(annotation_keys)[2], y = "n",
+        ggplot(aes_string(x = names(annotation_keys)[2], y = "n",
                                    text = "label")) +
-        ggplot2::geom_col(aes_string(fill = names(annotation_keys[1])),
+        geom_col(aes_string(fill = names(annotation_keys[1])),
                           colour = "white", size = 0.2) +
-        ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
-        ggplot2::xlab("") +
-        ggplot2::ylab(glue::glue("Number of {label}",
+        scale_fill_viridis_d(annotation_keys[[1]]) +
+        xlab("") +
+        ylab(glue::glue("Number of {label}",
                                  label = sample_labels[[sample_key]])) +
-        ggplot2::scale_y_continuous(expand = c(0, 0)) +
-        ggplot2::coord_flip() +
+        scale_y_continuous(expand = c(0, 0)) +
+        coord_flip() +
         custom_theme_bw()
 
     plotly::ggplotly(p, tooltip = 'text', height = num_bars * 40 + 155) %>%
@@ -159,7 +159,7 @@ plot_file_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            dplyr::filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
+            filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
                              all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
@@ -172,27 +172,27 @@ plot_file_counts_by_annotationkey_2d <- function(
     bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
     num_bars <- length(bar_vals)
 
-    fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
-    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length), na.rm = TRUE)
+    fill_margin <- max(map_int(fill_vals, stringr::str_length))
+    bar_margin <- max(map_int(bar_vals, stringr::str_length), na.rm = TRUE)
 
     group_cols <- sapply(names(annotation_keys), as.name)
 
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
-        dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarize(n = n_distinct(id)) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        group_by(UQS(group_cols)) %>%
+        summarize(n = n_distinct(id)) %>%
+        ungroup() %>%
+        mutate_at(.vars = names(annotation_keys),
                          funs(replace(., is.na(.), replace_missing))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                            funs(forcats::fct_infreq(.))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                          funs(forcats::fct_rev(.))) %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        mutate_at(.vars = names(annotation_keys),
                          funs(forcats::fct_relevel(., "Not Annotated"))) %>%
-        dplyr::mutate(label = glue::glue(
+        mutate(label = glue::glue(
             "<b>{fill_val}:</b>\n{count} files",
-            fill_val = rlang::UQ(as.name(names(annotation_keys)[1])),
+            fill_val = UQ(as.name(names(annotation_keys)[1])),
             count = n)
         )
 
@@ -204,16 +204,16 @@ plot_file_counts_by_annotationkey_2d <- function(
     }
 
     p <- plot_df %>%
-        ggplot2::ggplot(aes_(x = group_cols[[2]], y = as.name("n"),
+        ggplot(aes_(x = group_cols[[2]], y = as.name("n"),
                                    text = as.name("label"))) +
-        ggplot2::geom_col(aes_(fill = group_cols[[1]]),
+        geom_col(aes_(fill = group_cols[[1]]),
                           colour = "white", size = 0.2) +
-        ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
-        ggplot2::guides(fill = guide_legend(reverse = T)) +
-        ggplot2::xlab("") +
-        ggplot2::ylab(glue::glue("Number of Files{scale}", scale = scale_note)) +
-        ggplot2::scale_y_continuous(expand = c(0, 0)) +
-        ggplot2::coord_flip() +
+        scale_fill_viridis_d(annotation_keys[[1]]) +
+        guides(fill = guide_legend(reverse = T)) +
+        xlab("") +
+        ylab(glue::glue("Number of Files{scale}", scale = scale_note)) +
+        scale_y_continuous(expand = c(0, 0)) +
+        coord_flip() +
         custom_theme_bw()
 
     plotly::ggplotly(p, tooltip = 'text', height = num_bars * 40 + 155) %>%
@@ -236,7 +236,7 @@ plot_study_counts_by_annotationkey_2d <- function(
     # TODO: add some check to make sure length(annotation_keys) == 2
     if (filter_missing) {
         view_df <- view_df %>%
-            dplyr::filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
+            filter_at(vars(one_of(c(names(annotation_keys), synproject_key))),
                 all_vars(!is.na(.) & !(. %in% c("null", "Not Applicable"))))
     }
 
@@ -249,21 +249,21 @@ plot_study_counts_by_annotationkey_2d <- function(
     bar_vals <- unique(view_df[[names(annotation_keys)[2]]])
     num_bars <- length(bar_vals)
 
-    fill_margin <- max(purrr::map_int(fill_vals, stringr::str_length))
-    bar_margin <- max(purrr::map_int(bar_vals, stringr::str_length))
+    fill_margin <- max(map_int(fill_vals, stringr::str_length))
+    bar_margin <- max(map_int(bar_vals, stringr::str_length))
 
     group_cols <- sapply(names(annotation_keys), as.name)
 
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
-        dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarize(n = n_distinct(study)) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate_at(.vars = names(annotation_keys),
+        group_by(UQS(group_cols)) %>%
+        summarize(n = n_distinct(study)) %>%
+        ungroup() %>%
+        mutate_at(.vars = names(annotation_keys),
             funs(replace(., is.na(.), replace_missing))) %>%
-        dplyr::mutate(label = glue::glue(
+        mutate(label = glue::glue(
             "<b>{assay}:</b>\n{count} studies",
-            assay = rlang::UQ(as.name(names(annotation_keys)[1])),
+            assay = UQ(as.name(names(annotation_keys)[1])),
             count = n)
         ) %>%
         I
@@ -271,20 +271,20 @@ plot_study_counts_by_annotationkey_2d <- function(
     scale_note <- ""
     if (log_counts) {
         plot_df <- plot_df %>%
-            dplyr::mutate(n = ifelse(n > 0, log10(n), n))
+            mutate(n = ifelse(n > 0, log10(n), n))
         scale_note <- " (log10)"
     }
 
     p <- plot_df %>%
-        ggplot2::ggplot(aes_(x = rlang::UQ(group_cols[[2]]), y = as.name("n"),
+        ggplot(aes_(x = UQ(group_cols[[2]]), y = as.name("n"),
             text = as.name("label"))) +
-        ggplot2::geom_col(aes_(fill = rlang::UQ(group_cols[[1]])),
+        geom_col(aes_(fill = UQ(group_cols[[1]])),
             colour = "white", size = 0.2) +
-        ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
-        ggplot2::xlab("") +
-        ggplot2::ylab(glue::glue("Number of Studies{scale}", scale = scale_note)) +
-        ggplot2::scale_y_continuous(expand = c(0, 0)) +
-        ggplot2::coord_flip() +
+        scale_fill_viridis_d(annotation_keys[[1]]) +
+        xlab("") +
+        ylab(glue::glue("Number of Studies{scale}", scale = scale_note)) +
+        scale_y_continuous(expand = c(0, 0)) +
+        coord_flip() +
         custom_theme_bw()
 
     plotly::ggplotly(p, tooltip = 'text', height = num_bars * 50 + 155) %>%
@@ -299,16 +299,16 @@ get_annotation_summary <-function(merged_df){
     replace_missing <- "Not Annotated"
 
     p <- merged_df %>%
-        dplyr::mutate_at(.vars = c('assay'),
+        mutate_at(.vars = c('assay'),
             funs(replace(., is.na(.), replace_missing))) %>%
-        dplyr::group_by(assay,Center) %>%
-        dplyr::tally() %>%
-        ggplot2::ggplot(aes(x = Center, y = n)) +
-        ggplot2::geom_col(aes(fill = assay)) + coord_flip() +
-        ggplot2::scale_fill_viridis_d() +
+        group_by(assay,Center) %>%
+        tally() %>%
+        ggplot(aes(x = Center, y = n)) +
+        geom_col(aes(fill = assay)) + coord_flip() +
+        scale_fill_viridis_d() +
         #   scale_y_log10() +
-        ggplot2::xlab("") +
-        ggplot2::ylab("")
+        xlab("") +
+        ylab("")
 
     plotly::ggplotly(p, height = 500) %>%
         plotly::layout(margin = list(l = 350, r = 100, b = 55))
@@ -316,14 +316,14 @@ get_annotation_summary <-function(merged_df){
 
 plot_assay_counts_by_center <- function(merged_df) {
     p <- merged_df %>%
-        dplyr::group_by(Center,assay) %>%
-        dplyr::tally() %>%
-        ggplot2::ggplot(aes(x = assay, y = n)) +
-        ggplot2::geom_col(aes(fill = Center)) + coord_flip() +
-        ggplot2::scale_fill_viridis_d() +
+        group_by(Center,assay) %>%
+        tally() %>%
+        ggplot(aes(x = assay, y = n)) +
+        geom_col(aes(fill = Center)) + coord_flip() +
+        scale_fill_viridis_d() +
      #   scale_y_log10() +
-        ggplot2::xlab("") +
-        ggplot2::ylab("")
+        xlab("") +
+        ylab("")
 
     plotly::ggplotly(p, height = 500) %>%
         plotly::layout(margin = list(l = 150, r = 100, b = 55)) %>%
@@ -332,13 +332,13 @@ plot_assay_counts_by_center <- function(merged_df) {
 
 plot_tool_inputs <- function(merged_df){
     p<- merged_df %>%
-        dplyr::group_by(Center,inputDataType) %>%
-        dplyr::tally() %>%
-        ggplot2::ggplot(aes(x=inputDataType,y=n)) +
-        ggplot2::geom_col(aes(fill=Center)) + coord_flip() +
-        ggplot2::scale_fill_viridis_d() +
-        ggplot2::xlab("") +
-        ggplot2::ylab("")
+        group_by(Center,inputDataType) %>%
+        tally() %>%
+        ggplot(aes(x=inputDataType,y=n)) +
+        geom_col(aes(fill=Center)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("")
 
     plotly::ggplotly(p,height=300) %>%
         plotly::layout(margin=list(l = 150, r=100, b=55)) %>%
@@ -348,16 +348,16 @@ plot_tool_inputs <- function(merged_df){
 
 plot_tool_outputs <- function(merged_df){
     p<- merged_df %>%
-        dplyr::group_by(Center,outputDataType) %>%
-        dplyr::tally() %>%
-        ggplot2::ggplot(aes(x=outputDataType,y=n)) +
-        ggplot2::geom_col(aes(fill=Center)) + coord_flip() +
-        ggplot2::scale_fill_viridis_d() +
-        ggplot2::xlab("") +
-        ggplot2::ylab("")
+        group_by(Center,outputDataType) %>%
+        tally() %>%
+        ggplot(aes(x=outputDataType,y=n)) +
+        geom_col(aes(fill=Center)) + coord_flip() +
+        scale_fill_viridis_d() +
+        xlab("") +
+        ylab("")
 
     plotly::ggplotly(p,height=300) %>%
-        layout(margin=list(l = 150, r=100, b=55)) %>%
+        plotly::layout(margin=list(l = 150, r=100, b=55)) %>%
         plotly::config(displayModeBar = F)
 
 }

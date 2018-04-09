@@ -19,6 +19,7 @@ Imports:
     htmlwidgets,
     httr,
     knitr,
+    magrittr,
     plotly,
     plyr,
     purrr,

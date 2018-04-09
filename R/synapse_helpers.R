@@ -58,7 +58,7 @@ save_table <- function(project_id, table_name, table_df) {
                              project_id)
     table_id <- synapser::synQuery(project_query) %>%
         # make sure that matched entities are tables
-        dplyr::filter(
+        filter(
             stringr::str_detect(Entity.concreteType, "TableEntity"),
             # then check whether any tables match the target name
             stringr::str_detect(Entity.name, table_name)) %>%
@@ -77,7 +77,7 @@ save_table <- function(project_id, table_name, table_df) {
         if (!all_equal(platform_workflow_df, syn_table_df) == TRUE) {
             # rather than try to conditionally update part of the table,
             # just wipe all rows and add the latest ones
-            synDelete(syn_table_data$asRowSet())
+            synapser::synDelete(syn_table_data$asRowSet())
             schema <- synapser::synGet(table_id)
             update_table <- synapser::Table(schema, platform_workflow_df)
             syn_table <- synapser::synStore(update_table)
@@ -163,19 +163,19 @@ datatable_to_synapse <- function(dt, parent_id, table_name) {
     tcols <- sapply(1:ncol(dt), function(x) {
         if (col.type[x] == 'STRING') {
             if (col.name[x] %in% c('viewFiles', 'View_Files'))
-                Column(
+                synapser::Column(
                     name = col.name[[x]],
                     columnType = 'LINK',
                     maximumSize = as.integer(512)
                 )
             else
-                Column(
+                synapser::Column(
                     name = col.name[[x]],
                     columnType = col.type[x],
                     maximumSize = as.integer(256)
                 )
         } else
-            Column(name = col.name[[x]], columnType = col.type[x])
+            synapser::Column(name = col.name[[x]], columnType = col.type[x])
     })
 
     schema.obj <- synapser::Schema(
@@ -190,7 +190,7 @@ datatable_to_synapse <- function(dt, parent_id, table_name) {
     #this is the jira:  https://sagebionetworks.jira.com/browse/SYNPY-603
     #    all.rows <-synapser::synTableQuery(paste('select * from',syn_id$tableId))
 
-    #synDelete(all.rows$asRowSet())
+    #synapser::synDelete(all.rows$asRowSet())
 
     #    syn_id <-synapser::synStore(synapser::Table(schema,dt))
 

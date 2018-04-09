@@ -13,7 +13,7 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
     if (length(cols_as_code)) {
         # first add in backticks for code blocks
         df <- df %>%
-            dplyr::mutate_at(cols_as_code, funs(stringr::str_c("`", ., "`")))
+            mutate_at(cols_as_code, funs(stringr::str_c("`", ., "`")))
     }
     df %>% knitr::kable(format = "markdown")
 }
@@ -133,17 +133,17 @@ summarize_by_annotationkey <- function(
 
     query_cols <- sapply(query_keys, as.name)
     summary_df <- summary_df %>%
-        dplyr::rowwise() %>%
-        dplyr::mutate(sourceFileview = table_id,
+        rowwise() %>%
+        mutate(sourceFileview = table_id,
                       query = build_tablequery(sourceFileview,
-                                               rlang::UQS(query_cols))) %>%
+                                               UQS(query_cols))) %>%
         add_queryview_column(format = queryformat) %>%
-        dplyr::select(-query, -sourceFileview) %>%
-        dplyr::ungroup()
+        select(-query, -sourceFileview) %>%
+        ungroup()
 
     if ("projectId" %in% annotation_keys & !is.null(synproject_key)) {
         summary_df %>%
-            dplyr::select(-dplyr::matches("projectId"))
+            select(-matches("projectId"))
     } else {
         summary_df
     }
@@ -156,8 +156,8 @@ summarize_project_info <- function(view_df) {
     proj_info <-
         sapply(unique(c(view_df$projectId)),
                function(x) {
-                   res = synGet(x)
-                   annotations = synGetAnnotations(x)
+                   res = synapser::synGet(x)
+                   annotations = synapser::synGetAnnotations(x)
                    c(
                        projectId = x,
                        projectName = ifelse(is.null(res$properties$name),"",res$properties$name),

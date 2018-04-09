@@ -15,11 +15,11 @@ add_missing_placeholder <- function(
 
     if (!is.null(replace_keys)) {
         df %>%
-            dplyr::mutate_at(.vars = replace_keys,
+            mutate_at(.vars = replace_keys,
                              funs(replace(., is.na(.), placeholder)))
     } else {
         df %>%
-            dplyr::mutate_all(funs(replace(., is.na(.), placeholder)))
+            mutate_all(funs(replace(., is.na(.), placeholder)))
     }
 }
 
@@ -36,9 +36,9 @@ filter_by_key <- function(
 ) {
 
     df %>%
-        dplyr::filter_at(
-            dplyr::vars(dplyr::one_of(filter_keys)),
-            dplyr::all_vars(!is.na(.) & !(. %in% bad_values))
+        filter_at(
+            vars(one_of(filter_keys)),
+            all_vars(!is.na(.) & !(. %in% bad_values))
         )
 }
 
@@ -55,19 +55,19 @@ augment_values <- function(
 ) {
 
     augment_keys %>%
-        purrr::walk2(names(.), function(meta_key, target_key) {
+        walk2(names(.), function(meta_key, target_key) {
             target_col <- as.name(target_key)
             meta_col <- as.name(meta_key)
             df <<- df %>%
-                dplyr::mutate(
-                    rlang::UQ(target_col) :=
-                        ifelse(!is.na(rlang::UQ(target_col)),
+                mutate(
+                    UQ(target_col) :=
+                        ifelse(!is.na(UQ(target_col)),
                                stringr::str_c(
-                                   rlang::UQ(meta_col),
-                                   rlang::UQ(target_col),
+                                   UQ(meta_col),
+                                   UQ(target_col),
                                    sep = " — "
                                ),
-                               rlang::UQ(target_col))
+                               UQ(target_col))
                 )
         })
     df
@@ -90,19 +90,19 @@ create_synapse_links <- function(
         base = base_url
     )
     link_keys %>%
-        purrr::walk2(names(.), function(id_key, target_key) {
+        walk2(names(.), function(id_key, target_key) {
             target_col <- as.name(target_key)
             id_col <- as.name(id_key)
             df <<- df %>%
-                dplyr::mutate(
-                    rlang::UQ(target_col) :=
-                        ifelse(!is.na(rlang::UQ(target_col)),
+                mutate(
+                    UQ(target_col) :=
+                        ifelse(!is.na(UQ(target_col)),
                                glue::glue(
                                    link_template,
-                                   id = rlang::UQ(id_col),
-                                   target = rlang::UQ(target_col)
+                                   id = UQ(id_col),
+                                   target = UQ(target_col)
                                ),
-                               rlang::UQ(target_col))
+                               UQ(target_col))
                 )
         })
     df
@@ -123,9 +123,9 @@ count_values <- function(
     group_cols <- sapply(group_keys, as.name)
 
     df %>%
-        dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarise_at(count_keys, n_distinct) %>%
-        dplyr::ungroup()
+        group_by(UQS(group_cols)) %>%
+        summarise_at(count_keys, n_distinct) %>%
+        ungroup()
 }
 
 
@@ -151,13 +151,13 @@ list_values <- function(
     }
 
     df %>%
-        dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarise_at(list_keys, merge_strings) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate_at(
+        group_by(UQS(group_cols)) %>%
+        summarise_at(list_keys, merge_strings) %>%
+        ungroup() %>%
+        mutate_at(
             .vars = list_keys,
-            dplyr::funs(str_c(start_opts[[list_format]], .,
-                              end_opts[[list_format]], sep = ""))
+            funs(stringr::str_c(start_opts[[list_format]], .,
+                                end_opts[[list_format]], sep = ""))
         )
 }
 
@@ -179,13 +179,13 @@ build_tablequery <- function(table_id, ...) {
     dots <- substitute(list(...))[-1]
     list_names <- sapply(dots, deparse)
     list(...) %>%
-        purrr::set_names(list_names) %>%
-        purrr::map2(names(.), function(value, key) {
+        set_names(list_names) %>%
+        map2(names(.), function(value, key) {
             filter_string <- glue::glue("( {key} = '{value}' )",
                                         key = key, value = value)
             filter_string
         }) %>%
-        purrr::flatten_chr() %>%
+        flatten_chr() %>%
         stringr::str_c(collapse = " AND ") %>%
         glue::glue(query_template, id = table_id, filters = .)
 }
@@ -224,7 +224,7 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
     )
     link_template <- link_templates[[format]]
     df %>%
-        dplyr::mutate(viewFiles = get_tablequery_url(sourceFileview, query),
+        mutate(viewFiles = get_tablequery_url(sourceFileview, query),
                       viewFiles = glue::glue(link_template, url = viewFiles))
 }
 
@@ -238,7 +238,7 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
 format_summarytable_columns <- function(df, facet_cols = c()) {
     # TODO: remove plyr dependency...
     name_map <- tibble::tibble(name = names(df)) %>%
-        dplyr::mutate(formatted_name = case_when(
+        mutate(formatted_name = case_when(
             name == "id" ~ "Files",
             name == "assay" & (name %in% facet_cols) ~ "Assay",
             name == "assay" & !(name %in% facet_cols) ~ "Assays",
@@ -265,6 +265,6 @@ format_summarytable_columns <- function(df, facet_cols = c()) {
             TRUE ~ name
         )) %>%
         split(.$name) %>%
-        purrr::map("formatted_name")
+        map("formatted_name")
     plyr::rename(df, name_map)
 }

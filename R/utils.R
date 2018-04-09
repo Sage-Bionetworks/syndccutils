@@ -5,17 +5,17 @@ get_script_lines <- function(html_path) {
     xml2::read_html(html_path) %>%
         rvest::html_node("head") %>%
         rvest::html_children() %>%
-        purrr::keep(function(x) {
+        keep(function(x) {
             rvest::html_name(x) %>%
-                purrr::has_element("script")
+                has_element("script")
         }) %>%
-        purrr::map_df(function(x) {
+        map_df(function(x) {
             list(
                 as.character(x),
                 rvest::html_attr(x, "src")
             ) %>%
-                purrr::flatten() %>%
-                purrr::set_names(c("target", "target_attr"))
+                flatten() %>%
+                set_names(c("target", "target_attr"))
         })
 }
 
@@ -23,17 +23,17 @@ get_link_lines <- function(html_path) {
     xml2::read_html(html_path) %>%
         rvest::html_node("head") %>%
         rvest::html_children() %>%
-        purrr::keep(function(x) {
+        keep(function(x) {
             rvest::html_name(x) %>%
-                purrr::has_element("link")
+                has_element("link")
         }) %>%
-        purrr::map_df(function(x) {
+        map_df(function(x) {
             list(
                 as.character(x),
                 rvest::html_attr(x, "href")
             ) %>%
-                purrr::flatten() %>%
-                purrr::set_names(c("target", "target_attr"))
+                flatten() %>%
+                set_names(c("target", "target_attr"))
         })
 }
 
@@ -50,13 +50,13 @@ parse_js_src <- function(src) {
     list(
         target_lib = src %>%
             stringr::str_split("/") %>%
-            purrr::map_chr(function(x) purrr::keep(x, is_js_lib)),
+            map_chr(function(x) keep(x, is_js_lib)),
         target_file = src %>%
             stringr::str_split("/") %>%
-            purrr::map_chr(function(x) purrr::keep(x, is_js_file))
+            map_chr(function(x) keep(x, is_js_file))
     ) %>%
         tibble::as_tibble() %>%
-        dplyr::mutate(target_version = stringr::str_extract(target_lib,
+        mutate(target_version = stringr::str_extract(target_lib,
                                                             "([0-9]+\\.*)+$"))
 }
 
@@ -72,7 +72,7 @@ cdn_search <- function(js_file, js_version) {
         .$results
     if (length(results)) {
         results %>%
-            dplyr::filter(version == js_version) %>%
+            filter(version == js_version) %>%
             tibble::as_tibble()
     } else {
         tibble::tibble(name = character(),
@@ -114,7 +114,7 @@ sanitize_versions <- function(path) {
         "dt-core" = "dt-core-1.10.12"
     )
     walk2(safe_versions, names(safe_versions), function(lib_version, lib) {
-        path <<- str_replace(
+        path <<- stringr::str_replace(
             path,
             stringr::str_c(lib, ".*/"),
             stringr::str_c(lib_version, "/")
@@ -150,16 +150,16 @@ path_replace_cdn <- function(path,
 # replace paths for a set of HTML lines
 update_html_lines <- function(html_lines, target_lines) {
     update_target_lines <- target_lines %>%
-        dplyr::rowwise() %>%
-        dplyr::mutate(replacement_attr = path_replace_cdn(target_attr),
-                      updated_html = purrr::walk2(
+        rowwise() %>%
+        mutate(replacement_attr = path_replace_cdn(target_attr),
+                      updated_html = walk2(
                           target_attr, replacement_attr, function(x, y) {
                               html_lines <<- stringr::str_replace(html_lines, x, y)
                           }
                       )
         ) %>%
-        dplyr::ungroup() %>%
-        dplyr::select(-updated_html)
+        ungroup() %>%
+        select(-updated_html)
     html_lines
 }
 
@@ -182,6 +182,6 @@ fix_js_assets <- function(html_path, rename_file = FALSE) {
         update_html_lines(script_lines) %>%
         update_html_lines(link_lines)
 
-    write_lines(html_lines, fixed_html_path)
+    readr::write_lines(html_lines, fixed_html_path)
     fixed_html_path
 }
