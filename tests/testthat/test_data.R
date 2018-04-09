@@ -38,7 +38,7 @@ count_cols <- c("id", "id_annotation")
 list_cols <- "random_annotation"
 
 mock_datafile_counts <- mock_fileview_df %>%
-    summarize_files_by_annotationkey_new(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         table_id = "syn1234",
         count_cols = count_cols,
