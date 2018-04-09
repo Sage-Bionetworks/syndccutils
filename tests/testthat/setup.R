@@ -1,4 +1,6 @@
-library(tidyverse)
+library(tibble)
+library(dplyr)
+library(stringr)
 library(fs)
 library(htmlwidgets)
 
@@ -26,13 +28,11 @@ plot_keys <- list(data_annotation = "Assay", status_annotation = "Disease")
 mock_chart <- mock_fileview_df %>%
     plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
 
-saveWidget(mock_chart, mock_chart_filename,
-           selfcontained = FALSE)
-mock_chart_filename <- file.path("tests/testthat/testdata", mock_chart_filename)
-file.rename(basename(mock_chart_filename), mock_chart_filename)
-file.rename("mock_chart_files/",
-            file.path("tests/testthat/testdata", "mock_chart_files/"))
-mock_chart_filename <- str_extract(mock_chart_filename, "testdata.*")
+saveWidget(
+  mock_chart,
+  file.path(normalizePath("./testdata/"), mock_chart_filename),
+  selfcontained = FALSE
+)
 
 # create and save mock table
 group_keys <- c("data_annotation", "status_annotation")
@@ -40,7 +40,7 @@ count_cols <- c("id", "id_annotation")
 list_cols <- "random_annotation"
 
 mock_datafile_counts <- mock_fileview_df %>%
-    summarize_files_by_annotationkey_new(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         table_id = "syn1234",
         count_cols = count_cols,
@@ -51,14 +51,9 @@ mock_datafile_counts_dt <- mock_datafile_counts %>%
     format_summarytable_columns(group_keys) %>%
     as_datatable()
 
-
-saveWidget(mock_datafile_counts_dt, mock_datatable_filename,
-           selfcontained = FALSE)
-mock_datatable_filename <- file.path("tests/testthat/testdata",
-                                     mock_datatable_filename)
-file.rename(basename(mock_datatable_filename), mock_datatable_filename)
-file.rename("mock_datatable_files/",
-            file.path("tests/testthat/testdata", "mock_datatable_files/"))
-mock_datatable_filename <- str_extract(mock_datatable_filename, "testdata.*")
-
+saveWidget(
+  mock_datafile_counts_dt,
+  file.path(normalizePath("./testdata/"), mock_datatable_filename),
+  selfcontained = FALSE
+)
 
