@@ -171,9 +171,11 @@ list_values <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' test_df %>%
 #'     rowwise() %>%
 #'     mutate(query = build_tablequery(table_id, assay))
+#' }
 build_tablequery <- function(table_id, ...) {
     query_template <- "SELECT * FROM {id} WHERE ( {filters} )"
     dots <- substitute(list(...))[-1]

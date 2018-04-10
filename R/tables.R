@@ -73,6 +73,7 @@ as_datatable <- function(df, cols_as_code = c()) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' group_keys <- c("assay", "tumorType")
 #' list_cols <- "study"
 #' augment_keys <- list(study = "Center Name")
@@ -86,6 +87,7 @@ as_datatable <- function(df, cols_as_code = c()) {
 #'        augment_keys = augment_keys,
 #'        link_keys = link_keys
 #'    )
+#' }
 summarize_by_annotationkey <- function(
     view_df, annotation_keys, table_id, synproject_key = NULL,
     count_cols = NULL, list_cols = NULL, augment_keys = NULL, link_keys = NULL,

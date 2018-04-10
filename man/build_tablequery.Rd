@@ -15,7 +15,9 @@ Construct a Synapse SQL-style table query using names/values of data frame
 column(s) to compose 'WHERE' clauses
 }
 \examples{
+\dontrun{
 test_df \%>\%
     rowwise() \%>\%
     mutate(query = build_tablequery(table_id, assay))
+}
 }
