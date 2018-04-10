@@ -18,11 +18,13 @@ custom_theme_bw <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
 #'                   diagnosis = "Diagnosis", species = "Species",
 #'                   organ = "Organ", tissue = "Tissue",
 #'                   dataType = "Data Type", study = "Study")
 #' plot_file_counts_by_annotationkey(fileview_df, plot_keys)
+#' }
 plot_file_counts_by_annotationkey <- function(
     view_df, annotation_keys, replace_missing = "Not Annotated",
     chart_height = NULL
@@ -83,8 +85,10 @@ plot_file_counts_by_annotationkey <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 #' plot_sample_counts_by_annotationkey_2d(fileview_df, "cellLine", plot_keys)
+#' }
 plot_sample_counts_by_annotationkey_2d <- function(
     view_df, sample_key = c("individualID", "specimenID", "cellLine"),
     annotation_keys, filter_missing = TRUE

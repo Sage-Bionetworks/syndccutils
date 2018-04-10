@@ -18,9 +18,11 @@ Plot the breakdown of files from a file view according to distinct values
 within each specified annotation key (i.e., category).
 }
 \examples{
+\dontrun{
 plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
                   diagnosis = "Diagnosis", species = "Species",
                   organ = "Organ", tissue = "Tissue",
                   dataType = "Data Type", study = "Study")
 plot_file_counts_by_annotationkey(fileview_df, plot_keys)
+}
 }

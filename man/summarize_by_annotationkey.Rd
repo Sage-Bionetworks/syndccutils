@@ -35,6 +35,7 @@ construct links from Synapse IDs in corresponding ID columns (list values)}
 Count files in a Synapse file view, grouped by annotation keys.
 }
 \examples{
+\dontrun{
 group_keys <- c("assay", "tumorType")
 list_cols <- "study"
 augment_keys <- list(study = "Center Name")
@@ -48,4 +49,5 @@ fileview_df \%>\%
        augment_keys = augment_keys,
        link_keys = link_keys
    )
+}
 }

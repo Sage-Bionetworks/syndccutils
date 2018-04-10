@@ -18,6 +18,8 @@ Plot the breakdown of samples in a file view based on distinct values
 within two specified annotation keys.
 }
 \examples{
+\dontrun{
 plot_keys <- list(assay = "Assay", tumorType = "Tumor Type")
 plot_sample_counts_by_annotationkey_2d(fileview_df, "cellLine", plot_keys)
+}
 }
