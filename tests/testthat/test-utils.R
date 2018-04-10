@@ -1,6 +1,8 @@
 
 context("utils - Modifying HTML output files")
 
+mock_chart_filename <- "testdata/mock_chart.html"
+
 test_that("get_script_lines returns expected dataframe of target line and attribute", {
 
     test_result <- get_script_lines(mock_chart_filename)
@@ -33,18 +35,18 @@ test_that("path_replace_cdn correctly replaces local path with CDN path for a pu
 })
 
 test_that("update_html_lines replaces path for all script lines", {
-    mock_html_lines <- read_lines(mock_chart_filename)
+    mock_html_lines <- readr::read_lines(mock_chart_filename)
     mock_target_lines <- get_script_lines(mock_chart_filename)
 
     test_html_lines <- update_html_lines(mock_html_lines, mock_target_lines)
     test_updated_count <- sum(
-        str_detect(test_html_lines, "<script src=\"https://cdn-www.synapse.org/research/")
+        stringr::str_detect(test_html_lines, "<script src=\"https://cdn-www.synapse.org/research/")
     )
     test_public_count <- sum(
-        str_detect(test_html_lines, "<script src=\"https://ajax.googleapis.com/ajax/libs/")
+        stringr::str_detect(test_html_lines, "<script src=\"https://ajax.googleapis.com/ajax/libs/")
     )
     test_target_count <- sum(
-        str_detect(test_html_lines, "<script src=\"mock_chart_files/")
+        stringr::str_detect(test_html_lines, "<script src=\"mock_chart_files/")
     )
 
     expect_equal(test_updated_count, 4)
@@ -53,15 +55,15 @@ test_that("update_html_lines replaces path for all script lines", {
 })
 
 test_that("update_html_lines replaces path for all link lines", {
-    mock_html_lines <- read_lines(mock_chart_filename)
+    mock_html_lines <- readr::read_lines(mock_chart_filename)
     mock_target_lines <- get_link_lines(mock_chart_filename)
 
     test_html_lines <- update_html_lines(mock_html_lines, mock_target_lines)
     test_updated_count <- sum(
-        str_detect(test_html_lines, "<link href=\"https://cdn-www.synapse.org/research/")
+        stringr::str_detect(test_html_lines, "<link href=\"https://cdn-www.synapse.org/research/")
     )
     test_target_count <- sum(
-        str_detect(test_html_lines, "<link href=\"mock_chart_files/")
+        stringr::str_detect(test_html_lines, "<link href=\"mock_chart_files/")
     )
 
     expect_equal(test_updated_count, 2)
@@ -72,9 +74,10 @@ test_that("update_html_lines replaces path for all link lines", {
 test_that("fix_js_assets replaces all script/link lines and writes new HTML file", {
     expected_result <- file.path(
         dirname(mock_chart_filename),
-        str_c("fixed_", basename(mock_chart_filename))
+        stringr::str_c("fixed_", basename(mock_chart_filename))
     )
-    test_result <- fix_js_assets(mock_chart_filename)
+    test_result <- fix_js_assets(mock_chart_filename,
+                                 rename_file = TRUE)
     expect_equal(test_result, expected_result)
 })
 

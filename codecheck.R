@@ -53,8 +53,10 @@ source_scripts <- c("R/tables.R", "R/charts.R", "R/synapse_helpers.R") %>%
     set_names(.)
 message("Unused in `scripts/` files:")
 map(source_scripts, function(source_script) {
-    find_unused_functions(source_script, "scripts",
-                          exclude_pattern = "study_summaries")
+    find_unused_functions(
+        source_script, "scripts",
+        exclude_pattern = "study_summaries|subproject_summaries"
+    )
 })
 
 message("Unused in `R/` files:")
