@@ -1,6 +1,6 @@
-# Synapse DCC Utilities for R
+# Synapse DCC Utilities for Python
 
-This is the R version of the `syndccutils` package.
+This is the Python version of the `syndccutils` package.
 
 Code for managing data coordinating operations (e.g., development of the CSBC/PS-ON Knowledge Portal and individual Center pages) for Sage-supported communities through Synapse. Currently this package is able to:
 * Build tables and charts to summarize annotations from a view
