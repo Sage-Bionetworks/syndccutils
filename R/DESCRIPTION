@@ -29,6 +29,7 @@ Imports:
     rlang,
     rvest,
     stringr,
+    PythonEmbedInR,
     synapser,
     tibble,
     viridisLite,
