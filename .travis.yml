@@ -1,0 +1,9 @@
+sudo: false
+
+matrix:
+  include:
+
+  - language: r
+    before_install:
+    - cd R
+
