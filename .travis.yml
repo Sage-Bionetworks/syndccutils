@@ -4,6 +4,7 @@ matrix:
   include:
 
   - language: r
+    cache: packages
     before_install:
     - cd R
 
