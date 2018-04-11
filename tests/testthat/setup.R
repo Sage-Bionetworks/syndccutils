@@ -22,6 +22,7 @@ mock_fileview_df <- tibble(
 # paths to mocked files
 mock_chart_filename <- "mock_chart.html"
 mock_datatable_filename <- "mock_datatable.html"
+dir_create("testdata")
 
 # create and save mock chart
 plot_keys <- list(data_annotation = "Assay", status_annotation = "Disease")
