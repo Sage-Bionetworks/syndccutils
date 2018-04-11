@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from future.utils import iteritems
 from itertools import chain
-import csbc
+import syndccutils
 import os
 import re
 import sys
@@ -89,6 +89,7 @@ def updateProjectViewScope(syn, consortium_viewId, projectId):
 
 def buildProject(syn, projectName, teamId, adminId, templateId, projectView):
     """
+    Copies a synapse project template and adds it to the csbc consortium project view
 
     :param syn:
     :param projectName:
@@ -110,6 +111,9 @@ def buildProject(syn, projectName, teamId, adminId, templateId, projectView):
 
 def template(args, syn):
     """
+    Given a grant id ex. U54, a Project title/name for that site (string), and a synapse team profile Id for that site project
+    it copies a template sckeleton for that project, adds the team to the synapse project and then adds the project to
+    the consortium project view.
 
     :param args:
     :param syn:
@@ -144,6 +148,7 @@ def template(args, syn):
 
 def csbcGrantList(syn, tableSynId):
     """
+    Get's the column containing grant numbers, drops the empty cells if any, and returns a list of grant numbers.
 
     :param syn:
     :param tableSynId:
@@ -157,6 +162,7 @@ def csbcGrantList(syn, tableSynId):
 
 def getGrantQuery(csbc):
     """
+    Constructs a string of grant numbers separated by the logic OR to query pubmed.
 
     :param csbc:
     :return:
@@ -167,6 +173,8 @@ def getGrantQuery(csbc):
 
 def getPubMedIds(query):
     """
+    Utilizes pubmed API, Entrenz to get the list of all publication(s) pubmed Id(s).
+    Max is set 1000000 publications for all grants in query.
 
     :param query:
     :return:
@@ -184,6 +192,7 @@ def getPubMedIds(query):
 
 def getCenterIdsView(syn, viewSynId):
     """
+    Get's the grant-view dataframe from synapse with existing grant numbers.
 
     :param syn:
     :param viewSynId:
@@ -196,6 +205,13 @@ def getCenterIdsView(syn, viewSynId):
 
 
 def getPublishedGEO(pId):
+    """
+    If any, retuns a list of produced GEO Id(s) of a publication study.
+    else, it returns an empty list.
+
+    :param pId:
+    :return:
+    """
     website = 'https://www.ncbi.nlm.nih.gov/gds?LinkName=pubmed_gds&from_uid=' + pId
     session = requests.Session()
     soup = BeautifulSoup(session.get(website).content, "lxml")
@@ -208,6 +224,11 @@ def getPublishedGEO(pId):
 
 def getPMIDDF(pubmedIds, csbcGrants, csbcView):
     """
+    Given a list of grant numbers with associated synapse metadata: consortium synapse ID and grant sub-type, scrapes
+    pubMed for each grant's publication and retrieves simple information such as publication title, year, and authors.
+    It also checks if any GEO data has been produced by the publication study. If so, then it saves the GEO html
+    links in a comma separated list. Per each publication, there will be a row in the final dataframe/synapse table
+    that maps back to the grant number and consortium synapse ID(i.e, the Key of this table is the PubMed column).
 
     :param pubmedIds:
     :param csbcGrants:
@@ -376,7 +397,7 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
             gseIds = ''
 
         rowDf = pandas.DataFrame(
-            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, 'No', '']],
+            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, '', '']],
             columns=columns)
         rows.append(rowDf)
 
@@ -424,21 +445,8 @@ def pubmed(args, syn):
         new_pubmed_ids = list(set(pubmedIds) - set([i.split("=")[1] for i in list(currentTable.PubMed)]))
         finalTable = getPMIDDF(new_pubmed_ids, csbcGrants, csbcView)
 
-        if not currentTable.empty:
-            # extract new rows in final table to append to synapse table
-            finalTable = pandas.merge(finalTable, currentTable, on=["PubMed"], how='outer', indicator=True).query(
-                '_merge == "left_only"')
-
-            if finalTable.empty:
-                print("nothing to update")
-            else:
-                # append new rows
-                table = synapseclient.Table(schema, finalTable.values.tolist())
-                table = syn.store(table)
-        else:
-            # add new rows
-            table = synapseclient.Table(schema, finalTable.values.tolist())
-            table = syn.store(table)
+        table = synapseclient.Table(schema, finalTable.values.tolist())
+        table = syn.store(table)
 
     else:
         # create a new schema
@@ -454,7 +462,7 @@ def pubmed(args, syn):
                 Column(name='Authors', columnType='STRING', maximumSize=990),
                 Column(name='Grant', columnType='STRING', maximumSize=50),
                 Column(name='Data Location', columnType='LINK', maximumSize=1000),
-                Column(name='Synapse Location', columnType='STRING', maximumSize=10),
+                Column(name='Synapse Location', columnType='ENTITYID', maximumSize=50),
                 Column(name='Keywords', columnType='STRING', maximumSize=250)]
 
         schema = synapseclient.Schema(name=args.tableName, columns=cols, parent=project)
@@ -583,6 +591,7 @@ def countNonSponsorTeamMembers(syn, project_ids,
 
 def getConsortiumProjectDF(syn, ID='syn10142562', sponsor_projects=['Multiple', 'Sage Bionetworks']):
     """
+    Get's the project view without the sponsor projects, and returns the pandas dataframe.
 
     :param syn:
     :param ID:
@@ -663,6 +672,9 @@ def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_file
 
 def getAnnotationCounts(annotList, annotation):
     """
+    Converts a list of dictionary objects containing annotations metadata into a pandas dataframe,
+    counts the number of files that have annotations,
+    given an annotation (ex. study) it also counts the number of files with each unique annotation value in annotation key.
 
     :param annotList:
     :param annotation:
@@ -688,6 +700,8 @@ def getAnnotationCounts(annotList, annotation):
 
 def unlist(column):
     """
+    For each cell in a column series containing a list object,
+    unlists the cell and returns a string. Each item of the list will be seperated by a comma in the string.
 
     :param column:
     :return:
@@ -703,6 +717,9 @@ def unlist(column):
 
 def summaryReport(args, syn):
     """
+    Walks top down from a synapse project tree and counts metadata information per each project.
+    Project Id is the main key of the final matrix. File and annotation metadata are saved as a list of
+    dictionary objects.
 
     :param args:
     :param syn:
@@ -806,6 +823,7 @@ def changeFloatToInt(final_df, col):
 
 def meltinfo(args, syn):
     """
+    Create a master matrix/table for consortium metrics. 
 
     :param args:
     :param syn:
@@ -860,7 +878,6 @@ def meltinfo(args, syn):
              'softwareLanguage',
              'species',
              'Data_Location',
-             'rnaAlignmentMethod',
              'specimenID',
              'fundingAgency',
              'isCellLine',
@@ -873,7 +890,6 @@ def meltinfo(args, syn):
              'transplantationDonorTissue',
              'peakCallingMethod',
              'fileFormat',
-             'dnaAlignmentMethod',
              'assay',
              'softwareRepository',
              'compoundName',
@@ -894,13 +910,14 @@ def meltinfo(args, syn):
              'resourceType',
              'outputDataType',
              'study',
-             'Publication_Year',
              'diseaseSubtype',
              'experimentalCondition',
              'diagnosis',
              'cellType',
              'experimentalTimePoint',
              'age',
+             'alignmentMethod',
+             'networkEdgeType'
              'name_file',
              'createdOn_file',
              'modifiedOn_file',

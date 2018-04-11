@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="csbc-synapse-utility-scripts",
+    name="synapse-dcc-utility-scripts",
     packages=find_packages(),
     license='Apache License, Version 2.0',
     version='1.0.0',
@@ -9,8 +9,8 @@ setup(
         'pandas',
         'synapseclient'],
     entry_points={
-        'console_scripts': ['csbc = csbc.__main__:main']
+        'console_scripts': ['syndccutils = syndccutils.__main__:main']
     },
     author="Nasim Sanati",
-    author_email="nasim.sanati@sagebase.org",
+    author_email="nasim.sanati@sagebionetworks.org",
 )
