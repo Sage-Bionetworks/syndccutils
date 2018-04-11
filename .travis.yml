@@ -1,4 +1,5 @@
 sudo: false
+warnings_are_errors: false
 
 matrix:
   include:
