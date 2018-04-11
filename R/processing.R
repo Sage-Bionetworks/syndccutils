@@ -65,7 +65,7 @@ augment_values <- function(
                                stringr::str_c(
                                    UQ(meta_col),
                                    UQ(target_col),
-                                   sep = " — "
+                                   sep = " - "
                                ),
                                UQ(target_col))
                 )

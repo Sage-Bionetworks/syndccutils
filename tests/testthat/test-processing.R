@@ -87,8 +87,8 @@ context("Targeted combination of columns")
 test_that("augment_values combines column values as expected (one pair)", {
     expected_result <- dplyr::tribble(
         ~col_x, ~col_y,
-        "foo", "foo — bar",
-        "bar", "bar — baz"
+        "foo", "foo - bar",
+        "bar", "bar - baz"
     )
 
     test_result <- tibble::tibble(col_x = c("foo", "bar"),
@@ -101,8 +101,8 @@ test_that("augment_values combines column values as expected (one pair)", {
 test_that("augment_values combines column values as expected (multiple pairs)", {
     expected_result <- dplyr::tribble(
         ~col_x, ~col_y, ~col_xx, ~col_yy,
-        "foo", "foo — bar", "foo1", "foo1 — bar1",
-        "bar", "bar — baz", "bar1", "bar1 — baz1"
+        "foo", "foo - bar", "foo1", "foo1 - bar1",
+        "bar", "bar - baz", "bar1", "bar1 - baz1"
     )
 
     test_result <- tibble::tibble(col_x = c("foo", "bar"),
