@@ -5,7 +5,7 @@ Here we will describe general processes to support data coordination efforts usi
 Below is a list of tasks we often perform using these tools
 * Create a data dashboard
 * Create a synapse project from a template
-* Invite members to a team
+* Manage project access [using teams](teamManagement.md)
 * Impose an annotation schema
 * Checking permissions of files in your project
 * Getting publication information from grants
