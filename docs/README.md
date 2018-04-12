@@ -7,6 +7,8 @@ Below is a list of tasks we often perform using these tools
 * Create a synapse project from a template
 * Invite members to a team
 * Impose an annotation schema
+* Checking permissions of files in your project
+* Getting publication information from grants
 
 ### More information
 Link out to other documentation efforts here!
