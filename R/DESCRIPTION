@@ -1,11 +1,11 @@
 Package: syndccutils
-Title: What the Package Does (one line, title case)
+Title: Synapse DCC Utilities for R
 Version: 0.0.0.9000
 Authors@R: c(
     person("James", "Eddy", email = "james.eddy@sagebionetworks.org", role = c("aut", "cre")),
     person("Sage Bionetworks", role = c("cph"))
     )
-Description: What the package does (one paragraph).
+Description: Code for managing data coordinating operations (e.g., development of the CSBC/PS-ON Knowledge Portal and individual Center pages) for Sage-supported communities through Synapse.
 Depends: R (>= 3.4.1)
 License: Apache License (>= 2.0)
 Imports:
