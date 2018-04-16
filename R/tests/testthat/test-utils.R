@@ -40,17 +40,17 @@ test_that("update_html_lines replaces path for all script lines", {
 
     test_html_lines <- update_html_lines(mock_html_lines, mock_target_lines)
     test_updated_count <- sum(
-        stringr::str_detect(test_html_lines, "<script src=\"https://cdn-www.synapse.org/research/")
+        stringr::str_detect(test_html_lines, "<script src=\"https://cdn-www.synapse.org")
     )
     test_public_count <- sum(
-        stringr::str_detect(test_html_lines, "<script src=\"https://ajax.googleapis.com/ajax/libs/")
+        stringr::str_detect(test_html_lines, "<script src=\"https://(ajax.googleapis.com|cdn.plot.ly)")
     )
     test_target_count <- sum(
         stringr::str_detect(test_html_lines, "<script src=\"mock_chart_files/")
     )
 
-    expect_equal(test_updated_count, 5)
-    expect_equal(test_public_count, 1)
+    expect_equal(test_updated_count, 4)
+    expect_equal(test_public_count, 2)
     expect_equal(test_target_count, 0)
 })
 

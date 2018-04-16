@@ -1,5 +1,10 @@
 # Synapse DCC Utilities for R
 
+| **Service** | **Master** | **Develop** |
+|:-------------:|:------:|:-------:|
+| CI Status | [![Travis-CI Build Status](https://travis-ci.org/Sage-Bionetworks/syndccutils.svg?branch=master)](https://travis-ci.org/Sage-Bionetworks/syndccutils) | [![Travis-CI Build Status](https://travis-ci.org/Sage-Bionetworks/syndccutils.svg?branch=develop)](https://travis-ci.org/Sage-Bionetworks/syndccutils) |
+| Test Coverage | *pending* | *pending* |
+
 This is the R version of the `syndccutils` package.
 
 Code for managing data coordinating operations (e.g., development of the CSBC/PS-ON Knowledge Portal and individual Center pages) for Sage-supported communities through Synapse. Currently this package is able to:

@@ -22,13 +22,14 @@ Imports:
     knitr,
     magrittr,
     openssl,
-    plotly,
+    plotly (>= 4.7.1.9000),
     plyr,
     purrr,
     readr,
     rlang,
     rvest,
     stringr,
+    PythonEmbedInR,
     synapser,
     tibble,
     viridisLite,
@@ -38,7 +39,8 @@ Suggests:
 Additional_repositories:
     https://sage-bionetworks.github.io/ran
 Remotes:
-    tidyverse/ggplot2
+    tidyverse/ggplot2,
+    ropensci/plotly
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1.9000

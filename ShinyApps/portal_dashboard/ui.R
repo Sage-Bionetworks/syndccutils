@@ -1,9 +1,3 @@
-library(shiny)
-library(shinydashboard)
-library(DT)
-library(plotly)
-library(streamgraph)
-
 dashboardPage(
     dashboardHeader(
         title = "CSBC/PS-ON Knowledge Portal",
@@ -20,6 +14,11 @@ dashboardPage(
         )
     ),
     dashboardBody(
+        tags$head(
+            singleton(
+                includeScript("www/readCookie.js")
+            )
+        ),
         tabItems(
             tabItem(tabName = "kp_overview",
                     fluidRow(

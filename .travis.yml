@@ -1,0 +1,11 @@
+sudo: false
+warnings_are_errors: false
+
+matrix:
+  include:
+
+  - language: r
+    cache: packages
+    before_install:
+    - cd R
+

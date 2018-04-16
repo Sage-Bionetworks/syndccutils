@@ -130,6 +130,7 @@ path_replace_cdn <- function(path,
 
     public_assets <- list(
         "plotlyjs-1.29.2/plotly-latest.min.js" = "https://cdn.plot.ly/plotly-1.29.2.min.js",
+        "plotlyjs-1.35.2/plotly-latest.min.js" = "https://cdn.plot.ly/plotly-1.35.2.min.js",
         "jquery-1.11.3/jquery.min.js" = "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js",
         "font-awesome-4.5.0/css/font-awesome.min.css" = "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css",
         "bootstrap-3.3.5/css/bootstrap.min.css" = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css",
