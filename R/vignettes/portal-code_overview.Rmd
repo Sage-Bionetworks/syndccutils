@@ -1,0 +1,516 @@
+---
+title: "CSBC/PS-ON Knowledge Portal:"
+subtitle: "Development & Dashboarding"
+author: "James Eddy — Cancer Strategy"
+date: "2/28/2018"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    smaller: false
+    transition: faster
+    df_print: paged
+    highlight: pygments
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(DT)
+devtools::load_all()
+```
+
+```{r load_data}
+fileview_df <- feather::read_feather("data/csbc_fileview_df.feather")
+tool_fileview_df <- feather::read_feather("data/csbc_tool_fileview_df.feather")
+synproject_df <- feather::read_feather("data/csbc_synproject_df.feather")
+hierarchy_df <- feather::read_feather("data/csbc_hierarchy_df.feather")
+fileview_df_plus <- feather::read_feather("data/csbc_fileview_df_plus.feather")
+```
+
+## CSBC/PS-ON resources {.build}
+
+- Numerous U54 Centers and U01 Projects contributing data, exposed through the CSBC/PS-ON Knowledge Portal:
+https://www.synapse.org/csbcpson
+- **Challenges:**
+    - diverse data — how to keep track and make sense of everything?
+    - large number of centers and projects
+    - non-prescribed formats, organization
+- Annotations and File Views help, but aren't trival to summarize
+
+## Data coordinating goals | What are we trying to accomplish? {.build}
+
+- Summarizing, monitoring, promoting resources
+- For... 
+    - investigators
+    - funders
+    - program officers
+    - coordinators (us!)
+- **Approach:** utilizing standardized annotations and R to summarize resources and activity
+
+## File Views | Enabling systematic use of annotations {.smaller}
+
+```{r, echo=TRUE, eval=FALSE}
+fileview_df <- get_table_df("syn9630847") # Synapse fileview associated with consortium data
+```
+
+```{r, echo=TRUE, rows.print=5}
+dim(fileview_df)
+
+fileview_df %>% 
+    sample_n(100)
+```
+
+# Early attempts
+
+## Summarizing (counting) data {.smaller}
+
+```{r, echo=TRUE, rows.print=10}
+fileview_df %>%
+    group_by(assay) %>%
+    summarize(
+        Centers = n_distinct(projectId),
+        Files = n_distinct(id),
+        disease = n_distinct(diagnosis),
+        patients = n_distinct(individualID)
+    ) %>% 
+    arrange(desc(Centers))
+```
+
+## Repeated code... {.smaller}
+
+```{r, echo=TRUE, eval=FALSE}
+summarize_assay_counts <- function(fileview_df) {
+    fileview_df %>%
+        ### <b>
+        group_by(assay) %>%
+        ### </b>
+        summarize(
+            Centers = n_distinct(projectId),
+            Files = n_distinct(id),
+            ### <b>
+            disease = n_distinct(diagnosis),
+            ### </b>
+            patients = n_distinct(individualID)
+        ) %>% 
+        arrange(desc(Centers))
+}
+
+summarize_disease_counts <- function(fileview_df) {
+    fileview_df %>%
+        ### <b>
+        group_by(diagnosis) %>%
+        ### </b>
+        summarize(
+            Centers = n_distinct(projectId),
+            Files = n_distinct(id),
+            ### <b>
+            assay = n_distinct(assay),
+            ### </b>
+            patients = n_distinct(individualID)
+        ) %>% 
+        arrange(desc(Centers))
+}
+```
+
+## Same for plotting {.smaller}
+
+```{r}
+plot_assay_stats_by_tumortype <- function(fileview_df) {
+    fileview_df %>%
+        group_by(assay, tumorType, diagnosis) %>%
+        summarize(
+            Centers = n_distinct(projectId),
+            Files = n_distinct(id),
+            specimens = n_distinct(specimenID),
+            patients = n_distinct(individualID)
+        ) %>% 
+        ggplot() +
+        geom_bar(aes(x = assay, fill = tumorType, y = Files),
+                 stat = 'identity', position = 'dodge') +
+        ggtitle('Files by assay, tumor type') +
+        scale_fill_viridis(discrete = TRUE) + 
+        xlab("") +
+        ylab("") +
+        scale_y_log10() +
+        coord_flip() +
+        theme(
+            plot.title = element_text(face = "bold"),
+            legend.title = element_blank(),
+            axis.text.x = element_text(angle = 315, hjust = 1)
+        )
+}
+plot_assay_stats_by_tumortype(fileview_df)
+```
+
+## Limited use functions... {.smaller}
+
+```{r, echo=TRUE, eval=FALSE}
+plot_assay_stats_by_tumortype <- function(fileview_df) {
+    fileview_df %>%
+        group_by(assay, tumorType, diagnosis) %>%
+        summarize(
+            Centers = n_distinct(projectId),
+            Files = n_distinct(id),
+            specimens = n_distinct(specimenID),
+            patients = n_distinct(individualID)
+        ) %>% 
+        ggplot() +
+        geom_bar(aes(x = assay, fill = tumorType, y = Files),
+                 stat = 'identity', position = 'dodge') +
+        ggtitle('Files by assay, tumor type') +
+        scale_fill_viridis(discrete = TRUE) + 
+        xlab("") +
+        ylab("") +
+        scale_y_log10() +
+        coord_flip() +
+        theme(
+            plot.title = element_text(face = "bold"),
+            legend.title = element_blank(),
+            axis.text.x = element_text(angle = 315, hjust = 1)
+        )
+}
+```
+
+
+# Standardizing code
+
+## **`CSBCPSONPortal`** (R package-ish) {.build}
+
+- Two main approaches to summarizing and visualizing: charts and tables
+- Everything is based on entity annotations (required, but not sufficient...)
+    - Also uses some project-level annotations and Synapse tables that describe consortium hierarchy
+    - Some initial joins used to build augmented file view data frames
+- Written with generalizability in mind, but still fairly CSBS/PS-ON-specific for now (in terms of expected annotations, structure, etc.)
+  
+## Compiling consortium data to summarize | Defining consortium hierarchy {.smaller}
+
+```{r, echo=TRUE, eval=FALSE}
+hierarchy_df <- get_table_df("syn10915872")
+hierarchy_df
+```
+
+```{r}
+hierarchy_df
+```
+
+
+## Compiling consortium data to summarize | Collecting Synapse project info {.smaller}
+
+```{r, echo=TRUE, eval=FALSE}
+synproject_df <- fileview_df %>%
+    summarize_project_info()
+synproject_df
+```
+
+```{r}
+synproject_df
+```
+
+## Compiling consortium data to summarize | Putting it all together {.smaller}
+
+```{r, echo=TRUE, eval=FALSE}
+fileview_df <- fileview_df %>%
+    left_join(hierarchy_df, by = c("study" = "Study Name")) %>%
+    left_join(synproject_df, by = c("Center" = "projectId")) %>%
+    rename(`Center Name` = `Center.y`)
+fileview_df %>% 
+    sample_n(100)
+```
+
+```{r}
+fileview_df <- fileview_df_plus
+fileview_df %>% 
+    sample_n(100)
+```
+
+
+## Improving the code | Abstraction! {.smaller}
+
+```{r, echo=TRUE}
+fileview_df %>% 
+    ### <b>
+    count_values(group_keys = c("assay", "tumorType"), 
+                 count_keys = c("id", "individualID"))
+    ### </b>
+```
+
+
+## Improving the code | Constructing Synapse table queries {.smaller}
+
+```{r, echo=TRUE}
+table_id <- "syn9630847"
+fileview_df %>% 
+    count_values(group_keys = c("assay", "tumorType"), 
+                 count_keys = c("id", "individualID")) %>% 
+    mutate(sourceFileview = table_id) %>% 
+    rowwise() %>% 
+    ### <b>
+    mutate(query = build_tablequery(table_id, assay, tumorType)) %>% 
+    ### </b>
+    ungroup()
+```
+
+## Improving the code | A quick note on interfaces in R...
+
+- Standard evaluation
+
+```{r, echo=TRUE, eval=FALSE}
+fileview_df %>% 
+    ### <b>
+    count_values(group_keys = c("assay", "tumorType"), 
+                 count_keys = c("id", "individualID")) %>% 
+    ### </b>
+    mutate(query = build_tablequery(table_id, assay, tumorType))
+```
+
+- Non-standard evaluation (`tidyeval`)
+
+```{r, echo=TRUE, eval=FALSE}
+fileview_df %>% 
+    count_values(group_keys = c("assay", "tumorType"), 
+                 count_keys = c("id", "individualID")) %>% 
+    ### <b>
+    mutate(query = build_tablequery(table_id, assay, tumorType))
+    ### </b>
+```
+
+
+## Improving the code | Creating table query URLs {.smaller}
+
+```{r}
+fileview_df %>% 
+    count_values(group_keys = c("assay", "tumorType"), 
+                 count_keys = c("id", "individualID")) %>% 
+    mutate(sourceFileview = table_id) %>% 
+    rowwise() %>% 
+    mutate(query = build_tablequery(sourceFileview, assay, tumorType)) %>% 
+    ungroup() %>% 
+    ### <b>
+    add_queryview_column()
+    ### </b>
+```
+
+## Improving the code | Listing annotation values within groups {.smaller}
+
+```{r}
+fileview_df %>% 
+    ### <b>
+    list_values(group_keys = c("assay", "tumorType"),
+                list_keys = c("study", "Study"),
+                list_format = "csv")
+    ### </b>
+```
+
+## Improving the code | Creating Synapse URLs for listed values {.smaller}
+
+```{r}
+fileview_df %>% 
+    ### <b>
+    create_synapse_links(link_keys = list(study = "Study")) %>% 
+    ### </b>
+    list_values(group_keys = c("assay", "tumorType"),
+                list_keys = "study",
+                list_format = "csv")
+```
+
+
+# Lightweight interactivity for cheap with **`htmlwidgets`**
+
+## **`plotly`** charts {.smaller}
+
+```{r}
+shiny::includeHTML("html/syn7080714_DataFilesByCategory.html")
+```
+
+## **`DT`** datatables {.smaller}
+
+```{r, echo=TRUE, eval=FALSE, out.height="600px"}
+datafile_counts <- fileview_df %>%
+    summarize_files_by_annotationkey_new(
+        annotation_keys =  c("assay", "tumorType"),
+        table_id = "syn9630847",
+        count_cols = c("id", "diagnosis", "individualID", "cellLine"),
+        list_cols = "study",
+        link_keys = list(study = "Study")
+    )
+
+datafile_counts %>%
+    format_summarytable_columns(c("assay", "tumorType")) %>%
+    as_datatable()
+```
+
+---
+
+```{r}
+shiny::includeHTML("html/syn7080714_DataFileCountsByAssayAndTumorType.html")
+```
+
+## Automation/templating
+
+- Original vision was to have a single or small number of "templates" (R or Rmd) and allow users to configure a project/community (~YAML)
+    - Consortium/Project/Study info and IDs
+    - Lists of charts and tables to build
+    - Destinations for where to store and insert charts and tables
+- In practice, ended up composing a script for each Consortium/Project/Study...
+    - Still uses shared functions, but lots of repeated code
+    - Lots of clutter
+- With either approach, idea would be to re-generate summaries on a scheduled basis (CRON?); not yet implemented
+
+# Ongoing development
+
+## Assorted issues and TODOs...
+
+```{r, out.width="800px"}
+knitr::include_graphics("images/github-issues.png")
+```
+
+## Performance and accessibility | Embedded JavaScript = large files, slow loading!
+
+```{r, out.width="800px"}
+knitr::include_graphics("images/embedded-js.png")
+```
+
+## Utilizing hosted JS assets {.smaller}
+
+```
+<script src="mock_chart_files/htmlwidgets-0.9/htmlwidgets.js"></script>
+<script src="mock_chart_files/plotly-binding-4.7.1/plotly.js"></script>
+<script src="mock_chart_files/typedarray-0.1/typedarray.min.js"></script>
+<script src="mock_chart_files/jquery-1.11.3/jquery.min.js"></script>
+<link href="mock_chart_files/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="mock_chart_files/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="mock_chart_files/plotlyjs-1.29.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="mock_chart_files/plotlyjs-1.29.2/plotly-latest.min.js"></script>
+```
+
+```{r, echo=TRUE, eval=FALSE}
+utils::fix_js_assets()
+```
+
+
+```
+<script src="https://cdn-www.synapse.org/research/htmlwidgets-0.9/htmlwidgets.js"></script>
+<script src="https://cdn-www.synapse.org/research/plotly-binding-4.7.1/plotly.js"></script>
+<script src="https://cdn-www.synapse.org/research/typedarray-0.1/typedarray.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<link href="https://cdn-www.synapse.org/research/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="https://cdn-www.synapse.org/research/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="https://cdn-www.synapse.org/research/plotlyjs-1.29.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="https://cdn.plot.ly/plotly-1.29.2.min.js"></script>
+```
+
+## Fixed!
+
+```{r, out.width="950px"}
+knitr::include_graphics("images/widget-sizes.png")
+```
+
+([demo](https://www.synapse.org/#!Synapse:syn11702831/wiki/514611))
+
+
+## Making things "clickable" (drill-down) | Not-so-easy interactivity
+
+- Most common request/question from progam officers, investigators...
+- What might this look like? see [ICGC Portal](https://dcc.icgc.org/)
+    - Ability to click on segment of a chart and view underlying data
+    - Really just assigning a link to coordinates in the graphic
+    - Would mirror the link to cached File View query we provide with HTML datatables
+- Not possible with current implementation!
+    - Functionality is known as "drill-down"
+    - `plotly` doesn't natively support drill-down...
+    - Requires some sort of event listener — might be able to use alternative R/JS packages, Shiny?, or custom JS...
+
+## Tests! | Making sure code is behaving as expected {.smaller}
+
+```{r, echo=TRUE, eval=FALSE}
+test_that("create_synapse_links correctly builds Synapse links (one pair)", {
+    expected_result <- dplyr::tribble(
+        ~col_x, ~col_y,
+        "syn111", "<a href='https://www.synapse.org/#!Synapse:syn111' target='_blank'>foo</a>",
+        "syn222", "<a href='https://www.synapse.org/#!Synapse:syn222' target='_blank'>bar</a>"
+    )
+
+    test_result <- tibble::tibble(col_x = c("syn111", "syn222"),
+                                  col_y = c("foo", "bar")) %>%
+        create_synapse_links(link_keys = list(col_y = "col_x"))
+
+    expect_equal(test_result, expected_result)
+})
+```
+
+
+## Aesthetics
+
+<div class="columns-2">
+
+- Formatting issues (legends/text getting cut off, sizing, zoom)
+- More interesting/useful visualizations (not just bar charts for everything)
+- Making things "prettier"? (related to previous, but could expand beyond `ggplot2`+`plotly` into D3 and other viz tools)
+
+```{r}
+shiny::includeHTML("html/syn7080714_IndividualsByAssayAndTumorType.html")
+```
+
+</div>
+
+## Dashboards?
+
+- Initially focused on stand-alone charts and tables to enable more flexible wiki composition (widgets interspersed with text)
+- For some applications, could utilize **`flexdashboard`** or other tools to build actual dashboards: example [here](https://www.synapse.org/#!Synapse:syn8507133/wiki/451415)
+
+## Expanding scope | Beyond summarizing resources
+
+- Other coordination/management tasks that we want to standardize are slowly being added (e.g., Python tools written by **Nasim**)
+- Working on adding some features that are geared even more towards reporting KP status to program officers (and that we can use for monitoring and directing engagement)
+
+# Development roadmap
+
+## Cleaning up code... {.smaller}
+
+```
+.
+├── DESCRIPTION
+├── NAMESPACE
+├── R/
+│   ├── charts.R
+│   ├── synapse_helpers.R
+│   ├── tables.R
+│   ├── test_data.R
+│   └── utils.R
+├── README.md
+├── config/
+│   └── targets.md
+├── html/
+├── python/
+│   ├── csbc/
+│   │   ├── __init__.py
+│   │   ├── __main__.py
+│   │   └── annotations_csbc.json
+│   └── setup.py
+├── scripts/
+└── tests/
+    ├── testthat/
+    │   ├── test-tables.R
+    │   ├── test-utils.R
+    │   └── testdata/
+    └── testthat.R
+```
+
+## Cleaning up code... 
+
+- Adding more tests
+- Improving and consolidating functions
+- Adding documentation
+- Turn into an actual R package...
+
+## Thinking about scope and purpose...
+
+- Have discussed adding tools for monitoring and reporting on projects/data in Synapse developed by others at Sage (e.g., **Kenny's** code for generating project activity reports)
+- Might evolve into a more general "DCC management" or "data portal management" toolbox
+- Worth looping in others at Sage to strategize, share development effort — emphasis on creating a generalized code base that can be used across communities
+- Should probably come up with a better name...
+
+# Thanks!
+
+

@@ -1,0 +1,113 @@
+---
+title: "CSBC/PS-ON Portal Code Demo"
+output: 
+  html_notebook: 
+    highlight: pygments
+    toc: true
+    toc_float: true
+---
+
+```{r}
+fileview_df <- feather::read_feather("../data/csbc_fileview.feather")
+head(fileview_df)
+```
+
+## Data frame operations
+
+### Counting annotation values within groups
+
+```{r}
+fileview_df %>% 
+    count_values(group_keys = c("assay", "tumorType"), 
+                 count_keys = c("id", "individualID"))
+```
+
+\  
+
+### Constructing Synapse table queries
+
+```{r, message=FALSE, warning=FALSE}
+table_id <- "syn9630847"
+fileview_df %>% 
+    count_values(group_keys = c("assay", "tumorType"), 
+                 count_keys = c("id", "individualID")) %>% 
+    mutate(sourceFileview = table_id) %>% 
+    rowwise() %>% 
+    mutate(query = build_tablequery(table_id, assay, tumorType)) %>% 
+    ungroup()
+```
+
+\  
+
+### Creating table query URLs
+
+```{r, message=FALSE, warning=FALSE}
+fileview_df %>% 
+    count_values(group_keys = c("assay", "tumorType"), 
+                 count_keys = c("id", "individualID")) %>% 
+    mutate(sourceFileview = table_id) %>% 
+    rowwise() %>% 
+    mutate(query = build_tablequery(sourceFileview, assay, tumorType)) %>% 
+    ungroup() %>% 
+    add_queryview_column()
+```
+
+\  
+
+### Listing annotation values within groups
+
+```{r}
+fileview_df %>% 
+    list_values(group_keys = c("assay", "tumorType"),
+                list_keys = c("study", "Study"),
+                list_format = "csv")
+```
+
+\  
+
+### Creating Synapse URLs for listed values
+
+```{r}
+fileview_df %>% 
+    create_synapse_links(link_keys = list(study = "Study")) %>% 
+    list_values(group_keys = c("assay", "tumorType"),
+                list_keys = "study",
+                list_format = "csv")
+```
+
+-----
+
+## Summary tables
+
+```{r, warning=FALSE, message=FALSE}
+datafile_counts <- fileview_df %>%
+    summarize_files_by_annotationkey_new(
+        annotation_keys =  c("assay", "tumorType"),
+        table_id = "syn9630847",
+        count_cols = c("id", "diagnosis", "individualID", "cellLine"),
+        list_cols = "study",
+        link_keys = list(study = "Study")
+    )
+
+datafile_counts %>%
+    format_summarytable_columns(c("assay", "tumorType")) %>%
+    as_datatable()
+```
+
+-----
+
+## Summary charts
+
+```{r}
+plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
+                  diagnosis = "Diagnosis", species = "Species",
+                  organ = "Organ", tissue = "Tissue",
+                  dataType = "Data Type", study = "Study")
+
+fileview_df %>%
+    plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
+```
+
+\  
+
+-----
