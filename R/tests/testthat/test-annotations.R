@@ -5,6 +5,11 @@ test_that("get_synapse_annotations provides data frame with the correct column n
   ## Requires synapse login, so skip on CRAN/CI
   skip_on_cran()
   skip_on_travis()
+
+  ## Also skip if can't access the annotations table for whatever reason (not
+  ## logged in, etc.)
+  res <- try(synapser::synTableQuery('select * from syn10242922'), silent = TRUE)
+  skip_if(inherits(res, "try-error"))
   
   expected_names <- c(
     "key",
