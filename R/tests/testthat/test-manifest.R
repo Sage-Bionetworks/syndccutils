@@ -22,3 +22,13 @@ test_that("generate_manifest includes correct columns", {
   expect_equal(names(dat3), c(standard_cols, annotation_cols))
   
 })
+
+test_that("write_manifest writes to excel file", {
+  tmp <- tempfile()
+  on.exit(unlink(tmp))
+
+  x <- data.frame(x = 1:5)
+  write_manifest(x, tmp)
+
+  expect_equal(openxlsx::read.xlsx(tmp), x)
+})
