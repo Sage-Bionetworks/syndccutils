@@ -1,8 +1,8 @@
 #' Generate manifest template
 #' 
-#' @param keys Character vector of annotation keys
+#' @param keys A character vector of annotation keys.
 #' @return A 0-row data frame with column names corresponding to those of a
-#'   Synapse manifest
+#'   Synapse manifest.
 #' @export
 #'
 #' @examples
@@ -21,9 +21,9 @@ generate_manifest <- function(keys = NULL) {
 #' Generate key description table
 #'
 #' @param table A table of annotation key/value descriptions (e.g. one produced
-#'   by [get_synapse_annotations()])
+#'   by [get_synapse_annotations()]).
 #' @return A dataframe containing the description of each annotation key in the
-#'   table
+#'   table.
 #' @export
 #' @md
 #' 
@@ -43,7 +43,7 @@ generate_key_description <- function(table) {
 #' 
 #' @inheritParams generate_key_description
 #' @return A dataframe containing the description of each annotation value in
-#'   the table
+#'   the table.
 #' @export
 #' @md
 #'
@@ -61,14 +61,14 @@ generate_value_description <- function(table) {
 #' 
 #' @param sheets Sheets to be written into the xlsx file. Can be one data frame,
 #'   or a list of data frames.
-#' @param filename
+#' @param file The file to be written to.
 #' @export
-write_manifest <- function(sheets, filename = "annotations_manifest.xlsx") {
+write_manifest <- function(sheets, file = "annotations_manifest.xlsx") {
   if (!is.data.frame(sheets)) {
     if (!is.list(sheets) | !all(vapply(sheets, is.data.frame, logical(1)))) {
       stop("`sheets` must be a data frame or list of data frames", call. = FALSE)
     }
   }
-  openxlsx::write.xlsx(sheets, filename)
+  openxlsx::write.xlsx(sheets, file)
   invisible(sheets)
 }

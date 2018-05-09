@@ -7,11 +7,11 @@
 generate_manifest(keys = NULL)
 }
 \arguments{
-\item{keys}{Character vector of annotation keys}
+\item{keys}{A character vector of annotation keys.}
 }
 \value{
 A 0-row data frame with column names corresponding to those of a
-  Synapse manifest
+  Synapse manifest.
 }
 \description{
 Generate manifest template

@@ -8,11 +8,11 @@ generate_value_description(table)
 }
 \arguments{
 \item{table}{A table of annotation key/value descriptions (e.g. one produced
-by \code{\link[=get_synapse_annotations]{get_synapse_annotations()}})}
+by \code{\link[=get_synapse_annotations]{get_synapse_annotations()}}).}
 }
 \value{
 A dataframe containing the description of each annotation value in
-the table
+the table.
 }
 \description{
 Generates a table that describes all of the values an annotation key may take

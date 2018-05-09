@@ -9,7 +9,7 @@ get_synapse_annotations()
 \value{
 A data frame containing all annotation keys, descriptions, column
   types, maximum sizes, values, value descriptions, sources, and the name of
-  the annotation's parent module
+  the annotation's parent module.
 }
 \description{
 Download current annotation values from Synapse and provide them as a data

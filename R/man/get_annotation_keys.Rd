@@ -8,14 +8,14 @@ get_annotation_keys(module, source)
 }
 \arguments{
 \item{module}{A module or modules to retrieve keys from. If missing, all keys
-will be returned}
+will be returned.}
 
 \item{source}{A data frame (such as that returned by
 \code{\link[=get_synapse_annotations]{get_synapse_annotations()}}) containing information about annotations.
-Should have a \code{module} column and \code{key} column}
+Should have a \code{module} column and \code{key} column.}
 }
 \value{
-A character vector of annotation keys from the specified module(s)
+A character vector of annotation keys from the specified module(s).
 }
 \description{
 Get all keys associated with a module or set of modules
