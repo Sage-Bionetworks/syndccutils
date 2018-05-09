@@ -4,13 +4,15 @@
 \alias{write_manifest}
 \title{Write manifest to file}
 \usage{
-write_manifest(sheets, file = "annotations_manifest.xlsx")
+write_manifest(sheets, file = "annotations_manifest.xlsx", ...)
 }
 \arguments{
 \item{sheets}{Sheets to be written into the xlsx file. Can be one data frame,
 or a list of data frames.}
 
 \item{file}{The file to be written to.}
+
+\item{...}{Additional arguments passed to [openxlsx::write.xlsx()].}
 }
 \description{
 Write manifest to file

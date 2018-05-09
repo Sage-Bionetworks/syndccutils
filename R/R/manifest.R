@@ -62,13 +62,9 @@ generate_value_description <- function(table) {
 #' @param sheets Sheets to be written into the xlsx file. Can be one data frame,
 #'   or a list of data frames.
 #' @param file The file to be written to.
+#' @param ... Additional arguments passed to [openxlsx::write.xlsx()].
 #' @export
-write_manifest <- function(sheets, file = "annotations_manifest.xlsx") {
-  if (!is.data.frame(sheets)) {
-    if (!is.list(sheets) | !all(vapply(sheets, is.data.frame, logical(1)))) {
-      stop("`sheets` must be a data frame or list of data frames", call. = FALSE)
-    }
-  }
-  openxlsx::write.xlsx(sheets, file)
+write_manifest <- function(sheets, file = "annotations_manifest.xlsx", ...) {
+  openxlsx::write.xlsx(sheets, file, ...)
   invisible(sheets)
 }
