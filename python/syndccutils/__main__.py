@@ -526,10 +526,12 @@ def inviteMembers(args, syn):
     table = syn.tableQuery('select * from %s' % tableSynId)
     df = table.asDataFrame()
 
-    if args.csbc:
+    if args.name in ['csbc', 'CSBC']:
         pattern = 'CSBC'
-    else:
+    elif args.name in ['pson', 'PSON']:
         pattern = 'PSON'
+    else:
+        pattern = args.name
 
     if args.message:
         message = args.message
@@ -538,7 +540,7 @@ def inviteMembers(args, syn):
 
     df = df.fillna('')
     subset_cols = [col for col in list(df.columns) if pattern in col]
-    subset_cols.append('RDSWG')
+    # subset_cols.append('RDSWG')
 
     member_list = [item for sublist in [df[c].tolist() for c in subset_cols] for item in sublist]
     member_list = filter(None, member_list)
@@ -1131,9 +1133,7 @@ def buildParser():
     parser_invitemembers.add_argument('--message', help='Message to be sent along with invitation. Note: This message '
                                                         'would be in addition to the standard invite template',
                                       required=False, type=str)
-    parser_invitemembers.add_argument('--csbc', action='store_true',
-                                      help='If members are in CSBC consortium else it would'
-                                           'look for PSON members')
+    parser_invitemembers.add_argument('--name', help='Name of consortium ex. csbc or pson', type=str, required=True)
     parser_invitemembers.set_defaults(func=inviteMembers)
 
     parser_summary = subparsers.add_parser('summary', help='Create consortium summary table on progress counts')
