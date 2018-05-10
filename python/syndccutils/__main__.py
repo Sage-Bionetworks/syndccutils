@@ -1157,7 +1157,8 @@ def buildParser():
                                                               'publications and geo data produced count')
     parser_meltinfo.add_argument('--projectAttribute', nargs='+', help='annoation keys or schema columns annotation of projects')
     parser_meltinfo.add_argument('--fileAttribute', nargs='+', help='annoation keys or schema columns annotation of files')
-
+    parser_meltinfo.add_argument('--views', help='list of table/view synapse Ids to 0 publications view, 1 project view,'
+                                                 '2 all data files,and 3 tools in order respectfully.')
     parser_meltinfo.set_defaults(func=meltinfo)
 
     parser_permit = subparsers.add_parser('permit', help='Set sponsors (local) permission on an entity')
