@@ -848,119 +848,126 @@ def changeFloatToInt(final_df, col):
 
 def meltinfo(args, syn):
     """
-    Create a master matrix/table for consortium metrics. 
+    Create a master matrix/table for consortium metrics (Unit of measure is currently counts).
+    Dependencies are: Consortium project-view, Publications Table, All consortium files file-view, and Project tools file-view
 
     :param args: User defined arguments
     :param syn: A logged in synapse object
     :return:
     """
-    # project and publication attributes
-    p_atr = ['projectId',
-             'Consortium',
-             'institution',
-             'grantNumber',
-             'grantType',
-             'teamMembersProfileId',
-             'teamProfileId',
-             'name_project',
-             'createdOn_project',
-             'modifiedOn_project',
-             'PubMed',
-             'Title',
-             'Authors',
-             'Journal',
-             'Keywords',
-             'Publication Year',
-             'Data Location',
-             'Synapse Location']
+    if args.name in ['csbc', 'CSBC', 'pson', 'PSON', 'csbc pson', 'CSBC PSON']:
+        # project and publication attributes
+        p_atr = ['projectId',
+                 'Consortium',
+                 'institution',
+                 'grantNumber',
+                 'grantType',
+                 'teamMembersProfileId',
+                 'teamProfileId',
+                 'name_project',
+                 'createdOn_project',
+                 'modifiedOn_project',
+                 'PubMed',
+                 'Title',
+                 'Authors',
+                 'Journal',
+                 'Keywords',
+                 'Publication Year',
+                 'Data Location',
+                 'Synapse Location']
 
-    # project attributes
-    p_view_atr = ['projectId',
-                  'consortium',
-                  'institution',
-                  'grantNumber',
-                  'grantType',
-                  'teamMembersProfileId',
-                  'teamProfileId',
-                  'name_project',
-                  'createdOn_project',
-                  'modifiedOn_project',
-                  'publication_count',
-                  'publication_geodata_produced']
+        # project attributes
+        p_view_atr = ['projectId',
+                      'consortium',
+                      'institution',
+                      'grantNumber',
+                      'grantType',
+                      'teamMembersProfileId',
+                      'teamProfileId',
+                      'name_project',
+                      'createdOn_project',
+                      'modifiedOn_project',
+                      'publication_count',
+                      'publication_geodata_produced']
 
-    # file attributes
-    f_atr = ['cellSubType',
-             'cellLine',
-             'softwareType',
-             'tumorType',
-             'transplantationRecipientTissue',
-             'individualID',
-             'sex',
-             'transcriptQuantificationMethod',
-             'isStranded',
-             'tissue',
-             'platform',
-             'softwareLanguage',
-             'species',
-             'Data_Location',
-             'specimenID',
-             'fundingAgency',
-             'isCellLine',
-             'individualIdSource',
-             'libraryPrep',
-             'inputDataType',
-             'compoundDose',
-             'runType',
-             'softwareRepositoryType',
-             'transplantationDonorTissue',
-             'peakCallingMethod',
-             'fileFormat',
-             'assay',
-             'softwareRepository',
-             'compoundName',
-             'transplantationType',
-             'dataType',
-             'softwareAuthor',
-             'transplantationDonorSpecies',
-             'readLength',
-             'Synapse_Location',
-             'modelSystem',
-             'scriptLanguageVersion',
-             'analysisType',
-             'concreteType',
-             'fileId',
-             'dataSubtype',
-             'organ',
-             'isPrimaryCell',
-             'resourceType',
-             'outputDataType',
-             'study',
-             'diseaseSubtype',
-             'experimentalCondition',
-             'diagnosis',
-             'cellType',
-             'experimentalTimePoint',
-             'age',
-             'alignmentMethod',
-             'networkEdgeType'
-             'name_file',
-             'createdOn_file',
-             'modifiedOn_file',
-             'projectId']
+        # file attributes
+        f_atr = ['cellSubType',
+                 'cellLine',
+                 'softwareType',
+                 'tumorType',
+                 'transplantationRecipientTissue',
+                 'individualID',
+                 'sex',
+                 'transcriptQuantificationMethod',
+                 'isStranded',
+                 'tissue',
+                 'platform',
+                 'softwareLanguage',
+                 'species',
+                 'Data_Location',
+                 'specimenID',
+                 'fundingAgency',
+                 'isCellLine',
+                 'individualIdSource',
+                 'libraryPrep',
+                 'inputDataType',
+                 'compoundDose',
+                 'runType',
+                 'softwareRepositoryType',
+                 'transplantationDonorTissue',
+                 'peakCallingMethod',
+                 'fileFormat',
+                 'assay',
+                 'softwareRepository',
+                 'compoundName',
+                 'transplantationType',
+                 'dataType',
+                 'softwareAuthor',
+                 'transplantationDonorSpecies',
+                 'readLength',
+                 'Synapse_Location',
+                 'modelSystem',
+                 'scriptLanguageVersion',
+                 'analysisType',
+                 'concreteType',
+                 'fileId',
+                 'dataSubtype',
+                 'organ',
+                 'isPrimaryCell',
+                 'resourceType',
+                 'outputDataType',
+                 'study',
+                 'diseaseSubtype',
+                 'experimentalCondition',
+                 'diagnosis',
+                 'cellType',
+                 'experimentalTimePoint',
+                 'age',
+                 'alignmentMethod',
+                 'networkEdgeType'
+                 'name_file',
+                 'createdOn_file',
+                 'modifiedOn_file',
+                 'projectId']
 
-    # merging all the things
-    # 0 publications view syn10923842
-    # 1 project view  syn10142562
-    # 2 all data files syn9630847
-    # 3 tools syn9898965
-    views = ['syn10923842', 'syn10142562', 'syn9630847', 'syn9898965']
+        # merging all the things
+        # 0 publications view syn10923842
+        # 1 project view  syn10142562
+        # 2 all data files syn9630847
+        # 3 tools syn9898965
+        views = ['syn10923842', 'syn10142562', 'syn9630847', 'syn9898965']
+    else:
+        p_atr = args.projectPublicationAttribute
+        p_view_atr = args.projectAttribute
+        f_atr = args.fileAttribute
+        views = args.views
 
     dfs = [getdf(syn, synid) for synid in views]
     [d.reset_index(inplace=True, drop=True) for d in dfs]
 
     # Project attributes
     # change columns to represent project attributes and unify key name to be projectId
-    dfs[0].rename(index=str, columns={"CSBC PSON Center": "projectId"}, inplace=True)
+    dfs[0].rename(index=str, columns={"CSBC PSON Center": "projectId", "Consortium Center": "projectId"}, inplace=True)
     dfs[1].rename(index=str, columns={"id": "projectId", "name": "name_project", "createdOn": "createdOn_project",
                                       "modifiedOn": "modifiedOn_project", "modifiedBy": "modifiedBy_project"},
                   inplace=True)
@@ -1144,6 +1151,12 @@ def buildParser():
 
     parser_meltinfo.add_argument('--tableId', help='Synapse table id that stores consortium projects and files '
                                                    'information - possibly created on a previous run of this command')
+
+    parser_meltinfo.add_argument('--projectPublicationAttribute', nargs='+', help='annoation keys or schema columns that '
+                                                              'represent consortium projects and thier associated '
+                                                              'publications and geo data produced count')
+    parser_meltinfo.add_argument('--projectAttribute', nargs='+', help='annoation keys or schema columns annotation of projects')
+    parser_meltinfo.add_argument('--fileAttribute', nargs='+', help='annoation keys or schema columns annotation of files')
 
     parser_meltinfo.set_defaults(func=meltinfo)
 
