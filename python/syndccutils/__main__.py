@@ -1055,8 +1055,8 @@ def setPermissionForAll(args, syn):
     a desired permission: view/read, download, or edit; it sets the requested permission on all specified teams
     for the specified entity.
 
-    :param args:
-    :param syn:
+    :param args: User defined arguments
+    :param syn: A logged in synapse object
     :return:
     """
     entity = args.entity
@@ -1136,7 +1136,7 @@ def buildParser():
     parser_invitemembers.add_argument('--name', help='Name of consortium ex. csbc or pson', type=str, required=True)
     parser_invitemembers.set_defaults(func=inviteMembers)
 
-    parser_summary = subparsers.add_parser('summary', help='Create consortium summary table on progress counts')
+    parser_summary = subparsers.add_parser('summary', help='Create consortium summary table of counts on progress')
     parser_summary.set_defaults(func=summaryReport)
 
     parser_meltinfo = subparsers.add_parser('meltinfo', help='Create melted table on csbc projects and files with '
