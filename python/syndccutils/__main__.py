@@ -47,10 +47,10 @@ def createProject(syn, project_name, teamId=None, adminId=None):
     Given a project name, creates a synapse project and sets permissions for All registered Synapse users and Anyone
     on the web to read/view, then given an admin and/or project team id it sets permissions for the team.
 
-    :param syn:
+    :param syn: A logged in synapse object
     :param project_name: A title string for the synapse project
-    :param teamId: A synapse team id (with-out 'syn')
-    :param adminId: A synapse team id that would hold admin permissions to consortium
+    :param teamId: A synapse team id (with-out 'syn'). This is also known as the profile Id
+    :param adminId: A synapse team id that would hold admin permissions to consortium. This is also known as the profile Id
     :return: project synapse entity with permission settings
     """
     project = Project(project_name)
@@ -91,12 +91,12 @@ def buildProject(syn, projectName, teamId, adminId, templateId, projectView):
     """
     Copies a synapse project template and adds it to the csbc consortium project view
 
-    :param syn:
-    :param projectName:
-    :param teamId:
-    :param adminId:
-    :param templateId:
-    :param projectView:
+    :param syn: A logged in synapse object
+    :param projectName: A title string for the synapse project
+    :param teamId: A synapse team id (with-out 'syn'). This is also known as the profile Id
+    :param adminId: A synapse team id that would hold admin permissions to consortium. This is also known as the profile Id
+    :param templateId: The synapse Id of the project template to be copied.
+    :param projectView: The project-view synapse Id that is being used to track and organize project level annotations.
     :return:
     """
 
@@ -115,8 +115,8 @@ def template(args, syn):
     it copies a template sckeleton for that project, adds the team to the synapse project and then adds the project to
     the consortium project view.
 
-    :param args:
-    :param syn:
+    :param args: User defined arguments
+    :param syn:  A logged in synapse object
     :return:
     """
     consortium = args.consortiumId
@@ -146,28 +146,28 @@ def template(args, syn):
                          projectView=csbc_project_viewId)
 
 
-def csbcGrantList(syn, tableSynId):
+def getGrantList(syn, tableSynId):
     """
     Get's the column containing grant numbers, drops the empty cells if any, and returns a list of grant numbers.
 
-    :param syn:
-    :param tableSynId:
+    :param syn:  A logged in synapse object
+    :param tableSynId: File-view or table holding projects grant annotations
     :return:
     """
-    csbc = syn.tableQuery("select * from %s" % tableSynId)
-    csbc = csbc.asDataFrame()
-    csbc = list(csbc.grantNumber.dropna())
-    return csbc
+    consortiumGrants = syn.tableQuery("select * from %s" % tableSynId)
+    consortiumGrants = consortiumGrants.asDataFrame()
+    consortiumGrants = list(consortiumGrants.grantNumber.dropna())
+    return consortiumGrants
 
 
-def getGrantQuery(csbc):
+def getGrantQuery(grants):
     """
     Constructs a string of grant numbers separated by the logic OR to query pubmed.
 
-    :param csbc:
+    :param grants: List of grant numbers
     :return:
     """
-    grantQuery = ' or '.join(csbc)
+    grantQuery = ' or '.join(grants)
     return grantQuery
 
 
@@ -176,7 +176,7 @@ def getPubMedIds(query):
     Utilizes pubmed API, Entrenz to get the list of all publication(s) pubmed Id(s).
     Max is set 1000000 publications for all grants in query.
 
-    :param query:
+    :param query: An Entrez (pubmed API) search query
     :return:
     """
     Entrez.email = 'nasim.sanati@sagebase.org'
@@ -194,22 +194,22 @@ def getCenterIdsView(syn, viewSynId):
     """
     Get's the grant-view dataframe from synapse with existing grant numbers.
 
-    :param syn:
-    :param viewSynId:
+    :param syn: A logged in synapse Id
+    :param viewSynId: File-view or table holding projects grant annotations
     :return:
     """
-    csbcView = syn.tableQuery("select * from %s" % viewSynId)
-    csbcView = csbcView.asDataFrame()
-    csbcView = csbcView[~csbcView['grantNumber'].isnull()]
-    return csbcView
+    consortiumView = syn.tableQuery("select * from %s" % viewSynId)
+    consortiumView = consortiumView.asDataFrame()
+    consortiumView = consortiumView[~consortiumView['grantNumber'].isnull()]
+    return consortiumView
 
 
 def getPublishedGEO(pId):
     """
-    If any, retuns a list of produced GEO Id(s) of a publication study.
+    If any, returns a list of produced GEO Id(s) of a publication study.
     else, it returns an empty list.
 
-    :param pId:
+    :param pId: A pubmed id
     :return:
     """
     website = 'https://www.ncbi.nlm.nih.gov/gds?LinkName=pubmed_gds&from_uid=' + pId
@@ -222,7 +222,7 @@ def getPublishedGEO(pId):
     return geoId
 
 
-def getPMIDDF(pubmedIds, csbcGrants, csbcView):
+def getPMIDDF(pubmedIds, consortiumGrants, consortiumView, consortiumName):
     """
     Given a list of grant numbers with associated synapse metadata: consortium synapse ID and grant sub-type, scrapes
     pubMed for each grant's publication and retrieves simple information such as publication title, year, and authors.
@@ -230,15 +230,20 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
     links in a comma separated list. Per each publication, there will be a row in the final dataframe/synapse table
     that maps back to the grant number and consortium synapse ID(i.e, the Key of this table is the PubMed column).
 
-    :param pubmedIds:
-    :param csbcGrants:
-    :param csbcView:
+    :param pubmedIds: List of pubmed Ids
+    :param consortiumGrants: List of grants
+    :param consortiumView: File-view or table holding projects grant annotations
+    :param consortiumName: Consortium name ex. csbc
     :return:
     """
 
     rows = []
-    columns = ['CSBC PSON Center', 'Consortium', 'PubMed', 'Journal', 'Publication Year', 'Title', 'Authors', 'Grant',
-               'Data Location', 'Synapse Location', 'Keywords']
+    if consortiumName in ['csbc', 'CSBC']:
+        columns = ['CSBC PSON Center', 'Consortium', 'PubMed', 'Journal', 'Publication Year', 'Title', 'Authors', 'Grant',
+                'Data Location', 'Synapse Location', 'Keywords']
+    else:
+        columns = ['Consortium Center', 'Consortium', 'PubMed', 'Journal', 'Publication Year', 'Title', 'Authors', 'Grant',
+                'Data Location', 'Synapse Location', 'Keywords']
 
     print("Number of publications found in pubmed query: %s" % len(pubmedIds))
 
@@ -360,29 +365,29 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
 
             gnum = [g.split()[1][:g.split()[1].index("/")] for g in grants]
             index = [j for j, x in enumerate(gnum) if
-                     x in csbcGrants]
+                     x in consortiumGrants]
 
             if index:
 
                 gType = [grants[i].split()[0] for i in index]
                 gNumber = [grants[i].split()[1][:g.split()[1].index("/")] for i in index]
                 print(gNumber)
-                csbcgrant = [' '.join(e) for e in zip(gType, gNumber)]
+                consortiumGrant = [' '.join(e) for e in zip(gType, gNumber)]
 
-                # match and get the csbc center synapse id from it's view table by grant number of this journal study
-                centerSynId = csbcView.loc[csbcView['grantNumber'].isin(gNumber)].id.iloc[0]
-                consortium = ','.join(list(set(csbcView.loc[csbcView['grantNumber'].isin(gNumber)].consortium)))
+                # match and get the consortiumGrant center synapse id from it's view table by grant number of this journal study
+                centerSynId = consortiumView.loc[consortiumView['grantNumber'].isin(gNumber)].id.iloc[0]
+                consortium = ','.join(list(set(consortiumView.loc[consortiumView['grantNumber'].isin(gNumber)].consortium)))
 
-                if len(csbcgrant) > 1:
-                    csbcgrant = ', '.join(csbcgrant)
+                if len(consortiumGrant) > 1:
+                    consortiumGrant = ', '.join(consortiumGrant)
                 else:
-                    csbcgrant = csbcgrant[0]
+                    consortiumGrant = consortiumGrant[0]
             else:
-                csbcgrant = ""
+                consortiumGrant = ""
                 centerSynId = ""
 
         else:
-            csbcgrant = ""
+            consortiumGrant = ""
             centerSynId = ""
 
         gseIds = getPublishedGEO(p)
@@ -397,7 +402,7 @@ def getPMIDDF(pubmedIds, csbcGrants, csbcView):
             gseIds = ''
 
         rowDf = pandas.DataFrame(
-            [[centerSynId, consortium, website, journal, year, title, auths, csbcgrant, gseIds, '', '']],
+            [[centerSynId, consortium, website, journal, year, title, auths, consortiumGrant, gseIds, '', '']],
             columns=columns)
         rows.append(rowDf)
 
@@ -412,8 +417,8 @@ def pubmed(args, syn):
     of all PubMed publication id's associated with the grants. Then it will go through the PubMed id's and scrape the
     publication for basic informative information.
 
-    :param args:
-    :param syn:
+    :param args: User defined arguments
+    :param syn: A logged in synapse object
     :return:
     """
     projectId = args.projectId
@@ -424,15 +429,16 @@ def pubmed(args, syn):
     else:
         grantviewId = "syn10142562"
 
-    csbcGrants = csbcGrantList(syn, grantviewId)
-    grantIds = getGrantQuery(csbcGrants)
+    consortiumName = args.name
+    consortiumGrants = getGrantList(syn, grantviewId)
+    grantIds = getGrantQuery(consortiumGrants)
     pubmedIds = getPubMedIds(grantIds)
-    csbcView = getCenterIdsView(syn, grantviewId)
+    consortiumView = getCenterIdsView(syn, grantviewId)
 
     # for utf encoding and debugging
-    # finalTable.to_csv("csbc.csv", sep=',', index=False, encoding="utf-8")
-    # finalTable = pandas.read_csv("csbc.csv", delimiter=',', encoding="utf-8")
-    # os.remove("csbc.csv")
+    # finalTable.to_csv("consortium.csv", sep=',', index=False, encoding="utf-8")
+    # finalTable = pandas.read_csv("consortium.csv", delimiter=',', encoding="utf-8")
+    # os.remove("consortium.csv")
 
     if args.tableId:
         # update existing schema
@@ -443,7 +449,7 @@ def pubmed(args, syn):
         currentTable = publicationTable.asDataFrame()
 
         new_pubmed_ids = list(set(pubmedIds) - set([i.split("=")[1] for i in list(currentTable.PubMed)]))
-        finalTable = getPMIDDF(new_pubmed_ids, csbcGrants, csbcView)
+        finalTable = getPMIDDF(new_pubmed_ids, consortiumGrants, consortiumView, consortiumName)
 
         table = synapseclient.Table(schema, finalTable.values.tolist())
         table = syn.store(table)
@@ -451,19 +457,32 @@ def pubmed(args, syn):
     else:
         # create a new schema
         # cols = synapseclient.as_table_columns(finalTable)
-        finalTable = getPMIDDF(pubmedIds, csbcGrants, csbcView)
+        finalTable = getPMIDDF(pubmedIds, consortiumGrants, consortiumView, consortiumName)
 
-        cols = [Column(name='CSBC PSON Center', columnType='ENTITYID', maximumSize=50),
-                Column(name='Consortium', columnType='STRING', maximumSize=100),
-                Column(name='PubMed', columnType='LINK', maximumSize=100),
-                Column(name='Journal', columnType='STRING', maximumSize=100),
-                Column(name='Publication Year', columnType='DATE'),
-                Column(name='Title', columnType='STRING', maximumSize=500),
-                Column(name='Authors', columnType='STRING', maximumSize=990),
-                Column(name='Grant', columnType='STRING', maximumSize=50),
-                Column(name='Data Location', columnType='LINK', maximumSize=1000),
-                Column(name='Synapse Location', columnType='ENTITYID', maximumSize=50),
-                Column(name='Keywords', columnType='STRING', maximumSize=250)]
+        if consortiumName in ['csbc', 'CSBC']:
+            cols = [Column(name='CSBC PSON Center', columnType='ENTITYID', maximumSize=50),
+                    Column(name='Consortium', columnType='STRING', maximumSize=100),
+                    Column(name='PubMed', columnType='LINK', maximumSize=100),
+                    Column(name='Journal', columnType='STRING', maximumSize=100),
+                    Column(name='Publication Year', columnType='DATE'),
+                    Column(name='Title', columnType='STRING', maximumSize=500),
+                    Column(name='Authors', columnType='STRING', maximumSize=990),
+                    Column(name='Grant', columnType='STRING', maximumSize=50),
+                    Column(name='Data Location', columnType='LINK', maximumSize=1000),
+                    Column(name='Synapse Location', columnType='ENTITYID', maximumSize=50),
+                    Column(name='Keywords', columnType='STRING', maximumSize=250)]
+        else:
+            cols = [Column(name='Consortium Center', columnType='ENTITYID', maximumSize=50),
+                    Column(name='Consortium', columnType='STRING', maximumSize=100),
+                    Column(name='PubMed', columnType='LINK', maximumSize=100),
+                    Column(name='Journal', columnType='STRING', maximumSize=100),
+                    Column(name='Publication Year', columnType='DATE'),
+                    Column(name='Title', columnType='STRING', maximumSize=500),
+                    Column(name='Authors', columnType='STRING', maximumSize=990),
+                    Column(name='Grant', columnType='STRING', maximumSize=50),
+                    Column(name='Data Location', columnType='LINK', maximumSize=1000),
+                    Column(name='Synapse Location', columnType='ENTITYID', maximumSize=50),
+                    Column(name='Keywords', columnType='STRING', maximumSize=250)]
 
         schema = synapseclient.Schema(name=args.tableName, columns=cols, parent=project)
         table = synapseclient.Table(schema, finalTable)
@@ -476,9 +495,9 @@ def sendRequest(syn, teamId, invitee, message=None):
     http://docs.synapse.org/rest/org/sagebionetworks/repo/model/MembershipInvitation.html
     params required are teamId, inviteeId or inviteeEmail.
 
-    :param syn:
-    :param teamId:
-    :param inviteeId:
+    :param syn: A logged in synapse object
+    :param teamId: Team profile Id
+    :param inviteeId: Member email or profile Id to invite to a synapse team
     :return:
     """
     body = dict(teamId=teamId, message=message)
@@ -497,8 +516,8 @@ def inviteMembers(args, syn):
     """
     Given a synapse table with member profileIds or emails, invites members of CSBC or PSON to the synapse team of interest.
 
-    :param args:
-    :param syn:
+    :param args: User defined arguments
+    :param syn: A logged in synapse object
     :return:
     """
     tableSynId = args.tableId
@@ -539,9 +558,9 @@ def countPublications(syn, project_ids, pub_med_view_id='syn10923842'):
     Gets the publication view, slices the df by project id and gets the row number of the project and returns a list
     of publication count that matches project_ids list
 
-    :param syn:
-    :param pub_med_view_id:
-    :param project_ids:
+    :param syn: A logged in synapse object
+    :param pub_med_view_id: Publications file view constructed by pubmed command
+    :param project_ids: List of synapse project Ids to extract count on
     :return:
     """
     pubmed_view = syn.tableQuery('select * from {id}'.format(id=pub_med_view_id))
@@ -564,9 +583,9 @@ def countNonSponsorTeamMembers(syn, project_ids,
     """
     Initial module to count team members of a project that are not sponsor or public
 
-    :param syn:
-    :param project_ids:
-    :param sponsor_or_public:
+    :param syn: A logged in synapse object
+    :param project_ids: List of projects synapse Ids
+    :param sponsor_or_public: List of sponsor or public synapse profile Ids
     :return:
     """
     ids = []
@@ -593,9 +612,9 @@ def getConsortiumProjectDF(syn, ID='syn10142562', sponsor_projects=['Multiple', 
     """
     Get's the project view without the sponsor projects, and returns the pandas dataframe.
 
-    :param syn:
-    :param ID:
-    :param sponsor_projects:
+    :param syn: A logged in synapse object
+    :param ID: Project view synapse Id
+    :param sponsor_projects: List of organizational/sponsor project names not utilized in count
     :return:
     """
     view = syn.tableQuery('select * from {id}'.format(id=ID))
@@ -608,7 +627,8 @@ def getConsortiumProjectDF(syn, ID='syn10142562', sponsor_projects=['Multiple', 
 def info(syn, ID):
     """
     Gets the latest version information with annotations and initial createdon and modifiedby date
-    :param ID:
+
+    :param ID: Synapse entity id to get latest information on
     :return:
     """
     uri = '/entity/{id}'.format(id=ID)
@@ -620,10 +640,10 @@ def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_file
     For a synapse project, walks through the folder hierarchy top-down and finds latest version of
     file and folder synapse types for counting purposes.
 
-    :param syn:
-    :param id:
-    :param sponsors_folder:
-    :param dummy_files:
+    :param syn: A logged in synapse object
+    :param id: Project synapse Id
+    :param sponsors_folder: List of organizational/sponsor folders not utilized in walk/count
+    :param dummy_files: List of placeholder files ex. placeholder.txt
     :return:
     """
     project_tree = {}
@@ -638,7 +658,7 @@ def getFolderAndFileHierarchy(syn, ID, sponsors_folder=['Reporting'], dummy_file
     if organize_files:
         print('files of project ', ID, '\n', 'posibly need to be placed in folders. \n', organize_files)
 
-    # Get parent folders that are not in CSBC reporting folder
+    # Get parent folders that are not in consortium reporting folder
     parent_folders = [(f['name'], f['id']) for f in project_tree_parent_nodes if f['type'] in
                       'org.sagebionetworks.repo.model.Folder' and f['name'] not in sponsors_folder]
 
@@ -676,8 +696,8 @@ def getAnnotationCounts(annotList, annotation):
     counts the number of files that have annotations,
     given an annotation (ex. study) it also counts the number of files with each unique annotation value in annotation key.
 
-    :param annotList:
-    :param annotation:
+    :param annotList: List of annotation dictionary objects, defined as an attribute of entity type in syanpse
+    :param annotation: A column name or key of an annotation dictionary
     :return:
     """
     df = pandas.DataFrame.from_records(annotList)
@@ -703,7 +723,7 @@ def unlist(column):
     For each cell in a column series containing a list object,
     unlists the cell and returns a string. Each item of the list will be seperated by a comma in the string.
 
-    :param column:
+    :param column: unlists a column with type list stored in each cell
     :return:
     """
     l = []
@@ -721,8 +741,8 @@ def summaryReport(args, syn):
     Project Id is the main key of the final matrix. File and annotation metadata are saved as a list of
     dictionary objects.
 
-    :param args:
-    :param syn:
+    :param args: User defined arguments
+    :param syn: A logged in synapse object
     :return:
     """
     dummy_files = ['placeholder.txt']
@@ -796,14 +816,15 @@ def summaryReport(args, syn):
         project_frames.append(pandas.DataFrame(d))
         print(project_frames)
     result = pandas.concat(project_frames)
-    result.to_csv('csbc_summary_iter.csv')
+    result.to_csv('consortium_summary_iter.csv')
 
 
 def getdf(syn, id):
     """
+    Returns a pandas data frame of the table/view schema
 
-    :param syn:
-    :param id:
+    :param syn: A logged in synapse object
+    :param id: Synapse Id of the view / table schema class
     :return:
     """
     df = syn.tableQuery('select * from {id}'.format(id=id)).asDataFrame()
@@ -812,9 +833,11 @@ def getdf(syn, id):
 
 def changeFloatToInt(final_df, col):
     """
+    Changes pandas type float to integers by replacing na with zero.
+    This may not be an ideal replacement for your usecase.
 
-    :param final_df:
-    :param col:
+    :param final_df: Pandas data frame
+    :param col: columns to convert type
     :return:
     """
     final_df[col] = final_df[col].fillna(0).astype(int)
@@ -825,8 +848,8 @@ def meltinfo(args, syn):
     """
     Create a master matrix/table for consortium metrics. 
 
-    :param args:
-    :param syn:
+    :param args: User defined arguments
+    :param syn: A logged in synapse object
     :return:
     """
     # project and publication attributes
@@ -1075,7 +1098,7 @@ def buildParser():
 
     subparsers = parser.add_subparsers(title='commands',
                                        description='The following commands are available:',
-                                       help='For additional help: "csbc <COMMAND> -h"')
+                                       help='For additional help: "syndccutils <COMMAND> -h"')
 
     parser_template = subparsers.add_parser('template', help='Create consortium template for new projects')
 
@@ -1085,14 +1108,15 @@ def buildParser():
 
     parser_template.set_defaults(func=template)
 
-    parser_pubmed = subparsers.add_parser('pubmed', help='Scrape pubMed publication information based on consortium '
-                                                         'grant number')
+    parser_pubmed = subparsers.add_parser('pubmed', help='Scrape pubMed publication information from a'
+                                                         'synapse file-view column (list) of consortium grant numbers')
 
     parser_pubmed.add_argument('--projectId', help='Synapse project to create the data policy table', required=True,
                                type=str)
     parser_pubmed.add_argument('--grantviewId', help='A table synapse id containing the grantNumber field', type=str)
     parser_pubmed.add_argument('--tableName', help='Synapse table name that would hold pubmed scrape info', type=str)
     parser_pubmed.add_argument('--tableId', help='Synapse table id that holds the pubmed scrape info', type=str)
+    parser_pubmed.add_argument('--name', help='Name of consortium ex. csbc', type=str, required=True)
 
     parser_pubmed.set_defaults(func=pubmed)
 
@@ -1145,8 +1169,8 @@ def performMain(args, syn):
     """
     performs main and raises error message if any
 
-    :param args:
-    :param syn:
+    :param args: User defined arguments
+    :param syn: A logged in synapse object
     :return:
     """
     if 'func' in args:
