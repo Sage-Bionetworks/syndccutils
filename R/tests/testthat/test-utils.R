@@ -35,10 +35,28 @@ test_that("path_replace_cdn correctly replaces local path with CDN path for a pu
 })
 
 test_that("update_html_lines replaces path for all script lines", {
-    mock_html_lines <- readr::read_lines(mock_chart_filename)
-    mock_target_lines <- get_script_lines(mock_chart_filename)
-
+  header <- paste(
+    '<!DOCTYPE html>',
+    '<html>',
+    '<head>',
+    '<meta charset="utf-8"/>',
+    '<script src="mock_chart_files/htmlwidgets-1.2/htmlwidgets.js"></script>',
+    '<script src="mock_chart_files/plotly-binding-4.7.1.9000/plotly.js"></script>',
+    '<script src="mock_chart_files/typedarray-0.1/typedarray.min.js"></script>',
+    '<script src="mock_chart_files/jquery-1.11.3/jquery.min.js"></script>',
+    '<link href="mock_chart_files/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />',
+    '<script src="mock_chart_files/crosstalk-1.0.0/js/crosstalk.min.js"></script>',
+    '<link href="mock_chart_files/plotlyjs-1.37.1/plotly-htmlwidgets.css" rel="stylesheet" />',
+    '<script src="mock_chart_files/plotlyjs-1.37.1/plotly-latest.min.js"></script>',
+    '  <title>plotly</title>',
+    '</head>',
+    '</html>',
+    sep = "\n"
+  )
+    mock_html_lines <- readr::read_lines(header)
+    mock_target_lines <- get_script_lines(header)
     test_html_lines <- update_html_lines(mock_html_lines, mock_target_lines)
+
     test_updated_count <- sum(
         stringr::str_detect(test_html_lines, "<script src=\"https://cdn-www.synapse.org")
     )
@@ -49,8 +67,8 @@ test_that("update_html_lines replaces path for all script lines", {
         stringr::str_detect(test_html_lines, "<script src=\"mock_chart_files/")
     )
 
-    expect_equal(test_updated_count, 4)
-    expect_equal(test_public_count, 2)
+    expect_equal(test_updated_count, 5)
+    expect_equal(test_public_count, 1)
     expect_equal(test_target_count, 0)
 })
 
