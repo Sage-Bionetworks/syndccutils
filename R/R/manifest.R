@@ -6,11 +6,11 @@
 #' @export
 #'
 #' @examples
-#' generate_manifest()
+#' generate_manifest_template()
 #' 
 #' my_keys <- c("study", "assay", "tissue")
-#' generate_manifest(my_keys)
-generate_manifest <- function(keys = NULL) {
+#' generate_manifest_template(my_keys)
+generate_manifest_template <- function(keys = NULL) {
   standard_cols <- c("path", "parent", "name", "used", "executed")
   columns <- unique(c(standard_cols, keys))
   schema <- data.frame(matrix(ncol = length(columns), nrow = 0))
