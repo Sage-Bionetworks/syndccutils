@@ -22,6 +22,7 @@ Imports:
     knitr,
     magrittr,
     openssl,
+    openxlsx,
     plotly (>= 4.7.1.9000),
     plyr,
     purrr,
