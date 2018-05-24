@@ -33,8 +33,8 @@ get_synapse_annotations <- function() {
 #'
 #' @examples
 #' \dontrun{
-#' get_keys_from_module("sageCommunity")
-#' get_keys_from_module(c("sageCommunity", "neuro"))
+#' get_annotation_keys("sageCommunity")
+#' get_annotation_keys(c("sageCommunity", "neuro"))
 #' }
 get_annotation_keys <- function(module, source) {
   if (missing(source)) {

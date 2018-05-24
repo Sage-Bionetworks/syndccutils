@@ -22,7 +22,7 @@ Get all keys associated with a module or set of modules
 }
 \examples{
 \dontrun{
-get_keys_from_module("sageCommunity")
-get_keys_from_module(c("sageCommunity", "neuro"))
+get_annotation_keys("sageCommunity")
+get_annotation_keys(c("sageCommunity", "neuro"))
 }
 }
