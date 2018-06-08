@@ -1,5 +1,5 @@
 ---
-title: "AMP-AD specimen and individual IDs in metadata files"
+title: "Specimen and individual IDs in metadata files"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 params:
