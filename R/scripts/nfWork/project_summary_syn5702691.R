@@ -1,6 +1,7 @@
 source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
+
 ##NEXUS work
 # Script/template to create summary tables and charts for a "project"
 
@@ -70,7 +71,7 @@ group_keys <- c("resourceType","fundingAgency")
 count_cols <- c("study")
 
 cell_line_counts <- fileview_df %>%
-    summarize_files_by_annotationkey(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         table_id = master_fileview_id,
         count_cols = count_cols,
@@ -95,7 +96,7 @@ table_filename <- glue::glue("{source_id}_DataFileCountsByAnalysisType.html",
     source_id = consortium_id)
 
 datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey_new(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         count_cols = count_cols,
         table_id = master_fileview_id,
@@ -124,7 +125,7 @@ table_filename <- glue::glue("{source_id}_DataFileCountsByAnalysisTypeAndFunder.
     source_id = consortium_id)
 
 datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey_new(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         count_cols = count_cols,
         table_id = master_fileview_id,
@@ -152,7 +153,7 @@ table_filename <- glue::glue("{source_id}_DataFileCountsByDaataTypeAndFunder.htm
     source_id = consortium_id)
 
 datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey_new(
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         count_cols = count_cols,
         table_id = master_fileview_id,
