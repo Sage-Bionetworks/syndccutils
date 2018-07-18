@@ -17,6 +17,12 @@ Code for managing data coordinating operations (e.g., development of the CSBC/PS
 
 What to see examples? Go to [config/targets.md](config/targets.md)
 
+## Installation
+
+```r
+devtools::install_github("Sage-Bionetworks/syndccutils", subdir = "R")
+```
+
 ## Getting Started
 There are a few ideas to get started using this package
 
