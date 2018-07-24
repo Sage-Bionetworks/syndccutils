@@ -12,5 +12,5 @@ setup(
         'console_scripts': ['syndccutils = syndccutils.__main__:main']
     },
     author="Nasim Sanati",
-    author_email="nasim.sanati@sagebionetworks.org",
+    author_email="nasim@plenary.org",
 )
