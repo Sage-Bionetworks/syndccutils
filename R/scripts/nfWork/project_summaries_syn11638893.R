@@ -2,7 +2,7 @@ source("R/charts.R")
 source("R/tables.R")
 source("R/synapse_helpers.R")
 
-#pNF Model Systems for Preclinical Drug Screening
+#preclinical MPNST
 synLogin()
 update_remote <- TRUE
 
