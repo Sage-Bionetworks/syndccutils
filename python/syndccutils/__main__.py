@@ -1116,7 +1116,7 @@ def buildParser():
 
     parser_pubmed = subparsers.add_parser('pubmed', help='Scrape pubMed publication information from a'
                                                          ' synapse file-view column (list) of consortium grant numbers. ' 
-                                                         'Run `syndccutils pubmed --tableId syn10923842 --name CSBC` to update CSBC PSON publication table')
+                                                         'Run `syndccutils pubmed --projectId syn7080714 --tableId syn10923842 --name CSBC` to update CSBC PSON publication table')
 
     parser_pubmed.add_argument('--projectId', help='Synapse project to create the data policy table', required=True,
                                type=str)
