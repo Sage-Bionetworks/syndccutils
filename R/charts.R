@@ -266,7 +266,9 @@ plot_study_counts_by_annotationkey_2d <- function(
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
         dplyr::group_by(rlang::UQS(group_cols)) %>%
-        dplyr::summarize(n = n_distinct(study)) %>%
+        dplyr::summarize(n=n_distinct(study)) %>%
+       # dplyr::group_by(rlang::UQS(group_cols)) %>%
+    #    dplyr::summarize(n = n_distinct(study)) %>%
         ungroup() %>%
         dplyr::mutate_at(.vars = names(annotation_keys),
             funs(replace(., is.na(.), replace_missing))) %>%
@@ -274,7 +276,7 @@ plot_study_counts_by_annotationkey_2d <- function(
             "<b>{assay}:</b>\n{count} studies",
             assay = rlang::UQ(as.name(names(annotation_keys)[1])),
             count = n)
-        ) %>%
+        )# %>%
         I
 
     scale_note <- ""
@@ -285,9 +287,9 @@ plot_study_counts_by_annotationkey_2d <- function(
     }
 
     p <- plot_df %>%
-        ggplot2::ggplot(aes_(x = rlang::UQ(group_cols[[2]]), y = as.name("n"),
+        ggplot2::ggplot(aes_(x = group_cols[[2]], y = as.name("n"),
             text = as.name("label"))) +
-        ggplot2::geom_col(aes_(fill = rlang::UQ(group_cols[[1]])),
+        ggplot2::geom_col(aes_(fill = group_cols[[1]]),
             colour = "white", size = 0.2) +
         ggplot2::scale_fill_viridis_d(annotation_keys[[1]]) +
         ggplot2::xlab("") +
