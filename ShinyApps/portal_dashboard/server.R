@@ -1,10 +1,10 @@
 function(input, output, session) {
   
-    session$sendCustomMessage(type="readCookie",
-                              message=list(name='org.sagebionetworks.security.user.login.token'))
-   
-    foo <- observeEvent(input$cookie, {
-        synLogin(sessionToken=input$cookie)
+    # session$sendCustomMessage(type="readCookie",
+    #                           message=list(name='org.sagebionetworks.security.user.login.token'))
+    # 
+    # foo <- observeEvent(input$cookie, {
+    #     synLogin(sessionToken=input$cookie)
         withProgress(message = 'Loading data...',
                  {source("getData.R")})
     
@@ -48,15 +48,63 @@ function(input, output, session) {
             )
         })
         
+        output$consortium_files <- renderpier({
+            consortium_donut(consortium_counts, "fileId", "Files")
+        })
+        
+        output$consortium_studies <- renderpier({
+          consortium_donut(consortium_counts, "study", "Studies")
+        })
+        
+        output$consortium_cancers <- renderpier({
+          consortium_donut(consortium_counts, "tumorType", "Cancer types")
+        })
+        
+        output$consortium_data <- renderpier({
+          consortium_donut(consortium_counts, "assay", "Data types")
+        })
+        
         output$kp_activity <- plotly::renderPlotly({
             ggplotly(p, tooltip = "text") %>%
-                layout(legend = list(orientation = 'h',
+                layout(font = list(family = "Lato"),
+                       legend = list(orientation = 'h',
                                      y = 1, x = 0, yanchor = "bottom"),
                        margin = list(l = 500, b = 55)) %>% 
                 plotly::config(displayModeBar = F)  
         })
         
-        # output$files_per_month <- streamgraph::renderStreamgraph({
+        output$consortium_summary <- plotly::renderPlotly({
+          plot_keys <- list(assay = "Assay", tumorType = "Tumor Type",
+                            diagnosis = "Diagnosis", species = "Species",
+                            organ = "Organ", tissue = "Tissue",
+                            dataType = "Data Type", study = "Study")
+          
+          chart <- csbc_summary_df %>%
+            plot_file_counts_by_annotationkey(plot_keys, chart_height = 300) %>% 
+            plotly::layout(font = list(family = "Lato"))
+          
+          chart
+        })
+        
+        output$annotationkey_counts <- plotly::renderPlotly({
+          plot_keys <- config$annotationkey_value[c(
+            input$sample_fill_select,
+            input$sample_group_select
+          )]
+          csbc_summary_df %>%
+            filter(!is.na(assay), 
+                   !(assay %in% c("null", "Not Applicable"))) %>% 
+            filter(!is.na(tumorType), 
+                   !(tumorType %in% c("null", "Not Applicable"))) %>% 
+            plot_sample_counts_by_annotationkey_2d(
+              sample_key = input$sample_type,
+              annotation_keys = plot_keys,
+              filter_missing = FALSE
+            ) %>% 
+            plotly::layout(font = list(family = "Lato"),
+                           showlegend = FALSE)
+        })
+        
         output$files_per_month <- plotly::renderPlotly({
             sg_facet_chr <- input$sg_facet
             sg_facet <- as.name(input$sg_facet)
@@ -99,7 +147,6 @@ function(input, output, session) {
                 ggplot(aes(x = month, y = n, text = label)) + 
                 geom_col(aes(fill = sg_facet), 
                          colour = "slategray", size = 0.3, alpha = 1) + 
-                # scale_fill_brewer(palette = "PuOr") + 
                 scale_fill_viridis_d() +
                 theme_bw() + 
                 xlab(" ") +
@@ -109,13 +156,10 @@ function(input, output, session) {
                 theme(axis.text.x = element_text(angle = 45, hjust = 1))
             
             ggplotly(p, tooltip = "text") %>%
-                layout(showlegend = FALSE) %>% 
+                layout(font = list(family = "Lato"),
+                       showlegend = FALSE) %>% 
                 plotly::config(displayModeBar = F)
-            
-            # streamgraph(as.list(plot_df), sg_facet, "n", "month", offset = "zero", 
-            #             interpolate = "step") %>%
-            #     sg_axis_x(1, "month", "%m-%Y") %>%
-            #     sg_fill_brewer("PuOr")
+
         })
 
         output$center_summary <- DT::renderDT({
@@ -204,15 +248,6 @@ function(input, output, session) {
                     center_df <- csbc_summary_df %>% 
                         filter(projectId == selected_center)
                     
-                    # plot_keys <- list(assay = "Assays", tumorType = "Tumor Types",
-                    #           diagnosis = "Diagnoses", species = "Species",
-                    #           organ = "Organs", tissue = "Tissues",
-                    #           dataType = "Data Types", study = "Studies")
-                    # 
-                    # chart <- center_df %>%
-                    #     plot_file_counts_by_annotationkey(plot_keys, chart_height = 300)
-                    # chart
-                    
                     p <- center_df %>%
                         mutate(tool = ifelse(!is.na(softwareLanguage), study, NA)) %>%
                         select(
@@ -250,10 +285,11 @@ function(input, output, session) {
                               axis.ticks.x = element_blank()) %>%
                         I
                     ggplotly(p, tooltip = "text") %>%
-                        layout(showlegend = FALSE) %>%
+                        layout(font = list(family = "Lato"),
+                               showlegend = FALSE) %>%
                         plotly::config(displayModeBar = F)
                 }
             })
-        })
+        # })
     })
 }

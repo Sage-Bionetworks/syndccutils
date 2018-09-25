@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css?family=Lato');
+
+body {
+  font-family: 'Lato', Open Sans, Helvetica Neue, Helvetica, Arial, sans-serif;  
+}
+
+/**
+.well {
+  color: #DDD;
+  font-size: 13px;
+  border: 1px solid #333;
+  background-color: rgba(0, 0, 0, 0.3)!important;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  white-space: normal;
+}
+**/
+
+.info-box-text {
+  text-transform: none;
+  white-space: normal;
+}
+
+/**  
+.box {
+  border-radius: 0px;
+}
+
+.box.box-solid {
+  border: 0!important;
+  border-top: 0 solid #666!important;
+}
+
+.box.box-success {
+  border-top-color: rgba(72, 138, 153, 0.5)!important;
+}
+
+.box.box-warning {
+  border-top-color: rgba(219, 174, 88, 1)!important;
+}
+
+.box.box-danger {
+  border-top-color: #666!important;
+}
+
+.box.box-solid.box-primary>.box-header {
+  background-color: rgba(72, 138, 153, 1)!important;
+}
+
+.box.box-solid.box-warning>.box-header {
+  background-color: rgba(30, 40, 62, 1)!important;
+}
+
+.box.box-solid.bg-yellow {
+  color: #000!important;
+  background-color: rgba(0, 0, 0, 0)!important;
+  border-bottom: 1px solid #888!important;
+  box-shadow: none;
+}
+
+.bg-black {
+    background-color: #333!important;
+}
+
+.bg-navy {
+    background-color: rgba(72, 72, 72, 1)!important;
+}
+
+.bg-green {
+    background-color: rgba(218, 218, 218, 0.5)!important;
+    color: #222!important;
+}
+**/

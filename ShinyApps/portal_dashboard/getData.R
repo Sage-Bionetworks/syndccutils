@@ -34,6 +34,12 @@ center_summary_df <- center_study_summary_df %>%
         by = "projectId"
     )
 
+consortium_counts <- csbc_summary_df %>% 
+  group_by(consortium) %>% 
+  summarize_at(
+    c("fileId", "study", "tumorType", "assay"), 
+    n_distinct
+  )
 
 plot_df <- center_study_summary_df %>% 
     mutate(sample = individualID + specimenID + cellLine) %>% 

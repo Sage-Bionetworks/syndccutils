@@ -1,0 +1,23 @@
+annotationkey_value:
+  assay: Assay
+  diagnosis: Diagnosis
+  tumorType: Tumor Type
+  name_project: Center
+  study: Study
+  
+annotationkey_display:
+  Assay: assay
+  Diagnosis: diagnosis
+  Tumor Type: tumorType
+  Center: name_project
+  Study: study
+
+sampletype_value:
+  cellLine: Cell Lines
+  individualID: Individuals
+  specimenID: Specimens
+
+sampletype_display:
+  Cell Lines: cellLine
+  Individuals: individualID
+  Specimens: specimenID
