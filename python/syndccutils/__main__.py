@@ -943,7 +943,8 @@ def meltinfo(args, syn):
                  'cellType',
                  'experimentalTimePoint',
                  'age',
-                 'alignmentMethod',
+                 'rnaAlignmentMethod',
+                 'dnaAlignmentMethod',
                  'networkEdgeType'
                  'name_file',
                  'createdOn_file',
@@ -987,8 +988,8 @@ def meltinfo(args, syn):
 
     dfs[0] = dfs[0].astype(object).replace(numpy.nan, '')
 
-    dfs[1]['publication_geodata_produced'] = [len(filter(None, dfs[0].loc[
-        dfs[0].projectId.isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(', '))) if len(
+    dfs[1]['publication_geodata_produced'] = [len(list(filter(None, dfs[0].loc[
+        dfs[0].projectId.isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(', ')))) if len(
         dfs[0].loc[dfs[0].projectId.isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(
             ',')) > 1 else 0 for p_id in list(dfs[1]['projectId'])]
 
@@ -1007,7 +1008,8 @@ def meltinfo(args, syn):
     dfs[3] = dfs[3][[cols for cols in list(dfs[3].columns) if cols in f_atr]]
 
     # remove dummy files
-    dfs[2] = dfs[2][~dfs[2].name_file.isin(['placeholder.txt'])]
+    if "name_file" in dfs[2].columns:
+        dfs[2] = dfs[2][~dfs[2].name_file.isin(['placeholder.txt'])]
 
     # double check if tools files are not duplicated
     if len(set(dfs[2].fileId.unique()).intersection(set(dfs[3].fileId.unique()))) == 0:
@@ -1159,6 +1161,8 @@ def buildParser():
     parser_meltinfo.add_argument('--fileAttribute', nargs='+', help='annoation keys or schema columns annotation of files')
     parser_meltinfo.add_argument('--views', help='list of table/view synapse Ids to 0 publications view, 1 project view,'
                                                  '2 all data files,and 3 tools in order respectfully.')
+    parser_meltinfo.add_argument('--name', help='Name of consortium ex. csbc', type=str, required=True)
+
     parser_meltinfo.set_defaults(func=meltinfo)
 
     parser_permit = subparsers.add_parser('permit', help='Set sponsors (local) permission on an entity')
