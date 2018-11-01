@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="synapse-dcc-utility-scripts",
+    name="syndccutils",
     packages=find_packages(),
     license='Apache License, Version 2.0',
-    version='1.0.0',
+    version='1.1.0',
     install_requires=[
         'pandas',
         'synapseclient'],
@@ -12,5 +12,5 @@ setup(
         'console_scripts': ['syndccutils = syndccutils.__main__:main']
     },
     author="Nasim Sanati",
-    author_email="nasim.sanati@sagebionetworks.org",
+    author_email="nasim@plenary.org",
 )
