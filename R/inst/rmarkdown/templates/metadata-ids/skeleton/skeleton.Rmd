@@ -31,21 +31,21 @@ get_column <- function(id, selectCol, idType="individualId") {
   target_col <- as.name(idType)
   d <- data.table::fread(synapser::synGet(id)$path, select=selectCol, data.table=FALSE)
   d <- d %>%
-    rename(rlang::UQ(target_col):=rlang::UQ(source_col)) %>%
-    mutate(rlang::UQ(target_col):=as.character(rlang::UQ(target_col)))
+    rename(rlang::`!!`(target_col):=rlang::`!!`(source_col)) %>%
+    mutate(rlang::`!!`(target_col):=as.character(rlang::`!!`(target_col)))
   return(d)
 }
 
 process_data <- function(df, selectCol, idType) {
   source_col <- as.name(selectCol)
   df %>%
-    dplyr::filter(!is.na(rlang::UQ(source_col))) %>%
-    dplyr::select(id, selectCol=rlang::UQ(source_col)) %>%
+    dplyr::filter(!is.na(rlang::`!!`(source_col))) %>%
+    dplyr::select(id, selectCol=rlang::`!!`(source_col)) %>%
     rowwise %>%
     dplyr::do(id=.$id, row=get_column(.$id, .$selectCol, idType=idType)) %>%
     mutate(id=unlist(id)) %>%
     unnest(row) %>%
-    left_join(df %>% select(id, study, dataType, fileFormat, rlang::UQ(source_col)))
+    left_join(df %>% select(id, study, dataType, fileFormat, rlang::`!!`(source_col)))
 }
 
 syn <- synapser::synLogin(silent=TRUE)
