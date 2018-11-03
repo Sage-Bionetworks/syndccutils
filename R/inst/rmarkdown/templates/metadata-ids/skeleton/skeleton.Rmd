@@ -1,0 +1,113 @@
+---
+title: "Specimen and individual IDs in metadata files"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+params:
+  fileViewId: "syn11711684"
+  dataTypes: "clinical"
+---
+
+<!-- Store command -->
+<!-- synapser::synStore(synapser::File("./reports/ampad.html", name="AMP-AD individual and specimen ID in metadata", parentId="syn8457451")) -->
+
+```{r}
+fileViewId <- params$fileViewId
+dataTypes <- paste(params$dataTypes, collapse=",")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  results = "asis"
+)
+
+library(tidyverse)
+library(syndccutils)
+
+get_column <- function(id, selectCol, idType="individualId") {
+  source_col <- as.name(selectCol)
+  target_col <- as.name(idType)
+  d <- data.table::fread(synapser::synGet(id)$path, select=selectCol, data.table=FALSE)
+  d <- d %>%
+    rename(rlang::`!!`(target_col):=rlang::`!!`(source_col)) %>%
+    mutate(rlang::`!!`(target_col):=as.character(rlang::`!!`(target_col)))
+  return(d)
+}
+
+process_data <- function(df, selectCol, idType) {
+  source_col <- as.name(selectCol)
+  df %>%
+    dplyr::filter(!is.na(rlang::`!!`(source_col))) %>%
+    dplyr::select(id, selectCol=rlang::`!!`(source_col)) %>%
+    rowwise %>%
+    dplyr::do(id=.$id, row=get_column(.$id, .$selectCol, idType=idType)) %>%
+    mutate(id=unlist(id)) %>%
+    unnest(row) %>%
+    left_join(df %>% select(id, study, dataType, fileFormat, rlang::`!!`(source_col)))
+}
+
+syn <- synapser::synLogin(silent=TRUE)
+
+```
+
+## Query to get the metadata files
+
+```{r do-query}
+cols <- 'id,study,assay,dataType,fileFormat,sampleIdColumn,individualIdColumn,specimenIdColumn'
+fileViewQuery <- "select %s from %s where dataType in (%s)"
+
+res <- synapser::synTableQuery(sprintf(fileViewQuery, cols, fileViewId, dataTypes))
+df <- res$asDataFrame() %>% tibble::as.tibble()
+```
+
+## Summary of individual IDs in use inside metadata files
+
+Metadata files with an `individualIdColumn` set are used.
+
+
+```{r report-individual-id-files, echo=FALSE, include=FALSE, eval=FALSE}
+### Individual metadata files used
+df %>% 
+  dplyr::filter(!is.na(individualIdColumn)) %>% 
+  select(id, study, dataType, fileFormat, individualIdColumn) %>% 
+  knitr::kable()
+```
+
+### Individual ID counts per study, file, and column used
+
+
+```{r report-individual-id-counts, echo=FALSE, message=FALSE, warning=FALSE}
+dfIndividual <- process_data(df, selectCol = "individualIdColumn", idType="individualId")
+
+dfIndividual %>% 
+  group_by(id, study, dataType, individualIdColumn) %>% 
+  summarize(n=n_distinct(individualId)) %>% 
+  knitr::kable()
+```
+
+## Summary of specimen IDs in use inside metadata files
+
+Metadata files with an `specimenIdColumn` set are used.
+
+
+```{r report-specimen-id-files, echo=FALSE, include=FALSE, eval=FALSE}
+### Specimen metadata files used
+df %>% 
+  dplyr::filter(!is.na(specimenIdColumn)) %>% 
+  select(id, study, dataType, fileFormat, specimenIdColumn) %>% 
+  knitr::kable()
+```
+
+### Specimen ID counts per study, file, and column used
+
+```{r report-specimen-id-counts, message=FALSE, warning=FALSE}
+dfSpecimen <- process_data(df, selectCol = "specimenIdColumn", idType="specimenId")
+
+dfSpecimen %>% 
+  group_by(id, study, dataType, specimenIdColumn) %>% 
+  summarize(n=n_distinct(specimenId)) %>% 
+  knitr::kable()
+```
+
