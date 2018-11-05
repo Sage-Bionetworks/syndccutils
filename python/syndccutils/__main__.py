@@ -254,7 +254,7 @@ def getPMIDDF(pubmedIds, consortiumGrants, consortiumView, consortiumName):
         # print(soup.prettify())
 
         title = soup.find_all(attrs={"class": "rprt abstract"})
-        title = title[0].h1.string.encode('ascii', 'ignore').decode('ascii')
+        title = title[0].h1.get_text().encode('ascii', 'ignore').decode('ascii')
         title = title.replace(".", "")
 
         journal = soup.find_all(attrs={"class": "cit"})
@@ -262,7 +262,6 @@ def getPMIDDF(pubmedIds, consortiumGrants, consortiumView, consortiumName):
         journal = journal.replace(".", "")
 
         citation = soup.find_all(attrs={"class": "cit"})[0].get_text()
-        print(citation)
 
         date = None
         try:
@@ -359,8 +358,6 @@ def getPMIDDF(pubmedIds, consortiumGrants, consortiumView, consortiumName):
 
         grants = list(set(cleangrants))
 
-        print(grants)
-
         if grants:
 
             gnum = [g.split()[1][:g.split()[1].index("/")] for g in grants]
@@ -369,9 +366,9 @@ def getPMIDDF(pubmedIds, consortiumGrants, consortiumView, consortiumName):
 
             if index:
 
-                gType = [grants[i].split()[0] for i in index]
-                gNumber = [grants[i].split()[1][:g.split()[1].index("/")] for i in index]
-                print(gNumber)
+                gType = [grants[i].split()[0] for i in index]             
+                gNumber = [grants[i].split()[1].split("/")[0] for i in index]
+                
                 consortiumGrant = [' '.join(e) for e in zip(gType, gNumber)]
 
                 # match and get the consortiumGrant center synapse id from it's view table by grant number of this journal study
@@ -1120,7 +1117,8 @@ def buildParser():
     parser_template.set_defaults(func=template)
 
     parser_pubmed = subparsers.add_parser('pubmed', help='Scrape pubMed publication information from a'
-                                                         'synapse file-view column (list) of consortium grant numbers')
+                                                         ' synapse file-view column (list) of consortium grant numbers. ' 
+                                                         'Run `syndccutils pubmed --projectId syn7080714 --tableId syn10923842 --name CSBC` to update CSBC PSON publication table')
 
     parser_pubmed.add_argument('--projectId', help='Synapse project to create the data policy table', required=True,
                                type=str)
