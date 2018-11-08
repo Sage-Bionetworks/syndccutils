@@ -14,7 +14,7 @@ Imports:
     feather,
     forcats,
     fs,
-    ggplot2 (>= 2.2.1.9000),
+    ggplot2 (>= 3.0.0),
     glue,
     htmlwidgets,
     httr,
@@ -40,7 +40,6 @@ Suggests:
 Additional_repositories:
     https://sage-bionetworks.github.io/ran
 Remotes:
-    tidyverse/ggplot2,
     ropensci/plotly
 Encoding: UTF-8
 LazyData: true
