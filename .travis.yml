@@ -9,3 +9,6 @@ matrix:
     before_install:
     - cd R
 
+env:
+  global:
+    - R_REMOTES_NO_ERRORS_FROM_WARNINGS=true
