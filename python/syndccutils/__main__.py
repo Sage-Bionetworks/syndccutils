@@ -8,6 +8,7 @@ import syndccutils
 import os
 import re
 import sys
+import ssl
 import requests
 import argparse
 import getpass
@@ -179,7 +180,12 @@ def getPubMedIds(query):
     :param query: An Entrez (pubmed API) search query
     :return:
     """
-    Entrez.email = 'nasim.sanati@sagebase.org'
+
+    if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)): 
+        ssl._create_default_https_context = ssl._create_unverified_context
+
+    Entrez.email = 'milen.nikolov@sagebase.org'
+    Entrez.api_key = '3f8cfef8d4356963e36d145c96b9ca9ece09'
     handle = Entrez.esearch(db='pubmed',
                             sort='relevance',
                             retmax='1000000',
@@ -308,7 +314,14 @@ def getPMIDDF(pubmedIds, consortiumGrants, consortiumView, consortiumName):
                 month = datetime.datetime.strptime(date[1], '%b').month
             day = date[2]
 
-        publishedDateUTC = datetime.date(int(year), int(month), int(day)).strftime('%Y-%m-%d')
+
+
+        try:
+            publishedDateUTC = datetime.date(int(year), int(month), int(day)).strftime('%Y-%m-%d')
+        except: # if publication citation doesn't follow assumed format data may not be parsable; skip this pubmed
+            print(p)
+            continue
+
         # year = publishedDateUTC
         # .strftime("%s") and year = "/".join([str(day), str(month), str(year)]) does not currently work
 
@@ -940,7 +953,8 @@ def meltinfo(args, syn):
                  'cellType',
                  'experimentalTimePoint',
                  'age',
-                 'alignmentMethod',
+                 'rnaAlignmentMethod',
+                 'dnaAlignmentMethod',
                  'networkEdgeType'
                  'name_file',
                  'createdOn_file',
@@ -984,8 +998,8 @@ def meltinfo(args, syn):
 
     dfs[0] = dfs[0].astype(object).replace(numpy.nan, '')
 
-    dfs[1]['publication_geodata_produced'] = [len(filter(None, dfs[0].loc[
-        dfs[0].projectId.isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(', '))) if len(
+    dfs[1]['publication_geodata_produced'] = [len(list(filter(None, dfs[0].loc[
+        dfs[0].projectId.isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(', ')))) if len(
         dfs[0].loc[dfs[0].projectId.isin([p_id]), 'Data Location'].str.cat(sep=', ', na_rep=None).split(
             ',')) > 1 else 0 for p_id in list(dfs[1]['projectId'])]
 
@@ -1004,7 +1018,8 @@ def meltinfo(args, syn):
     dfs[3] = dfs[3][[cols for cols in list(dfs[3].columns) if cols in f_atr]]
 
     # remove dummy files
-    dfs[2] = dfs[2][~dfs[2].name_file.isin(['placeholder.txt'])]
+    if "name_file" in dfs[2].columns:
+        dfs[2] = dfs[2][~dfs[2].name_file.isin(['placeholder.txt'])]
 
     # double check if tools files are not duplicated
     if len(set(dfs[2].fileId.unique()).intersection(set(dfs[3].fileId.unique()))) == 0:
@@ -1157,6 +1172,8 @@ def buildParser():
     parser_meltinfo.add_argument('--fileAttribute', nargs='+', help='annoation keys or schema columns annotation of files')
     parser_meltinfo.add_argument('--views', help='list of table/view synapse Ids to 0 publications view, 1 project view,'
                                                  '2 all data files,and 3 tools in order respectfully.')
+    parser_meltinfo.add_argument('--name', help='Name of consortium ex. csbc', type=str, required=True)
+
     parser_meltinfo.set_defaults(func=meltinfo)
 
     parser_permit = subparsers.add_parser('permit', help='Set sponsors (local) permission on an entity')
