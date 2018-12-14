@@ -8,6 +8,7 @@ import syndccutils
 import os
 import re
 import sys
+import ssl
 import requests
 import argparse
 import getpass
@@ -179,7 +180,12 @@ def getPubMedIds(query):
     :param query: An Entrez (pubmed API) search query
     :return:
     """
-    Entrez.email = 'nasim.sanati@sagebase.org'
+
+    if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)): 
+        ssl._create_default_https_context = ssl._create_unverified_context
+
+    Entrez.email = 'milen.nikolov@sagebase.org'
+    Entrez.api_key = '3f8cfef8d4356963e36d145c96b9ca9ece09'
     handle = Entrez.esearch(db='pubmed',
                             sort='relevance',
                             retmax='1000000',
@@ -308,7 +314,14 @@ def getPMIDDF(pubmedIds, consortiumGrants, consortiumView, consortiumName):
                 month = datetime.datetime.strptime(date[1], '%b').month
             day = date[2]
 
-        publishedDateUTC = datetime.date(int(year), int(month), int(day)).strftime('%Y-%m-%d')
+
+
+        try:
+            publishedDateUTC = datetime.date(int(year), int(month), int(day)).strftime('%Y-%m-%d')
+        except: # if publication citation doesn't follow assumed format data may not be parsable; skip this pubmed
+            print(p)
+            continue
+
         # year = publishedDateUTC
         # .strftime("%s") and year = "/".join([str(day), str(month), str(year)]) does not currently work
 
