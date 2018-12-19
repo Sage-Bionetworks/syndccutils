@@ -29,7 +29,8 @@
 add_fileview_annotations <- function(data, fileview_id) {
   schema <- synapser::synGet(fileview_id)
   fileview <- synapser::synTableQuery(paste0("SELECT * FROM ", fileview_id))
-  cols_to_add <- names(data)[!names(data) %in% names(as.data.frame(fileview))]
+  fileview_df <- synapser::as.data.frame(fileview)
+  cols_to_add <- names(data)[!names(data) %in% names(fileview_df)]
   purrr::walk(cols_to_add, function(x) {
     schema$addColumn(
       synapser::Column(
