@@ -1,5 +1,13 @@
 #!/usr/bin/env Rscript
 
+##########################################################
+####  Access metadata from GEO and export as a table  ####
+##########################################################
+
+## Sample usage:
+## $ Rscript get-geo-annotations.R --gse "GSE89777" > manifest.tsv
+
+## Load packages
 usePackage <- function(p) 
 {
   if (!is.element(p, installed.packages()[,1]))
@@ -103,6 +111,8 @@ get_link_from_entrez <- function(sra) {
 if(any(metadata.tbl$type == "SRA")) {
   sra.db.dest.file <- "SRAmetadb.sqlite"
   if(!file.exists(sra.db.dest.file)) {
+    ## Download SRA database file. Note this is large (~35 GB as of 2018-12-19)
+    ## so will take some time
     sra.db.dest.file <- getSRAdbFile(destfile = paste0(sra.db.dest.file, ".gz"))
   }
   con <- dbConnect(RSQLite::SQLite(), sra.db.dest.file)
