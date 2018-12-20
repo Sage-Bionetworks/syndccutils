@@ -86,9 +86,8 @@ if(any(metadata.tbl$type == "SRA")) {
   for(i in 1:nrow(metadata.tbl)) {
     if(metadata.tbl$type[i] == "SRA") {
       ## Extract the SRA identifier
-      ## NB: this is probably also in the relation column
-      url <- metadata.tbl$url[i]
-      sra.identifier <- gsub("^.*\\/([^\\/]+)$", "\\1", url)
+      relation <- metadata.tbl$relation[i]
+      sra.identifier <- gsub("^(.+?)sra\\?term=(.+)$", "\\2", relation)
       url <- listSRAfile(sra.identifier, con)$ftp
       metadata.tbl$url[i] <- url
     }
