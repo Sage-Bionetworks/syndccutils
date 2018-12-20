@@ -12,6 +12,8 @@ suppressPackageStartupMessages(p_load("GEOquery"))
 suppressPackageStartupMessages(p_load("SRAdb"))
 suppressPackageStartupMessages(p_load("plyr"))
 suppressPackageStartupMessages(p_load("optparse"))
+suppressPackageStartupMessages(p_load("xml2"))
+suppressPackageStartupMessages(p_load("rentrez"))
 
 option_list <- list(
                     make_option(c("--gse"), action="store",
@@ -76,6 +78,28 @@ if(length(supp.file.columns) > 1) {
 
 metadata.tbl$url <- as.character(metadata.tbl[, supp.file.columns[1]])
 
+## Function to find FTP link by searching Entrez and parsing the XML results
+get_link_from_entrez <- function(sra) {
+  search_results <- entrez_search(db = "sra", term = paste0(sra, "[Accession]"))
+  if (length(search_results$ids) > 1) {
+    stop("Too many ids found", call. = FALSE)
+  }
+  ## Fetch entity via entrez
+  entity <- entrez_fetch(db = "sra", id = search_results$id, rettype = "xml")
+
+  ## Parse XML and find the id that corresponds to the SRA file (this is
+  ## different than the SRA id)
+  entity_xml <- read_xml(entity)
+  id <- xml_text(xml_find_first(entity_xml, "//RUN_SET/RUN/IDENTIFIERS"))
+
+  ## Build path to FTP
+  base_path <- "ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra"
+  first3 <- substr(id, 1, 3)
+  first6 <- substr(id, 1, 6)
+  ftp <- paste(base_path, first3, first6, id, paste0(id, ".sra"), sep = "/")
+  ftp
+}
+
 if(any(metadata.tbl$type == "SRA")) {
   sra.db.dest.file <- "SRAmetadb.sqlite"
   if(!file.exists(sra.db.dest.file)) {
@@ -88,7 +112,17 @@ if(any(metadata.tbl$type == "SRA")) {
       ## Extract the SRA identifier
       relation <- metadata.tbl$relation[i]
       sra.identifier <- gsub("^(.+?)sra\\?term=(.+)$", "\\2", relation)
-      url <- listSRAfile(sra.identifier, con)$ftp
+      ## Find FTP link in one of two ways: 1) look up in the SRA database. 2) if
+      ## not found (e.g. because database isn't up to date), search using Entrez
+      url <- try(listSRAfile(sra.identifier, con)$ftp, silent = TRUE)
+      if (inherits(url, "try-error")) {
+        message("Could not find SRA file in SRA database; searching Entrez instead.")
+        url <- try(get_link_from_entrez(sra.identifier), silent = TRUE)
+      }
+      if (inherits(url, "try-error")) {
+        warning("Could not find FTP link to SRA file", call. = FALSE)
+        url <- NA
+      }
       metadata.tbl$url[i] <- url
     }
   }
