@@ -60,7 +60,7 @@ metadata.tbl <- ldply(sampleNames(phenoData(gse.geo[[1]])),
                         
                         ## Metadata is a list of lists.
                         ## Go through each entry and concatenate the individual lists using a ';' delimiter
-                        as.data.frame(lapply(md, function(entry) paste(entry, collapse=";")))
+                        as.data.frame(lapply(md, function(entry) paste(entry, collapse=";")), stringsAsFactors = FALSE)
                       })
 
 ## If these are SRA entries, the entity listed in supplementary_file will be a directory
