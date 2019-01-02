@@ -108,36 +108,38 @@ get_link_from_entrez <- function(sra) {
   ftp
 }
 
-if(any(metadata.tbl$type == "SRA")) {
-  sra.db.dest.file <- "SRAmetadb.sqlite"
-  if(!file.exists(sra.db.dest.file)) {
-    ## Download SRA database file. Note this is large (~35 GB as of 2018-12-19)
-    ## so will take some time
-    sra.db.dest.file <- getSRAdbFile(destfile = paste0(sra.db.dest.file, ".gz"))
+## Function to find FTP link. First it tries Entrez using the
+## `get_link_from_entrez()` function above; if that doesn't work, it tries
+## downloading the SRA database
+get_link <- function(sra) {
+  url <- try(get_link_from_entrez(sra))
+  if (inherits(url, "try-error")) {
+    message("Could not find link through Entrez; trying SRA database next")
+    sra.db.dest.file <- "SRAmetadb.sqlite"
+    if(!file.exists(sra.db.dest.file)) {
+      ## Download SRA database file. Note this is large (~35 GB as of 2018-12-19)
+      ## so will take some time
+      sra.db.dest.file <- getSRAdbFile(destfile = paste0(sra.db.dest.file, ".gz"))
+    }
+    con <- dbConnect(RSQLite::SQLite(), sra.db.dest.file)
+    url <- try(listSRAfile(sra, con)$ftp, silent = TRUE)
+    d <- dbDisconnect(con)
   }
-  con <- dbConnect(RSQLite::SQLite(), sra.db.dest.file)
-  
-  for(i in 1:nrow(metadata.tbl)) {
-    if(metadata.tbl$type[i] == "SRA") {
-      ## Extract the SRA identifier
+  if (inherits(url, "try-error")) {
+    warning("Could not find FTP link to SRA file", call. = FALSE)
+    url <- NA
+  }
+  return(url)
+}
+
+if (any(metadata.tbl$type == "SRA")) {
+  for (i in seq_len(nrow(metadata.tbl))) {
+    if (metadata.tbl$type[i] == "SRA") {
       relation <- metadata.tbl$relation[i]
       sra.identifier <- gsub("^(.+?)sra\\?term=(.+)$", "\\2", relation)
-      ## Find FTP link in one of two ways: 1) look up in the SRA database. 2) if
-      ## not found (e.g. because database isn't up to date), search using Entrez
-      url <- try(listSRAfile(sra.identifier, con)$ftp, silent = TRUE)
-      if (inherits(url, "try-error")) {
-        message("Could not find SRA file in SRA database; searching Entrez instead.")
-        url <- try(get_link_from_entrez(sra.identifier), silent = TRUE)
-      }
-      if (inherits(url, "try-error")) {
-        warning("Could not find FTP link to SRA file", call. = FALSE)
-        url <- NA
-      }
-      metadata.tbl$url[i] <- url
+      metadata.tbl$url[i] <- get_link(sra.identifier)
     }
   }
-  
-  d <- dbDisconnect(con)
 }
 
 write.table(metadata.tbl, sep="\t", quote=FALSE, row.names=FALSE, col.names=TRUE)
