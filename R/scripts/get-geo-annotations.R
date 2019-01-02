@@ -132,11 +132,14 @@ get_link <- function(sra) {
   return(url)
 }
 
+## Look up FTP links for SRA files in metadata.tbl and add to url column
 if (any(metadata.tbl$type == "SRA")) {
   for (i in seq_len(nrow(metadata.tbl))) {
     if (metadata.tbl$type[i] == "SRA") {
       relation <- metadata.tbl$relation[i]
+      ## Extract SRA id
       sra.identifier <- gsub("^(.+?)sra\\?term=(.+)$", "\\2", relation)
+      ## Get FTP link
       metadata.tbl$url[i] <- get_link(sra.identifier)
     }
   }
