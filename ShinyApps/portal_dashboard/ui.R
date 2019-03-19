@@ -33,8 +33,18 @@ dashboardPage(
               ),
               fluidRow(
                 box(
-                  title = "Program Content", width = 12, height = 175,
+                  title = "Program Content", width = 12, height = 250,
                   solidHeader = FALSE, status = "warning",
+                  fluidRow(
+                    column(width = 2, offset = 8,
+                           div(class = "blue-square"),
+                           span(style = "font-size:12px", p("CSBC"))
+                    ),
+                    column(width = 2,
+                           div(class = "orange-square"),
+                           span(style = "font-size:12px", p("PS-ON"))
+                    )
+                  ),
                   column(width = 3, pierOutput("consortium_files")),
                   column(width = 3, pierOutput("consortium_studies")),
                   column(width = 3, pierOutput("consortium_cancers")),

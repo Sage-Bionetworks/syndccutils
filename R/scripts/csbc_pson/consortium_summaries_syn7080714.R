@@ -1,13 +1,13 @@
-source("R/charts.R")
-source("R/tables.R")
-source("R/synapse_helpers.R")
+# source("R/charts.R")
+# source("R/tables.R")
+# source("R/synapse_helpers.R")
 
 # Script/template to create summary tables and charts for a "project"
 
 synLogin()
 
 cache_data <- TRUE
-update_remote <- TRUE
+update_remote <- FALSE
 
 
 # Config ------------------------------------------------------------------
@@ -71,8 +71,8 @@ list_cols <- "study"
 augment_keys <- list(study = "Center Name")
 link_keys <- list(study = "Study")
 
-datafile_counts <- fileview_df %>%
-    summarize_files_by_annotationkey_new(
+datafile_counts <- csbc_summary_df %>%
+    summarize_by_annotationkey(
         annotation_keys = group_keys,
         table_id = master_fileview_id,
         count_cols = count_cols,

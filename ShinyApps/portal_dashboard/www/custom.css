@@ -4,6 +4,24 @@ body {
   font-family: 'Lato', Open Sans, Helvetica Neue, Helvetica, Arial, sans-serif;  
 }
 
+.blue-square{
+    width: 12px;
+    height: 12px;
+    Background-color: #679EC1;/* Your Color */
+    float: left;
+    margin-top: 4px;
+    margin-right: 4px;
+}
+
+.orange-square{
+    width: 12px;
+    height: 12px;
+    Background-color: #EB8231;/* Your Color */
+    float: left;
+    margin-top: 4px;
+    margin-right: 4px;
+}
+
 /**
 .well {
   color: #DDD;
