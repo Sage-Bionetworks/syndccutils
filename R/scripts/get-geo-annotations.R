@@ -1,5 +1,13 @@
 #!/usr/bin/env Rscript
 
+##########################################################
+####  Access metadata from GEO and export as a table  ####
+##########################################################
+
+## Sample usage:
+## $ Rscript get-geo-annotations.R --gse "GSE89777" > manifest.tsv
+
+## Load packages
 usePackage <- function(p) 
 {
   if (!is.element(p, installed.packages()[,1]))
@@ -12,6 +20,8 @@ suppressPackageStartupMessages(p_load("GEOquery"))
 suppressPackageStartupMessages(p_load("SRAdb"))
 suppressPackageStartupMessages(p_load("plyr"))
 suppressPackageStartupMessages(p_load("optparse"))
+suppressPackageStartupMessages(p_load("xml2"))
+suppressPackageStartupMessages(p_load("rentrez"))
 
 option_list <- list(
                     make_option(c("--gse"), action="store",
@@ -60,7 +70,7 @@ metadata.tbl <- ldply(sampleNames(phenoData(gse.geo[[1]])),
                         
                         ## Metadata is a list of lists.
                         ## Go through each entry and concatenate the individual lists using a ';' delimiter
-                        as.data.frame(lapply(md, function(entry) paste(entry, collapse=";")))
+                        as.data.frame(lapply(md, function(entry) paste(entry, collapse=";")), stringsAsFactors = FALSE)
                       })
 
 ## If these are SRA entries, the entity listed in supplementary_file will be a directory
@@ -76,25 +86,63 @@ if(length(supp.file.columns) > 1) {
 
 metadata.tbl$url <- as.character(metadata.tbl[, supp.file.columns[1]])
 
-if(any(metadata.tbl$type == "SRA")) {
-  sra.db.dest.file <- "SRAmetadb.sqlite"
-  if(!file.exists(sra.db.dest.file)) {
-    sra.db.dest.file <- getSRAdbFile(destfile = paste0(sra.db.dest.file, ".gz"))
+## Function to find FTP link by searching Entrez and parsing the XML results
+get_link_from_entrez <- function(sra) {
+  search_results <- entrez_search(db = "sra", term = paste0(sra, "[Accession]"))
+  if (length(search_results$ids) > 1) {
+    stop("Too many ids found", call. = FALSE)
   }
-  con <- dbConnect(RSQLite::SQLite(), sra.db.dest.file)
-  
-  for(i in 1:nrow(metadata.tbl)) {
-    if(metadata.tbl$type[i] == "SRA") {
-      ## Extract the SRA identifier
-      ## NB: this is probably also in the relation column
-      url <- metadata.tbl$url[i]
-      sra.identifier <- gsub("^.*\\/([^\\/]+)$", "\\1", url)
-      url <- listSRAfile(sra.identifier, con)$ftp
-      metadata.tbl$url[i] <- url
+  ## Fetch entity via entrez
+  entity <- entrez_fetch(db = "sra", id = search_results$id, rettype = "xml")
+
+  ## Parse XML and find the id that corresponds to the SRA file (this is
+  ## different than the SRA id)
+  entity_xml <- read_xml(entity)
+  id <- xml_text(xml_find_first(entity_xml, "//RUN_SET/RUN/IDENTIFIERS"))
+
+  ## Build path to FTP
+  base_path <- "ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra"
+  first3 <- substr(id, 1, 3)
+  first6 <- substr(id, 1, 6)
+  ftp <- paste(base_path, first3, first6, id, paste0(id, ".sra"), sep = "/")
+  ftp
+}
+
+## Function to find FTP link. First it tries Entrez using the
+## `get_link_from_entrez()` function above; if that doesn't work, it tries
+## downloading the SRA database
+get_link <- function(sra) {
+  url <- try(get_link_from_entrez(sra))
+  if (inherits(url, "try-error")) {
+    message("Could not find link through Entrez; trying SRA database next")
+    sra.db.dest.file <- "SRAmetadb.sqlite"
+    if(!file.exists(sra.db.dest.file)) {
+      ## Download SRA database file. Note this is large (~35 GB as of 2018-12-19)
+      ## so will take some time
+      sra.db.dest.file <- getSRAdbFile(destfile = paste0(sra.db.dest.file, ".gz"))
+    }
+    con <- dbConnect(RSQLite::SQLite(), sra.db.dest.file)
+    url <- try(listSRAfile(sra, con)$ftp, silent = TRUE)
+    d <- dbDisconnect(con)
+  }
+  if (inherits(url, "try-error")) {
+    warning("Could not find FTP link to SRA file", call. = FALSE)
+    url <- NA
+  }
+  return(url)
+}
+
+## Look up FTP links for SRA files in metadata.tbl and add to url column
+if (any(metadata.tbl$type == "SRA")) {
+  for (i in seq_len(nrow(metadata.tbl))) {
+    if (metadata.tbl$type[i] == "SRA") {
+      relation <- metadata.tbl$relation[i]
+      ## Extract SRA id
+      sra.identifier <- gsub("^(.+?)sra\\?term=(.+)$", "\\2", relation)
+      ## Get FTP link
+      metadata.tbl$url[i] <- get_link(sra.identifier)
     }
   }
-  
-  d <- dbDisconnect(con)
 }
 
 write.table(metadata.tbl, sep="\t", quote=FALSE, row.names=FALSE, col.names=TRUE)
