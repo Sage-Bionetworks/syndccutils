@@ -38,7 +38,7 @@ Imports:
 Suggests:
     testthat
 Additional_repositories:
-    https://sage-bionetworks.github.io/ran
+    http://ran.synapse.org
 Remotes:
     ropensci/plotly
 Encoding: UTF-8
