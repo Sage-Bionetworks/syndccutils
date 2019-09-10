@@ -9,8 +9,11 @@
 #' @export
 #' @return A tibble.
 #' @examples
+#' \dontrun{
 #' fv <- get_view("syn18691012")
 #' table <- get_view("syn20555115")
+#' }
+#' 
 get_view <- function(fileview_id) {
   fileview <- synapser::synTableQuery(paste0("SELECT * FROM ", fileview_id))
   readr::read_csv(fileview$filepath, col_types = readr::cols(.default = "c"))
@@ -25,9 +28,12 @@ get_view <- function(fileview_id) {
 #' there are changes to be made to the existing table, a Synapse Table object is 
 #' returned with metadata to describe the upload.
 #' @examples
+#' \dontrun{
 #' update_table(fv = get_view("synId"), 
 #' table = get_view("synId"), 
 #' fileview_id = "syn20555115")
+#' }
+#'
 update_table <- function(fv, table, fileview_id) {
   if (check_etag(fv, table) == c("No changes to existing annotations")
       && check_version(fv, table) == c("No changes to existing files")
@@ -51,7 +57,10 @@ update_table <- function(fv, table, fileview_id) {
 #' @return A tibble with notation added to the notes column. ROW_ID and ROW_VERSION 
 #' remain from existing table to enable storage to Synapse.
 #' @examples
+#' \dontrun{
 #' mod_table(fv = get_view("synId"), table = get_view("synId"))
+#' }
+#' 
 mod_table <- function(fv, table, fileview_id) {
   verIds <- check_version(fv, table)
   annotIds <- check_etag(fv, table)
@@ -131,7 +140,10 @@ mod_table <- function(fv, table, fileview_id) {
 #' @return A string of synIds where file metadata has changed, including modifications 
 #' to the annotations.
 #' @examples
+#' \dontrun{
 #' check_etag(fv = get_view("synId"), table = get_view("synId"))
+#' }
+#' 
 check_etag <- function(fv,
                        table) {
   diff_tables <- dplyr::anti_join(fv[, c("id", "etag")], table[, c("id", "etag")])
@@ -148,7 +160,10 @@ check_etag <- function(fv,
 #' @param table A tibble. A table imported with [get_view()].
 #' @return A string of synIds where file has changed.
 #' @examples
+#' \dontrun{
 #' check_version(fv = get_view("synId"), table = get_view("synId"))
+#' }
+#'
 check_version <- function(fv,
                           table) {
   diff_tables <- dplyr::anti_join(fv[, c("id", "currentVersion")], 
@@ -174,7 +189,10 @@ check_version <- function(fv,
 #' @param join A mutating full_join is required
 #' @return A tibble with the most relevant metadata and notation.
 #' @examples
+#' \dontrun{
 #' coalesce_join(x = fv, y = table, by = "columnHeader")
+#' }
+#' 
 coalesce_join <- function(x,
                           y,
                           by = NULL, suffix = c(".x", ".y"),
