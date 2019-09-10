@@ -28,7 +28,7 @@ get_view <- function(fileview_id) {
 #' update_table(fv = get_view("synId"), 
 #' table = get_view("synId"), 
 #' fileview_id = "syn20555115")
-update_table <- function(fv, table, fileview_id = c()){
+update_table <- function(fv, table, fileview_id) {
   if (check_etag(fv, table) == c("No changes to existing annotations")
       && check_version(fv, table) == c("No changes to existing files")
       && setequal(fv$id, table$id[!(table$notes %in% c("File removed"))])) {
@@ -48,7 +48,7 @@ update_table <- function(fv, table, fileview_id = c()){
 #' remain from existing table to enable storage to Synapse.
 #' @examples
 #' mod_table(fv = get_view("synId"), table = get_view("synId"))
-mod_table <- function(fv, table, fileview_id = c()) {
+mod_table <- function(fv, table, fileview_id) {
   verIds <- check_version(fv, table)
   annotIds <- check_etag(fv, table)
   excludeCols <- c("ROW_ID", "ROW_ETAG", "ROW_VERSION")
