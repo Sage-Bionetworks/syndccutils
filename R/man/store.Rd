@@ -7,7 +7,7 @@
 store(table_to_store, fileview_id)
 }
 \arguments{
-\item{table_to_store}{A tibble. Output from mod_table()}
+\item{table_to_store}{A tibble. Output from [mod_table()]}
 
 \item{fileview_id}{A synId c().}
 }

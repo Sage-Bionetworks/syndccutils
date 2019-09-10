@@ -2,21 +2,26 @@
 % Please edit documentation in R/consortia_internal_tracking.R
 \name{check_etag}
 \alias{check_etag}
-\title{Compare the fileview and table etag to note changes to the annotations or file metadata itself. This would indicate a user needs to update the metadata associated with the file.}
+\title{Compare the fileview and table etag to note changes to the annotations or file 
+metadata itself. This would indicate a user needs to update the metadata associated 
+with the file.}
 \usage{
 check_etag(fv, table)
 }
 \arguments{
-\item{fv}{A tibble. A fileview imported with get_v.}
+\item{fv}{A tibble. A fileview imported with [get_view()].}
 
-\item{table}{A tibble. A table imported with get_v.}
+\item{table}{A tibble. A table imported with [get_view()].}
 }
 \value{
-A string of synIds where file metadata has changed, including modifications to the annotations.
+A string of synIds where file metadata has changed, including modifications 
+to the annotations.
 }
 \description{
-Compare the fileview and table etag to note changes to the annotations or file metadata itself. This would indicate a user needs to update the metadata associated with the file.
+Compare the fileview and table etag to note changes to the annotations or file 
+metadata itself. This would indicate a user needs to update the metadata associated 
+with the file.
 }
 \examples{
-check_etag(fv = get_v("synId"), table = get_v("synId"))
+check_etag(fv = get_view("synId"), table = get_view("synId"))
 }

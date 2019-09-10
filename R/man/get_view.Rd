@@ -16,6 +16,6 @@ A tibble.
 Get Synapse view - fileview or table
 }
 \examples{
-fv <- get_v("syn18691012")
-table <- get_v("syn20555115")
+fv <- get_view("syn18691012")
+table <- get_view("syn20555115")
 }

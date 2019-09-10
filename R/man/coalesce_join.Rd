@@ -2,19 +2,24 @@
 % Please edit documentation in R/consortia_internal_tracking.R
 \name{coalesce_join}
 \alias{coalesce_join}
-\title{Fileview is joined to the existing table by synId, prioritizing the fileview annotations which are assummed to be the most updated information. dplyr::coalesce() prioritizes the first non-missing value at each position thus prioritizing the fileview annotations.}
+\title{Fileview is joined to the existing table by synId, prioritizing the fileview 
+annotations which are assummed to be the most updated information. dplyr::coalesce() 
+prioritizes the first non-missing value at each position thus prioritizing the 
+fileview annotations.}
 \usage{
 coalesce_join(x, y, by = NULL, suffix = c(".x", ".y"),
   join = dplyr::full_join, ...)
 }
 \arguments{
-\item{x}{A tibble. The data is prioritized during coalesce() thus replacing data in y.}
+\item{x}{A tibble. The data is prioritized during coalesce() thus replacing data 
+in y.}
 
 \item{y}{A tibble.}
 
 \item{by}{A character vector of variables to join by.}
 
-\item{suffix}{A suffix is added to non-joined duplicate variables in x and y, these suffixes will be added to the output ot disambiguate them.}
+\item{suffix}{A suffix is added to non-joined duplicate variables in x and y, these 
+suffixes will be added to the output ot disambiguate them.}
 
 \item{join}{A mutating full_join is required}
 }
@@ -22,7 +27,10 @@ coalesce_join(x, y, by = NULL, suffix = c(".x", ".y"),
 A tibble with the most relevant metadata and notation.
 }
 \description{
-Fileview is joined to the existing table by synId, prioritizing the fileview annotations which are assummed to be the most updated information. dplyr::coalesce() prioritizes the first non-missing value at each position thus prioritizing the fileview annotations.
+Fileview is joined to the existing table by synId, prioritizing the fileview 
+annotations which are assummed to be the most updated information. dplyr::coalesce() 
+prioritizes the first non-missing value at each position thus prioritizing the 
+fileview annotations.
 }
 \examples{
 coalesce_join(x = fv, y = table, by = "columnHeader")

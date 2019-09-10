@@ -4,21 +4,25 @@
 \alias{update_table}
 \title{Check whether updates need to be made}
 \usage{
-update_table(fv, table, fileview_id = c())
+update_table(fv, table, fileview_id)
 }
 \arguments{
-\item{fv}{A tibble. A fileview imported with get_v.}
+\item{fv}{A tibble. A fileview imported with [get_view()].}
 
-\item{table}{A tibble. A table imported with get_v.}
+\item{table}{A tibble. A table imported with [get_view()].}
 
 \item{fileview_id}{A synId c().}
 }
 \value{
-If no changes are to be made the string "No changes!" is returned. If there are changes to be made to the existing table, a Synapse Table object is returned with metadata to describe the upload.
+If no changes are to be made the string "No changes!" is returned. If 
+there are changes to be made to the existing table, a Synapse Table object is 
+returned with metadata to describe the upload.
 }
 \description{
 Check whether updates need to be made
 }
 \examples{
-update_table(fv = get_v("synId"), table = get_v("synId"), fileview_id = "syn20555115")
+update_table(fv = get_view("synId"), 
+table = get_view("synId"), 
+fileview_id = "syn20555115")
 }
