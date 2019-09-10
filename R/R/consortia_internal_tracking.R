@@ -31,7 +31,7 @@ get_view <- function(fileview_id) {
 #' \dontrun{
 #' update_table(fv = get_view("synId"), 
 #' table = get_view("synId"), 
-#' fileview_id = "syn20555115")
+#' fileview_id = "syn56789")
 #' }
 #'
 update_table <- function(fv, table, fileview_id) {
@@ -58,7 +58,9 @@ update_table <- function(fv, table, fileview_id) {
 #' remain from existing table to enable storage to Synapse.
 #' @examples
 #' \dontrun{
-#' mod_table(fv = get_view("synId"), table = get_view("synId"))
+#' mod_table(fv = get_view("synId"), 
+#' table = get_view("synId"), 
+#' fileview_id = "syn56789")
 #' }
 #' 
 mod_table <- function(fv, table, fileview_id) {
