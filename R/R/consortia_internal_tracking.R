@@ -3,7 +3,9 @@
 # Author: Kelsey Montgomery
 # Date: 2019.08.01
 #'
-#' Get Synapse view - fileview or table
+#' Get Synapse view
+#' 
+#' This function can accept a synId corresponding to a fileview or table.
 #'
 #' @param fileview_id A synId c().
 #' @export
@@ -18,7 +20,7 @@ get_view <- function(fileview_id) {
   fileview <- synapser::synTableQuery(paste0("SELECT * FROM ", fileview_id))
   readr::read_csv(fileview$filepath, col_types = readr::cols(.default = "c"))
 }
-#' Check whether updates need to be made
+#' Check for updates
 #'
 #' @param fv A tibble. A fileview imported with [get_view()].
 #' @param table A tibble. A table imported with [get_view()].
@@ -43,12 +45,13 @@ update_table <- function(fv, table, fileview_id) {
     mod_table(fv, table, fileview_id)
   }
 }
-#' Bind new files to the existing table, notes deleted files and file/annotation 
-#' modifications or checks only for file/annotation modifications. Deleted files
-#' are a special case. In order to not overwrite existing 'modifiedOn' notation,
-#' the object note_del_files stores a vector of synIds that corresponds to files 
-#' deleted prior. These entries will not be modified when mod_table() is
-#' executed.
+#' Bind new files and note changes
+#' 
+#' New entries are added to the existing table, deleted files and file/annotation
+#' modifications are noted. Deleted files are a special case. In order to not overwrite
+#' existing 'modifiedOn' notation, the object note_del_files stores a vector of synIds
+#' that corresponds to files deleted prior. These entries will not be modified when
+#' mod_table() is executed.
 #'
 #' @param fv A tibble. A fileview imported with [get_view()].
 #' @param table A tibble. A table imported with [get_view()].
@@ -68,6 +71,9 @@ mod_table <- function(fv, table, fileview_id) {
   annotIds <- check_etag(fv, table)
   excludeCols <- c("ROW_ID", "ROW_ETAG", "ROW_VERSION")
   includeCols <- names(fv)[!(names(fv) %in% excludeCols)]
+  # In order to not overwrite existing 'modifiedOn' notation, the object note_del_files
+  # stores a vector of synIds that corresponds to files deleted prior. These entries 
+  # will not be modified when mod_table() is executed.
   note_del_files <- table$id[!(table$notes %in% c("File removed"))]
 
   if (!setequal(fv$id, note_del_files)) {
@@ -133,6 +139,8 @@ mod_table <- function(fv, table, fileview_id) {
     store(new, fileview_id)
   }
 }
+#' Identify annotation changes
+#' 
 #' Compare the fileview and table etag to note changes to the annotations or file 
 #' metadata itself. This would indicate a user needs to update the metadata associated 
 #' with the file.
@@ -156,6 +164,8 @@ check_etag <- function(fv,
     return("No changes to existing annotations")
   }
 }
+#' Identify new file versions
+#' 
 #' Compare the fileview and table etag to note file metadata or file itself has been 
 #' modified. This would indicate a user needs to download a new version.
 #' @param fv A tibble. A fileview imported with [get_view()].
@@ -177,6 +187,8 @@ check_version <- function(fv,
     return("No changes to existing files")
   }
 }
+#' Join fileview and table, prioritizing fileview
+#' 
 #' Fileview is joined to the existing table by synId, prioritizing the fileview 
 #' annotations which are assummed to be the most updated information. dplyr::coalesce() 
 #' prioritizes the first non-missing value at each position thus prioritizing the 
