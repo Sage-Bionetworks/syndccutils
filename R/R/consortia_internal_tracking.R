@@ -16,8 +16,8 @@ get_view <- function(fileview_id) {
 }
 #' Check whether updates need to be made
 #'
-#' @param fv A tibble. A fileview imported with get_view.
-#' @param table A tibble. A table imported with get_view.
+#' @param fv A tibble. A fileview imported with [get_view()].
+#' @param table A tibble. A table imported with [get_view()].
 #' @param fileview_id A synId c().
 #' @export
 #' @return If no changes are to be made the string "No changes!" is returned. If there are changes to be made to the existing table, a Synapse Table object is returned with metadata to describe the upload.
@@ -34,8 +34,8 @@ update_table <- function(fv, table, fileview_id = c()){
 }
 #' Bind new files to the existing table, notes deleted files and file/annotation modifications or checks only for file/annotation modifications
 #'
-#' @param fv A tibble. A fileview imported with get_view.
-#' @param table A tibble. A table imported with get_view.
+#' @param fv A tibble. A fileview imported with [get_view()].
+#' @param table A tibble. A table imported with [get_view()].
 #' @param fileview_id A synId c().
 #' @export
 #' @return A tibble with notation added to the notes column. ROW_ID and ROW_VERSION remain from existing table to enable storage to Synapse.
@@ -113,8 +113,8 @@ mod_table <- function(fv, table, fileview_id = c()) {
 }
 #' Compare the fileview and table etag to note changes to the annotations or file metadata itself. This would indicate a user needs to update the metadata associated with the file.
 #'
-#' @param fv A tibble. A fileview imported with get_view.
-#' @param table A tibble. A table imported with get_view.
+#' @param fv A tibble. A fileview imported with [get_view()].
+#' @param table A tibble. A table imported with [get_view()].
 #' @return A string of synIds where file metadata has changed, including modifications to the annotations.
 #' @examples
 #' check_etag(fv = get_view("synId"), table = get_view("synId"))
@@ -129,8 +129,8 @@ check_etag <- function(fv,
   }
 }
 #' Compare the fileview and table etag to note file metadata or file itself has been modified. This would indicate a user needs to download a new version.
-#' @param fv A tibble. A fileview imported with get_view.
-#' @param table A tibble. A table imported with get_view.
+#' @param fv A tibble. A fileview imported with [get_view()].
+#' @param table A tibble. A table imported with [get_view()].
 #' @return A string of synIds where file has changed.
 #' @examples
 #' check_version(fv = get_view("synId"), table = get_view("synId"))
@@ -172,7 +172,7 @@ coalesce_join <- function(x,
 }
 #' Store updated table to Synapse
 #'
-#' @param table_to_store A tibble. Output from mod_table()
+#' @param table_to_store A tibble. Output from [mod_table()]
 #' @param fileview_id A synId c().
 #' @return A Synapse client object with storage metadata.
 store <- function(table_to_store, fileview_id) {
