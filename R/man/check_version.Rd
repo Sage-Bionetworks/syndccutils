@@ -2,8 +2,7 @@
 % Please edit documentation in R/consortia_internal_tracking.R
 \name{check_version}
 \alias{check_version}
-\title{Compare the fileview and table etag to note file metadata or file itself has been 
-modified. This would indicate a user needs to download a new version.}
+\title{Identify new file versions}
 \usage{
 check_version(fv, table)
 }
@@ -20,5 +19,8 @@ Compare the fileview and table etag to note file metadata or file itself has bee
 modified. This would indicate a user needs to download a new version.
 }
 \examples{
+\dontrun{
 check_version(fv = get_view("synId"), table = get_view("synId"))
+}
+
 }

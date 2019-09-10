@@ -2,10 +2,7 @@
 % Please edit documentation in R/consortia_internal_tracking.R
 \name{coalesce_join}
 \alias{coalesce_join}
-\title{Fileview is joined to the existing table by synId, prioritizing the fileview 
-annotations which are assummed to be the most updated information. dplyr::coalesce() 
-prioritizes the first non-missing value at each position thus prioritizing the 
-fileview annotations.}
+\title{Join fileview and table, prioritizing fileview}
 \usage{
 coalesce_join(x, y, by = NULL, suffix = c(".x", ".y"),
   join = dplyr::full_join, ...)
@@ -33,5 +30,8 @@ prioritizes the first non-missing value at each position thus prioritizing the
 fileview annotations.
 }
 \examples{
+\dontrun{
 coalesce_join(x = fv, y = table, by = "columnHeader")
+}
+
 }

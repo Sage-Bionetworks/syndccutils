@@ -2,9 +2,7 @@
 % Please edit documentation in R/consortia_internal_tracking.R
 \name{check_etag}
 \alias{check_etag}
-\title{Compare the fileview and table etag to note changes to the annotations or file 
-metadata itself. This would indicate a user needs to update the metadata associated 
-with the file.}
+\title{Identify annotation changes}
 \usage{
 check_etag(fv, table)
 }
@@ -23,5 +21,8 @@ metadata itself. This would indicate a user needs to update the metadata associa
 with the file.
 }
 \examples{
+\dontrun{
 check_etag(fv = get_view("synId"), table = get_view("synId"))
+}
+
 }

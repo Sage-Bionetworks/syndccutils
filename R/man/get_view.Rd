@@ -2,7 +2,7 @@
 % Please edit documentation in R/consortia_internal_tracking.R
 \name{get_view}
 \alias{get_view}
-\title{Get Synapse view - fileview or table}
+\title{Get Synapse view}
 \usage{
 get_view(fileview_id)
 }
@@ -13,9 +13,12 @@ get_view(fileview_id)
 A tibble.
 }
 \description{
-Get Synapse view - fileview or table
+This function can accept a synId corresponding to a fileview or table.
 }
 \examples{
+\dontrun{
 fv <- get_view("syn18691012")
 table <- get_view("syn20555115")
+}
+
 }

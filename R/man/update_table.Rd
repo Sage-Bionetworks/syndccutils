@@ -2,7 +2,7 @@
 % Please edit documentation in R/consortia_internal_tracking.R
 \name{update_table}
 \alias{update_table}
-\title{Check whether updates need to be made}
+\title{Check for updates}
 \usage{
 update_table(fv, table, fileview_id)
 }
@@ -19,10 +19,13 @@ there are changes to be made to the existing table, a Synapse Table object is
 returned with metadata to describe the upload.
 }
 \description{
-Check whether updates need to be made
+Check for updates
 }
 \examples{
+\dontrun{
 update_table(fv = get_view("synId"), 
 table = get_view("synId"), 
-fileview_id = "syn20555115")
+fileview_id = "syn56789")
+}
+
 }

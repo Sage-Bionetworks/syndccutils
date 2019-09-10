@@ -2,12 +2,7 @@
 % Please edit documentation in R/consortia_internal_tracking.R
 \name{mod_table}
 \alias{mod_table}
-\title{Bind new files to the existing table, notes deleted files and file/annotation 
-modifications or checks only for file/annotation modifications. Deleted files
-are a special case. In order to not overwrite existing 'modifiedOn' notation,
-the object note_del_files stores a vector of synIds that corresponds to files 
-deleted prior. These entries will not be modified when mod_table() is
-executed.}
+\title{Bind new files and note changes}
 \usage{
 mod_table(fv, table, fileview_id)
 }
@@ -23,13 +18,17 @@ A tibble with notation added to the notes column. ROW_ID and ROW_VERSION
 remain from existing table to enable storage to Synapse.
 }
 \description{
-Bind new files to the existing table, notes deleted files and file/annotation 
-modifications or checks only for file/annotation modifications. Deleted files
-are a special case. In order to not overwrite existing 'modifiedOn' notation,
-the object note_del_files stores a vector of synIds that corresponds to files 
-deleted prior. These entries will not be modified when mod_table() is
-executed.
+New entries are added to the existing table, deleted files and file/annotation
+modifications are noted. Deleted files are a special case. In order to not overwrite
+existing 'modifiedOn' notation, the object note_del_files stores a vector of synIds
+that corresponds to files deleted prior. These entries will not be modified when
+mod_table() is executed.
 }
 \examples{
-mod_table(fv = get_view("synId"), table = get_view("synId"))
+\dontrun{
+mod_table(fv = get_view("synId"), 
+table = get_view("synId"), 
+fileview_id = "syn56789")
+}
+
 }
