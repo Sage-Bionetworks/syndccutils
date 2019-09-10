@@ -68,7 +68,8 @@ as_datatable <- function(df, cols_as_code = c()) {
 #' @param link_keys list mapping target columns (list names) for which to
 #'   construct links from Synapse IDs in corresponding ID columns (list values)
 #' @param filter_missing remove records with missing annotation values
-#'
+#' @param queryformat Query format. Defaults to `"html"`
+#' @param list_format Format of keys
 #' @export
 #'
 #' @examples

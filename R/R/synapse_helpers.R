@@ -8,6 +8,7 @@ library(synapser)
 #' in a data frame.
 #'
 #' @param table_id Synapse ID of table
+#' @param cache Is the table cached? Defaults to `FALSE`
 #'
 #' @return data frame with table values
 #' @export

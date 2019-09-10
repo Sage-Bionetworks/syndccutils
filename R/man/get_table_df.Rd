@@ -9,6 +9,8 @@ get_table_df(table_id, cache = FALSE)
 }
 \arguments{
 \item{table_id}{Synapse ID of table}
+
+\item{cache}{Is the table cached? Defaults to `FALSE`}
 }
 \value{
 data frame with table values

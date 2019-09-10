@@ -133,7 +133,8 @@ count_values <- function(
 #'
 #' @param df data frame nominally representing a Synapse table or file view
 #' @param group_keys character vector of keys by which to group
-#' @param list_keys character vector of keys for which to list values
+#' @param list_keys Which keys to list
+#' @param list_format Format of keys
 #'
 #' @export
 list_values <- function(
