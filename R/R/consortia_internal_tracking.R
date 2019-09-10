@@ -1,4 +1,5 @@
-# Synapse data tracking - track "working" data available to internal consortia. Note modified, new and deleted files.
+# Synapse data tracking - track "working" data available to internal consortia. 
+# Note modified, new and deleted files.
 # Author: Kelsey Montgomery
 # Date: 2019.08.01
 #'
@@ -20,9 +21,13 @@ get_view <- function(fileview_id) {
 #' @param table A tibble. A table imported with [get_view()].
 #' @param fileview_id A synId c().
 #' @export
-#' @return If no changes are to be made the string "No changes!" is returned. If there are changes to be made to the existing table, a Synapse Table object is returned with metadata to describe the upload.
+#' @return If no changes are to be made the string "No changes!" is returned. If 
+#' there are changes to be made to the existing table, a Synapse Table object is 
+#' returned with metadata to describe the upload.
 #' @examples
-#' update_table(fv = get_view("synId"), table = get_view("synId"), fileview_id = "syn20555115")
+#' update_table(fv = get_view("synId"), 
+#' table = get_view("synId"), 
+#' fileview_id = "syn20555115")
 update_table <- function(fv, table, fileview_id = c()){
   if (check_etag(fv, table) == c("No changes to existing annotations")
       && check_version(fv, table) == c("No changes to existing files")
@@ -32,13 +37,15 @@ update_table <- function(fv, table, fileview_id = c()){
     mod_table(fv, table, fileview_id)
   }
 }
-#' Bind new files to the existing table, notes deleted files and file/annotation modifications or checks only for file/annotation modifications
+#' Bind new files to the existing table, notes deleted files and file/annotation 
+#' modifications or checks only for file/annotation modifications
 #'
 #' @param fv A tibble. A fileview imported with [get_view()].
 #' @param table A tibble. A table imported with [get_view()].
 #' @param fileview_id A synId c().
 #' @export
-#' @return A tibble with notation added to the notes column. ROW_ID and ROW_VERSION remain from existing table to enable storage to Synapse.
+#' @return A tibble with notation added to the notes column. ROW_ID and ROW_VERSION 
+#' remain from existing table to enable storage to Synapse.
 #' @examples
 #' mod_table(fv = get_view("synId"), table = get_view("synId"))
 mod_table <- function(fv, table, fileview_id = c()) {
@@ -111,11 +118,14 @@ mod_table <- function(fv, table, fileview_id = c()) {
     store(new, fileview_id)
   }
 }
-#' Compare the fileview and table etag to note changes to the annotations or file metadata itself. This would indicate a user needs to update the metadata associated with the file.
+#' Compare the fileview and table etag to note changes to the annotations or file 
+#' metadata itself. This would indicate a user needs to update the metadata associated 
+#' with the file.
 #'
 #' @param fv A tibble. A fileview imported with [get_view()].
 #' @param table A tibble. A table imported with [get_view()].
-#' @return A string of synIds where file metadata has changed, including modifications to the annotations.
+#' @return A string of synIds where file metadata has changed, including modifications 
+#' to the annotations.
 #' @examples
 #' check_etag(fv = get_view("synId"), table = get_view("synId"))
 check_etag <- function(fv,
@@ -128,7 +138,8 @@ check_etag <- function(fv,
     return("No changes to existing annotations")
   }
 }
-#' Compare the fileview and table etag to note file metadata or file itself has been modified. This would indicate a user needs to download a new version.
+#' Compare the fileview and table etag to note file metadata or file itself has been 
+#' modified. This would indicate a user needs to download a new version.
 #' @param fv A tibble. A fileview imported with [get_view()].
 #' @param table A tibble. A table imported with [get_view()].
 #' @return A string of synIds where file has changed.
@@ -136,7 +147,8 @@ check_etag <- function(fv,
 #' check_version(fv = get_view("synId"), table = get_view("synId"))
 check_version <- function(fv,
                           table) {
-  diff_tables <- dplyr::anti_join(fv[, c("id", "currentVersion")], table[, c("id", "currentVersion")])
+  diff_tables <- dplyr::anti_join(fv[, c("id", "currentVersion")], 
+                                  table[, c("id", "currentVersion")])
   if (!(is.data.frame(diff_tables) && nrow(diff_tables) == 0)) {
     verIds <- diff_tables$id
     verIds
@@ -144,12 +156,17 @@ check_version <- function(fv,
     return("No changes to existing files")
   }
 }
-#' Fileview is joined to the existing table by synId, prioritizing the fileview annotations which are assummed to be the most updated information. dplyr::coalesce() prioritizes the first non-missing value at each position thus prioritizing the fileview annotations.
+#' Fileview is joined to the existing table by synId, prioritizing the fileview 
+#' annotations which are assummed to be the most updated information. dplyr::coalesce() 
+#' prioritizes the first non-missing value at each position thus prioritizing the 
+#' fileview annotations.
 #'
-#' @param x A tibble. The data is prioritized during coalesce() thus replacing data in y.
+#' @param x A tibble. The data is prioritized during coalesce() thus replacing data 
+#' in y.
 #' @param y A tibble.
 #' @param by A character vector of variables to join by.
-#' @param suffix A suffix is added to non-joined duplicate variables in x and y, these suffixes will be added to the output ot disambiguate them.
+#' @param suffix A suffix is added to non-joined duplicate variables in x and y, these 
+#' suffixes will be added to the output ot disambiguate them.
 #' @param join A mutating full_join is required
 #' @return A tibble with the most relevant metadata and notation.
 #' @examples
