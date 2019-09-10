@@ -38,7 +38,11 @@ update_table <- function(fv, table, fileview_id) {
   }
 }
 #' Bind new files to the existing table, notes deleted files and file/annotation 
-#' modifications or checks only for file/annotation modifications
+#' modifications or checks only for file/annotation modifications. Deleted files
+#' are a special case. In order to not overwrite existing 'modifiedOn' notation,
+#' the object note_del_files stores a vector of synIds that corresponds to files 
+#' deleted prior. These entries will not be modified when mod_table() is
+#' executed.
 #'
 #' @param fv A tibble. A fileview imported with [get_view()].
 #' @param table A tibble. A table imported with [get_view()].
