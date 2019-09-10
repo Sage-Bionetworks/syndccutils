@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^codecheck\.R$
+^LICENSE$
+^scripts/
