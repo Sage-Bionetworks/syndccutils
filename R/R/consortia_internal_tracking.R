@@ -8,21 +8,21 @@
 #' @export
 #' @return A tibble.
 #' @examples
-#' fv <- get_v("syn18691012")
-#' table <- get_v("syn20555115")
+#' fv <- get_view("syn18691012")
+#' table <- get_view("syn20555115")
 get_view <- function(fileview_id) {
   fileview <- synapser::synTableQuery(paste0("SELECT * FROM ", fileview_id))
   readr::read_csv(fileview$filepath, col_types = readr::cols(.default = "c"))
 }
 #' Check whether updates need to be made
 #'
-#' @param fv A tibble. A fileview imported with get_v.
-#' @param table A tibble. A table imported with get_v.
+#' @param fv A tibble. A fileview imported with get_view.
+#' @param table A tibble. A table imported with get_view.
 #' @param fileview_id A synId c().
 #' @export
 #' @return If no changes are to be made the string "No changes!" is returned. If there are changes to be made to the existing table, a Synapse Table object is returned with metadata to describe the upload.
 #' @examples
-#' update_table(fv = get_v("synId"), table = get_v("synId"), fileview_id = "syn20555115")
+#' update_table(fv = get_view("synId"), table = get_view("synId"), fileview_id = "syn20555115")
 update_table <- function(fv, table, fileview_id = c()){
   if (check_etag(fv, table) == c("No changes to existing annotations")
       && check_version(fv, table) == c("No changes to existing files")
@@ -34,13 +34,13 @@ update_table <- function(fv, table, fileview_id = c()){
 }
 #' Bind new files to the existing table, notes deleted files and file/annotation modifications or checks only for file/annotation modifications
 #'
-#' @param fv A tibble. A fileview imported with get_v.
-#' @param table A tibble. A table imported with get_v.
+#' @param fv A tibble. A fileview imported with get_view.
+#' @param table A tibble. A table imported with get_view.
 #' @param fileview_id A synId c().
 #' @export
 #' @return A tibble with notation added to the notes column. ROW_ID and ROW_VERSION remain from existing table to enable storage to Synapse.
 #' @examples
-#' mod_table(fv = get_v("synId"), table = get_v("synId"))
+#' mod_table(fv = get_view("synId"), table = get_view("synId"))
 mod_table <- function(fv, table, fileview_id = c()) {
   verIds <- check_version(fv, table)
   annotIds <- check_etag(fv, table)
@@ -113,11 +113,11 @@ mod_table <- function(fv, table, fileview_id = c()) {
 }
 #' Compare the fileview and table etag to note changes to the annotations or file metadata itself. This would indicate a user needs to update the metadata associated with the file.
 #'
-#' @param fv A tibble. A fileview imported with get_v.
-#' @param table A tibble. A table imported with get_v.
+#' @param fv A tibble. A fileview imported with get_view.
+#' @param table A tibble. A table imported with get_view.
 #' @return A string of synIds where file metadata has changed, including modifications to the annotations.
 #' @examples
-#' check_etag(fv = get_v("synId"), table = get_v("synId"))
+#' check_etag(fv = get_view("synId"), table = get_view("synId"))
 check_etag <- function(fv,
                        table) {
   diff_tables <- dplyr::anti_join(fv[, c("id", "etag")], table[, c("id", "etag")])
@@ -129,11 +129,11 @@ check_etag <- function(fv,
   }
 }
 #' Compare the fileview and table etag to note file metadata or file itself has been modified. This would indicate a user needs to download a new version.
-#' @param fv A tibble. A fileview imported with get_v.
-#' @param table A tibble. A table imported with get_v.
+#' @param fv A tibble. A fileview imported with get_view.
+#' @param table A tibble. A table imported with get_view.
 #' @return A string of synIds where file has changed.
 #' @examples
-#' check_version(fv = get_v("synId"), table = get_v("synId"))
+#' check_version(fv = get_view("synId"), table = get_view("synId"))
 check_version <- function(fv,
                           table) {
   diff_tables <- dplyr::anti_join(fv[, c("id", "currentVersion")], table[, c("id", "currentVersion")])
