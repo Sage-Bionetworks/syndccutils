@@ -5,11 +5,16 @@
 \title{Plot the breakdown of samples in a file view based on distinct values
 within two specified annotation keys.}
 \usage{
-plot_sample_counts_by_annotationkey_2d(view_df, sample_key = c("individualID",
-  "specimenID", "cellLine"), annotation_keys, filter_missing = TRUE)
+plot_sample_counts_by_annotationkey_2d(view_df,
+  sample_key = c("individualID", "specimenID", "cellLine"),
+  annotation_keys, filter_missing = TRUE)
 }
 \arguments{
+\item{view_df}{File view data frame}
+
 \item{sample_key}{string indicating sample type}
+
+\item{annotation_keys}{Annotation keys to group by}
 
 \item{filter_missing}{remove records with missing annotation values}
 }

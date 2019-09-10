@@ -10,7 +10,9 @@ add_missing_placeholder(df, placeholder = "Not Annotated",
 \arguments{
 \item{df}{data frame nominally representing a Synapse table or file view}
 
-\item{replace_keys}{}
+\item{placeholder}{Placeholder value to use. Defaults to "Not Annotated"}
+
+\item{replace_keys}{Keys to replace with placeholder value}
 }
 \description{
 Fill in missing values with default or specified string.

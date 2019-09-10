@@ -8,7 +8,9 @@ column(s) to compose 'WHERE' clauses}
 build_tablequery(table_id, ...)
 }
 \arguments{
-\item{...}{}
+\item{table_id}{Synapse ID of table}
+
+\item{...}{Additional query parameters}
 }
 \description{
 Construct a Synapse SQL-style table query using names/values of data frame

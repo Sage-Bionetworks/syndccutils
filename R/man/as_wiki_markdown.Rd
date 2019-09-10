@@ -7,7 +7,9 @@
 as_wiki_markdown(df, cols_as_code = c())
 }
 \arguments{
-\item{cols_as_code}{}
+\item{df}{Data frame}
+
+\item{cols_as_code}{Columns to format as code (i.e. with a fixed width font)}
 }
 \description{
 Format data frame as markdown table

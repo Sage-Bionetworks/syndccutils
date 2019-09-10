@@ -4,8 +4,8 @@
 
 #' Format data frame as markdown table
 #'
-#' @param df
-#' @param cols_as_code
+#' @param df Data frame
+#' @param cols_as_code Columns to format as code (i.e. with a fixed width font)
 #'
 #' @export
 as_wiki_markdown <- function(df, cols_as_code = c()) {
@@ -21,8 +21,7 @@ as_wiki_markdown <- function(df, cols_as_code = c()) {
 
 #' Convert and format data frame as datatable widget.
 #'
-#' @param df
-#' @param cols_as_code
+#' @inheritParams as_wiki_markdown
 #'
 #' @export
 as_datatable <- function(df, cols_as_code = c()) {

@@ -5,8 +5,8 @@
 #' Fill in missing values with default or specified string.
 #'
 #' @param df data frame nominally representing a Synapse table or file view
-#' @param placeholder
-#' @param replace_keys
+#' @param placeholder Placeholder value to use. Defaults to "Not Annotated"
+#' @param replace_keys Keys to replace with placeholder value
 #'
 #' @export
 add_missing_placeholder <- function(
@@ -165,8 +165,8 @@ list_values <- function(
 #' Construct a Synapse SQL-style table query using names/values of data frame
 #' column(s) to compose 'WHERE' clauses
 #'
-#' @param table_id
-#' @param ...
+#' @param table_id Synapse ID of table
+#' @param ... Additional query parameters
 #'
 #' @export
 #'
@@ -195,8 +195,8 @@ build_tablequery <- function(table_id, ...) {
 
 #' Construct a URL to view the results of a Synapse table query
 #'
-#' @param table_id
-#' @param query_string
+#' @param table_id Synapse ID of table
+#' @param query_string A string containing Synapse query
 #'
 #' @export
 get_tablequery_url <- function(table_id, query_string) {
@@ -214,7 +214,8 @@ get_tablequery_url <- function(table_id, query_string) {
 #' Shortcut function that wraps `build_tablequery` and `get_tablequery_url`
 #' to add a new column with link to view table query results
 #'
-#' @param df
+#' @param df Data frame to add a column to
+#' @param format Output format (one of `"markdown"`, `"html"`, or `"raw"`)
 #'
 #' @export
 add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
@@ -233,8 +234,8 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
 
 #' Prettify column names based on annotation keys.
 #'
-#' @param df
-#' @param facet_cols
+#' @param df Data frame to modify
+#' @param facet_cols Vector of names of facet columns
 #'
 #' @export
 format_summarytable_columns <- function(df, facet_cols = c()) {

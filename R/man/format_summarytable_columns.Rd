@@ -7,7 +7,9 @@
 format_summarytable_columns(df, facet_cols = c())
 }
 \arguments{
-\item{facet_cols}{}
+\item{df}{Data frame to modify}
+
+\item{facet_cols}{Vector of names of facet columns}
 }
 \description{
 Prettify column names based on annotation keys.

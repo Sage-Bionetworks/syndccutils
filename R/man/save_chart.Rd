@@ -7,7 +7,14 @@
 save_chart(parent_id, chart_filename, plot_object, static = FALSE)
 }
 \arguments{
-\item{static}{}
+\item{parent_id}{Synapse ID of the parent, i.e. location where the chart will
+be stored}
+
+\item{chart_filename}{File name under which to save the chart}
+
+\item{plot_object}{Plot object to save}
+
+\item{static}{Is the plot static? Defaults to `FALSE`}
 }
 \description{
 Save a static or dynamic chart to a file and store in Synapse.

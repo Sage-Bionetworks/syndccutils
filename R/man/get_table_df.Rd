@@ -8,7 +8,7 @@ in a data frame.}
 get_table_df(table_id, cache = FALSE)
 }
 \arguments{
-\item{table_id}{}
+\item{table_id}{Synapse ID of table}
 }
 \value{
 data frame with table values

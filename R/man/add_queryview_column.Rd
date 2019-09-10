@@ -8,7 +8,9 @@ to add a new column with link to view table query results}
 add_queryview_column(df, format = c("markdown", "html", "raw"))
 }
 \arguments{
-\item{df}{}
+\item{df}{Data frame to add a column to}
+
+\item{format}{Output format (one of `"markdown"`, `"html"`, or `"raw"`)}
 }
 \description{
 Shortcut function that wraps `build_tablequery` and `get_tablequery_url`
