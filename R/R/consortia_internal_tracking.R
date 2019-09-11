@@ -75,7 +75,12 @@ mod_table <- function(fv, table, fileview_id) {
   # stores a vector of synIds that corresponds to files deleted prior. These entries 
   # will not be modified when mod_table() is executed.
   note_del_files <- table$id[!(table$notes %in% c("File removed"))]
-
+  # If the synIds differ between the existing table and the fileview, then a dplyr::bind_rows()
+  # will append the new entries. The vector of synIds note_del_files is compared instead of the 
+  # vector of synIds from the table object so that previously identified missing entries, from
+  # deleted files, are not overwritten. If the synIds are the same between the existing table 
+  # and the fileview, the dplyr::bind_rows() is skipped and the function checks for changes to 
+  # existing file annotations or metadata. 
   if (!setequal(fv$id, note_del_files)) {
     new_entries <- setdiff(fv$id, table$id)
     del_entries <- setdiff(table$id, fv$id)
