@@ -1,6 +1,6 @@
 Package: syndccutils
 Title: Synapse DCC Utilities for R
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: c(
     person("James", "Eddy", email = "james.eddy@sagebionetworks.org", role = c("aut", "cre")),
     person("Sage Bionetworks", role = c("cph"))

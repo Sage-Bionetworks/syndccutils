@@ -2,7 +2,9 @@
 #'
 #' Download current annotation values from Synapse and provide them as a data
 #' frame.
-#' 
+#'
+#' @param synID. The Synapse ID of a table to query from. Defaults to
+#'   "syn10242922"
 #' @return A data frame containing all annotation keys, descriptions, column
 #'   types, maximum sizes, values, value descriptions, sources, and the name of
 #'   the annotation's parent module.
@@ -13,8 +15,8 @@
 #' synLogin()
 #' dat <- get_synapse_annotations()
 #' }
-get_synapse_annotations <- function() {
-  queryResult <- synapser::synTableQuery('select * from syn10242922')
+get_synapse_annotations <- function(synID = "syn10242922") {
+  queryResult <- synapser::synTableQuery(glue::glue('select * from {synID}'))
   dat <- synapser::as.data.frame(queryResult)
   dat <- dat[, !names(dat) %in% c("ROW_ID", "ROW_VERSION")]
   dat
