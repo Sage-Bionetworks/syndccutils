@@ -70,6 +70,7 @@ as_datatable <- function(df, cols_as_code = c()) {
 #'   construct links from Synapse IDs in corresponding ID columns (list values)
 #' @param filter_missing remove records with missing annotation values
 #'
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -137,10 +138,10 @@ summarize_by_annotationkey <- function(
     summary_df <- summary_df %>%
         rowwise() %>%
         mutate(sourceFileview = table_id,
-                      query = build_tablequery(sourceFileview,
+                      query = build_tablequery(.data$sourceFileview,
                                                UQS(query_cols))) %>%
         add_queryview_column(format = queryformat) %>%
-        select(-query, -sourceFileview) %>%
+        select(-.data$query, -.data$sourceFileview) %>%
         ungroup()
 
     if ("projectId" %in% annotation_keys & !is.null(synproject_key)) {

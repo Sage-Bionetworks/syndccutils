@@ -48,7 +48,7 @@ plot_file_counts_by_annotationkey <- function(
                 ))
 
             p <- plot_df %>%
-                ggplot(aes(x = 1, y = n, text = label)) +
+                ggplot(aes(x = 1, y = .data$n, text = .data$label)) +
                 geom_col(aes_(fill = as.name(annotation_key)),
                                   position = position_stack(reverse = FALSE),
                                   colour = "white", size = 0.2) +
@@ -261,7 +261,7 @@ plot_study_counts_by_annotationkey_2d <- function(
     replace_missing <- "Not Annotated"
     plot_df <- view_df %>%
         group_by(UQS(group_cols)) %>%
-        summarize(n = n_distinct(study)) %>%
+        summarize(n = n_distinct(.data$study)) %>%
         ungroup() %>%
         mutate_at(.vars = names(annotation_keys),
             funs(replace(., is.na(.), replace_missing))) %>%
@@ -305,10 +305,10 @@ get_annotation_summary <-function(merged_df){
     p <- merged_df %>%
         mutate_at(.vars = c('assay'),
             funs(replace(., is.na(.), replace_missing))) %>%
-        group_by(assay,Center) %>%
+        group_by(.data$assay, .data$Center) %>%
         tally() %>%
-        ggplot(aes(x = Center, y = n)) +
-        geom_col(aes(fill = assay)) + coord_flip() +
+        ggplot(aes(x = .data$Center, y = .data$n)) +
+        geom_col(aes(fill = .data$assay)) + coord_flip() +
         scale_fill_viridis_d() +
         #   scale_y_log10() +
         xlab("") +
@@ -320,10 +320,10 @@ get_annotation_summary <-function(merged_df){
 
 plot_assay_counts_by_center <- function(merged_df) {
     p <- merged_df %>%
-        group_by(Center,assay) %>%
+        group_by(.data$Center, .data$assay) %>%
         tally() %>%
-        ggplot(aes(x = assay, y = n)) +
-        geom_col(aes(fill = Center)) + coord_flip() +
+        ggplot(aes(x = .data$assay, y = .data$n)) +
+        geom_col(aes(fill = .data$Center)) + coord_flip() +
         scale_fill_viridis_d() +
      #   scale_y_log10() +
         xlab("") +
@@ -336,10 +336,10 @@ plot_assay_counts_by_center <- function(merged_df) {
 
 plot_tool_inputs <- function(merged_df){
     p<- merged_df %>%
-        group_by(Center,inputDataType) %>%
+        group_by(.data$Center, .data$inputDataType) %>%
         tally() %>%
-        ggplot(aes(x=inputDataType,y=n)) +
-        geom_col(aes(fill=Center)) + coord_flip() +
+        ggplot(aes(x = .data$inputDataType, y = .data$n)) +
+        geom_col(aes(fill = .data$Center)) + coord_flip() +
         scale_fill_viridis_d() +
         xlab("") +
         ylab("")
@@ -352,10 +352,10 @@ plot_tool_inputs <- function(merged_df){
 
 plot_tool_outputs <- function(merged_df){
     p<- merged_df %>%
-        group_by(Center,outputDataType) %>%
+        group_by(.data$Center, .data$outputDataType) %>%
         tally() %>%
-        ggplot(aes(x=outputDataType,y=n)) +
-        geom_col(aes(fill=Center)) + coord_flip() +
+        ggplot(aes(x = .data$outputDataType, y = .data$n)) +
+        geom_col(aes(fill = .data$Center)) + coord_flip() +
         scale_fill_viridis_d() +
         xlab("") +
         ylab("")
