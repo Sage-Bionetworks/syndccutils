@@ -18,3 +18,12 @@ Here we can use a file view with annotations to create multiple charts of visual
 
 ### Summarizing projects by dashboard
 Here we can summarize activity by project, date added, data type, etc.
+
+## Contributions
+Code in this respository should be validated before commits are pushed, pull requests made, etc. We can use pre-commit hooks to do this. 
+1. [Install the awslabs git-secrets script](https://github.com/awslabs/git-secrets) to your dev environment
+2. Make sure the `git-secrets` script is in the $PATH of your shell 
+3. Run `git secrets --install && git secrets --register-aws` while in the local repository
+4. `git-secrets` will run before commits but will only output when it finds a problem
+
+

@@ -1,12 +1,12 @@
 Package: syndccutils
 Title: Synapse DCC Utilities for R
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: c(
     person("James", "Eddy", email = "james.eddy@sagebionetworks.org", role = c("aut", "cre")),
     person("Sage Bionetworks", role = c("cph"))
     )
 Description: Code for managing data coordinating operations (e.g., development of the CSBC/PS-ON Knowledge Portal and individual Center pages) for Sage-supported communities through Synapse.
-Depends: R (>= 3.4.1)
+Depends: R (>= 3.4.0)
 License: Apache License (>= 2.0)
 Imports:
     dplyr,
@@ -43,4 +43,4 @@ Remotes:
     ropensci/plotly
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.1.1

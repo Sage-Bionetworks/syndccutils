@@ -4,7 +4,11 @@
 \alias{get_synapse_annotations}
 \title{Get Synapse annotations}
 \usage{
-get_synapse_annotations()
+get_synapse_annotations(synID = "syn10242922")
+}
+\arguments{
+\item{synID.}{The Synapse ID of a table to query from. Defaults to
+"syn10242922"}
 }
 \value{
 A data frame containing all annotation keys, descriptions, column

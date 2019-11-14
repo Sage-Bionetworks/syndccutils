@@ -56,7 +56,7 @@ parse_js_src <- function(src) {
             map_chr(function(x) keep(x, is_js_file))
     ) %>%
         tibble::as_tibble() %>%
-        mutate(target_version = stringr::str_extract(target_lib,
+        mutate(target_version = stringr::str_extract(.data$target_lib,
                                                             "([0-9]+\\.*)+$"))
 }
 
@@ -152,15 +152,15 @@ path_replace_cdn <- function(path,
 update_html_lines <- function(html_lines, target_lines) {
     update_target_lines <- target_lines %>%
         rowwise() %>%
-        mutate(replacement_attr = path_replace_cdn(target_attr),
+        mutate(replacement_attr = path_replace_cdn(.data$target_attr),
                       updated_html = walk2(
-                          target_attr, replacement_attr, function(x, y) {
+                          .data$target_attr, .data$replacement_attr, function(x, y) {
                               html_lines <<- stringr::str_replace(html_lines, x, y)
                           }
                       )
         ) %>%
         ungroup() %>%
-        select(-updated_html)
+        select(-.data$updated_html)
     html_lines
 }
 

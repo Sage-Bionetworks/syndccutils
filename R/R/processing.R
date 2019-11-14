@@ -228,8 +228,8 @@ add_queryview_column <- function(df, format = c("markdown", "html","raw")) {
     )
     link_template <- link_templates[[format]]
     df %>%
-        mutate(viewFiles = get_tablequery_url(sourceFileview, query),
-                      viewFiles = glue::glue(link_template, url = viewFiles))
+        mutate(viewFiles = get_tablequery_url(.data$sourceFileview, .data$query),
+               viewFiles = glue::glue(link_template, url = .data$viewFiles))
 }
 
 

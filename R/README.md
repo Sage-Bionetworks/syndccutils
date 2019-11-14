@@ -31,3 +31,6 @@ Here we can use a file view with annotations to create multiple charts of visual
 
 ### Summarizing projects by dashboard
 Here we can summarize activity by project, date added, data type, etc.
+
+### Data tracking for internal consortia spaces
+Data available preceding a public data release is subject to change. Here we can note files added, deleted and changes to file metadata.
