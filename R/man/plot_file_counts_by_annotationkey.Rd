@@ -9,6 +9,10 @@ plot_file_counts_by_annotationkey(view_df, annotation_keys,
   replace_missing = "Not Annotated", chart_height = NULL)
 }
 \arguments{
+\item{view_df}{File view data frame}
+
+\item{annotation_keys}{Annotation keys to group by}
+
 \item{replace_missing}{String to use for missing annotation values (defaults to "Not Annotated").}
 
 \item{chart_height}{Height of the chart in pixels (optional, defaults to automatic sizing).}

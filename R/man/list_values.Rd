@@ -11,7 +11,9 @@ list_values(df, group_keys, list_keys, list_format = c("html", "csv"))
 
 \item{group_keys}{character vector of keys by which to group}
 
-\item{list_keys}{character vector of keys for which to list values}
+\item{list_keys}{Which keys to list}
+
+\item{list_format}{Format of keys}
 }
 \description{
 List distinct values within each group for specified keys

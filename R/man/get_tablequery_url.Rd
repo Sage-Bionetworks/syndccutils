@@ -7,7 +7,9 @@
 get_tablequery_url(table_id, query_string)
 }
 \arguments{
-\item{query_string}{}
+\item{table_id}{Synapse ID of table}
+
+\item{query_string}{A string containing Synapse query}
 }
 \description{
 Construct a URL to view the results of a Synapse table query

@@ -30,6 +30,10 @@ prepend values of corresponding meta columns (list values)}
 construct links from Synapse IDs in corresponding ID columns (list values)}
 
 \item{filter_missing}{remove records with missing annotation values}
+
+\item{queryformat}{Query format. Defaults to `"html"`}
+
+\item{list_format}{Format of keys}
 }
 \description{
 Count files in a Synapse file view, grouped by annotation keys.

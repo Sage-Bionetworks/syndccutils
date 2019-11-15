@@ -10,8 +10,8 @@ custom_theme_bw <- function() {
 #' Plot the breakdown of files from a file view according to distinct values
 #' within each specified annotation key (i.e., category).
 #'
-#' @param view_df
-#' @param annotation_keys
+#' @param view_df File view data frame
+#' @param annotation_keys Annotation keys to group by
 #' @param replace_missing String to use for missing annotation values (defaults to "Not Annotated").
 #' @param chart_height Height of the chart in pixels (optional, defaults to automatic sizing).
 #'
@@ -77,9 +77,8 @@ plot_file_counts_by_annotationkey <- function(
 #' Plot the breakdown of samples in a file view based on distinct values
 #' within two specified annotation keys.
 #'
-#' @param view_df
+#' @inheritParams plot_file_counts_by_annotationkey
 #' @param sample_key string indicating sample type
-#' @param annotation_keys
 #' @param filter_missing remove records with missing annotation values
 #'
 #' @export

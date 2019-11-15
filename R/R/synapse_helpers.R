@@ -7,7 +7,8 @@ library(synapser)
 #' Collect all rows and columns from a Synapse table and return as values
 #' in a data frame.
 #'
-#' @param table_id
+#' @param table_id Synapse ID of table
+#' @param cache Is the table cached? Defaults to `FALSE`
 #'
 #' @return data frame with table values
 #' @export
@@ -103,10 +104,11 @@ save_table <- function(project_id, table_name, table_df) {
 
 #' Save a static or dynamic chart to a file and store in Synapse.
 #'
-#' @param parent_id
-#' @param chart_filename
-#' @param plot_object
-#' @param static
+#' @param parent_id Synapse ID of the parent, i.e. location where the chart will
+#'   be stored
+#' @param chart_filename File name under which to save the chart
+#' @param plot_object Plot object to save
+#' @param static Is the plot static? Defaults to `FALSE`
 #'
 #' @export
 save_chart <- function(parent_id, chart_filename, plot_object, static = FALSE) {
