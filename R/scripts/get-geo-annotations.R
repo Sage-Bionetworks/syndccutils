@@ -74,17 +74,19 @@ metadata.tbl <- ldply(sampleNames(phenoData(gse.geo[[1]])),
                       })
 
 ## If these are SRA entries, the entity listed in supplementary_file will be a directory
-## not a URL.  Do a little more work to find that URL.
+## not a URL.  Do a little more work to find that URL (see get_link)
 supp.file.columns <- colnames(metadata.tbl)[grepl(colnames(metadata.tbl), pattern="supplementary_file")]
 if(length(supp.file.columns) == 0) {
     stop(paste0("Could not find a column name with pattern \"supplementary_file\" in columns:\n", paste(colnames(metadata.tbl), collapse=", "), "\n"))
 }
 
-if(length(supp.file.columns) > 1) {
-    warning(paste0("Got multiple columns with pattern \"supplementary_file\"\nJust using the first of the following:\n", paste(supp.file.columns, collpase=", "), "\n"))
-}
-
-metadata.tbl$url <- as.character(metadata.tbl[, supp.file.columns[1]])
+## If there are multiple supplemental file columns (i.e., if there are
+## multiple GEO files associated with this sample), collapse them all
+## together
+metadata.tbl$url <-
+  apply(metadata.tbl[, supp.file.columns, drop = FALSE], 1,
+        function(row) paste0(row, collapse = ", "))
+                
 
 ## Function to find FTP link by searching Entrez and parsing the XML results
 get_link_from_entrez <- function(sra) {
