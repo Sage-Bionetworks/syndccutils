@@ -155,23 +155,30 @@ l_ply(1:nrow(pub.tbl), .parallel = FALSE,
 				     }))
                all.grant.names <- paste0(all.grant.names, collapse = ", ")
 	       all.grant.synIds <- paste0(all.grant.synIds, collapse = ", ")
-	       
+
+               force.dataset.processing <- TRUE
+	       force.geo.annotation <- FALSE
+
                ## Iterate over each GEO dataset associated with this publication
 	       l_ply(gses,
 	             .fun = function(gse) {
 
                               ## Has this GEO dataset already been linked?
 			      ## i.e., does it exist in the dataset table?
-                              if(gse %in% dataset.tbl[, dataset.id.col]) {
-			        message(paste0(gse, " already exists in dataset table. Skipping.\n"))
-				return()
+                              if(!force.dataset.processing) {
+			        if(gse %in% dataset.tbl[, dataset.id.col]) {
+			          message(paste0(gse, " already exists in dataset table. Skipping.\n"))
+				  return()
+				}
 			      }
 			      message(paste0("Adding ", gse, " to dataset table\n"))
 
                               ## Get the GEO annotations for this dataset
 			      anno.file <- paste0(gse, "-metadata.tsv")
-			      cmd <- paste0("Rscript ./get-geo-annotations.R --gse=", gse, " > ", anno.file)
-			      system(cmd)
+			      if(!file.exists(anno.file) || force.geo.annotation) {
+  			        cmd <- paste0("Rscript ./get-geo-annotations.R --gse=", gse, " > ", anno.file)
+			        system(cmd)
+		              }
 			      if(!file.exists(anno.file) || ( file.size(anno.file) == 0)) {
 			        message(paste0("Could not download annotations for GEO dataset ", gse, "\n"))
 				return()
@@ -204,33 +211,36 @@ l_ply(1:nrow(pub.tbl), .parallel = FALSE,
 			            .fun = function(j) {
 				             l_ply(file.cols, .parallel = FALSE,
 					           .fun = function(file.col) {
-				                            file <- anno.tbl[j, file.col]
-							    if(is.null(file)) { return() }
-							    if(is.na(file)) { return() }
-							    if(file == "NONE") { return() }
-							    if(!grepl(file, pattern="ftp")) { return() }
-							    message(paste0("Linking ", file, " to folder /datasets/", gse, " (synId = ", geo.dataset.synId, ")\n"))
-				                            f <- File(file, parentId = geo.dataset.synId, synapseStore = FALSE)
-					                    obj <- synStore(f)
-					                    synId <- get.synapse.id(obj)
-							    splits <- unlist(strsplit(file, split="/"))
-							    fileName = splits[length(splits)]
+				                            files <- as.character(anno.tbl[j, file.col])
+							    files <- unlist(strsplit(files, split = ",[ ]*"))
+							    for(file in files) {
+  							      if(is.null(file)) { return() }
+							      if(is.na(file)) { return() }
+							      if(file == "NONE") { return() }
+							      if(!grepl(file, pattern="ftp")) { return() }
+							      message(paste0("Linking ", file, " to folder /datasets/", gse, " (synId = ", geo.dataset.synId, ")\n"))
+				                              f <- File(file, parentId = geo.dataset.synId, synapseStore = FALSE)
+					                      obj <- synStore(f)
+					                      synId <- get.synapse.id(obj)
+							      splits <- unlist(strsplit(file, split="/"))
+							      fileName = splits[length(splits)]
 
-                                                            ## Add a few annotations to the link
-                                                            annos <- synGetAnnotations(obj)
-                                                            annos[["fileName"]] <- fileName
-  			                                    annos[["datasetName"]] <- gse
-			                                    annos[["datasetId"]] <- gse
-			                                    annos[["datasets"]] <- gse
+                                                              ## Add a few annotations to the link
+                                                              annos <- synGetAnnotations(obj)
+                                                              annos[["fileName"]] <- fileName
+  			                                      annos[["datasetName"]] <- gse
+			                                      annos[["datasetId"]] <- gse
+			                                      annos[["datasets"]] <- gse
 
-			                                    annos[["grantId"]] <- all.grant.synIds
-			                                    annos[["grantName"]] <- all.grant.names
-							    anno.cols <- list("instrument_model" = "platform", "title" = "title", "geo_accession" = "geo_accession")
-							    for(anno.col in names(anno.cols)) {
-							      if(!(anno.col %in% colnames(anno.tbl))) { next }
-							      annos[[anno.cols[[anno.col]]]] <- anno.tbl[j, anno.col]
+			                                      annos[["grantId"]] <- all.grant.synIds
+			                                      annos[["grantName"]] <- all.grant.names
+							      anno.cols <- list("instrument_model" = "platform", "title" = "title", "geo_accession" = "geo_accession")
+							      for(anno.col in names(anno.cols)) {
+							        if(!(anno.col %in% colnames(anno.tbl))) { next }
+							        annos[[anno.cols[[anno.col]]]] <- anno.tbl[j, anno.col]
+							      }
+			                                      synSetAnnotations(obj, annotations=annos)
 							    }
-			                                    synSetAnnotations(obj, annotations=annos)
 							  })
 					   })
 			      
