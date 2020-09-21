@@ -56,9 +56,14 @@ options('download.file.method.GEOquery' = 'libcurl')
 message(paste0("Retrieving the GSE object for identifier: ", gse.identifier, "\n"))
 gse.geo <- getGEO(gse.identifier, getGPL=FALSE)
 
+message(paste0("Length of GEO list: ", length(gse.geo), "\n"))
+
 ## Iterate over each of the GSMs associated with this GSE
-metadata.tbl <- ldply(sampleNames(phenoData(gse.geo[[1]])), 
-                      .fun = function(gsm.identifier) {
+metadata.tbl <-
+    ldply(gse.geo,
+          .fun = function(entry) {
+              ldply(sampleNames(phenoData(entry)),
+                    .fun = function(gsm.identifier) {
 
                         message(paste0("Retrieving metadata for GSM identifier: ", gsm.identifier, "\n"))
                           
@@ -71,7 +76,8 @@ metadata.tbl <- ldply(sampleNames(phenoData(gse.geo[[1]])),
                         ## Metadata is a list of lists.
                         ## Go through each entry and concatenate the individual lists using a ';' delimiter
                         as.data.frame(lapply(md, function(entry) paste(entry, collapse=";")), stringsAsFactors = FALSE)
-                      })
+                    })
+          })
 
 ## If these are SRA entries, the entity listed in supplementary_file will be a directory
 ## not a URL.  Do a little more work to find that URL.
